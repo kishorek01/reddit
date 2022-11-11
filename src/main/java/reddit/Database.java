@@ -10,6 +10,7 @@ public class Database {
 	        // Initialize all the information regarding
 	        // Database Connection
 //	        String dbDriver = "com.mysql.jdbc.Driver";
+			Class.forName("org.postgresql.Driver");
 	        String dbURL = "jdbc:postgresql://localhost:5432/";
 	        // Database name to access
 	        String dbName = "reddit";
