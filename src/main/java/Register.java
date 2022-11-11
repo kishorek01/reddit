@@ -103,6 +103,7 @@ public class Register extends HttpServlet {
 						}
 						if(!Storage.isUserInStorage(rs.getString("username"))) {
 							User getU = new User(rs.getString("username"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("created_at"), rs.getString("updated_at"));
+
 							Storage.setUser(getU);
 						}
 						res.addProperty("message","Email Already Exists");

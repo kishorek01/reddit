@@ -1,11 +1,6 @@
 package reddit;
-
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-
 public class RegisterThread extends Thread{
     RegisterUser registerUser;
     String username;
@@ -27,10 +22,8 @@ public class RegisterThread extends Thread{
     public void run(){
         try {
             registerUser.register(username,name,email,password,request,response);
-        } catch (ServletException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

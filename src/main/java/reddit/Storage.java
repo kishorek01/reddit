@@ -1,10 +1,11 @@
 package reddit;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Storage {
-    protected static HashMap<String, User> users=new HashMap<>();
-    protected static ArrayList<String> registeredEmails=new ArrayList<>();
+    protected static ConcurrentHashMap<String, User> users=new ConcurrentHashMap<>();
+    protected static CopyOnWriteArrayList<String> registeredEmails=new CopyOnWriteArrayList<>();
     public static User getUser(String userName){
         if(users.containsKey(userName)){
             return users.get(userName);
