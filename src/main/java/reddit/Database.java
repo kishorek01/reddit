@@ -382,6 +382,21 @@ public class Database {
 
 	}
 
+	public static synchronized String RandomConversationID(String user1,String user2)
+	{
+		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+		String result=user1+","+user2+",";
+		int i;
+		for ( i=0; i<6; i++) {
+			//generating a random number using math.random()
+			int ch = (int)(AlphaNumericStr.length() * Math.random());
+			//adding Random character one by one at the end of s
+			result=result+AlphaNumericStr.charAt(ch);
+		}
+		return result;
+
+	}
+
 
 	public static synchronized JsonObject getMyMessages(String username) throws Exception{
 		String sql="select * from conversations where user1='"+username+"' or user2='"+username+"';";

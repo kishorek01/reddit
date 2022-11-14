@@ -182,7 +182,7 @@ public class StorageMethods extends Storage{
         Comments commentData=new Comments(commentId,comment,username,postID);
         comments.put(commentId,commentData);
         res.add("data",new Gson().toJsonTree(commentData));
-        Storage.commentQueue.add(commentId);
+        Storage.newCommentQueue.add(commentId);
         PrintWriter out=response.getWriter();
         res.addProperty("commented", true);
         res.addProperty("message","Commented Successful");
@@ -200,7 +200,7 @@ public class StorageMethods extends Storage{
         posts.put(postId,postData);
         res.add("data",new Gson().toJsonTree(postData));
         users.get(username).myPosts.add(postId);
-        Storage.postQueue.add(postId);
+        Storage.newPostQueue.add(postId);
         PrintWriter out=response.getWriter();
         res.addProperty("posted", true);
         res.addProperty("message", "Posted Successful");
@@ -213,7 +213,7 @@ public class StorageMethods extends Storage{
 
     public static synchronized void updateDBComments() throws Exception {
         String postssql="";
-        String commentKey = commentQueue.poll();
+        String commentKey = newCommentQueue.poll();
         while (commentKey!=null){
             String subsqlposts="";
 
@@ -236,7 +236,7 @@ public class StorageMethods extends Storage{
                 }
             }
 
-            commentKey = commentQueue.poll();
+            commentKey = newCommentQueue.poll();
         }
         System.out.println(postssql);
 
@@ -248,7 +248,7 @@ public class StorageMethods extends Storage{
 
     public static synchronized void updateDBPosts() throws Exception{
         String postssql="";
-        String postKey = postQueue.poll();
+        String postKey = newPostQueue.poll();
         while (postKey!=null){
             String subsqlposts="";
 
@@ -269,7 +269,7 @@ public class StorageMethods extends Storage{
 
             }
 
-            postKey = postQueue.poll();
+            postKey = newPostQueue.poll();
         }
         System.out.println(postssql);
 

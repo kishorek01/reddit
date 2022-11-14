@@ -56,14 +56,6 @@ public class Login extends HttpServlet {
 		try {
 			JsonObject userData= Database.loginUser(username);
 			if(userData.size()!=0){
-				if(userData.get("password").getAsString().equals(password)){
-					data.add("data", userData);
-					data.addProperty("login", true);
-					data.addProperty("message", "Login Successful");
-				}else{
-					data.addProperty("login", false);
-					data.addProperty("message", "Wrong Password");
-				}
 				LoginUser loginUser=new LoginUser();
 				LoginThread r1=new LoginThread(loginUser,username,password,request,response);
 				r1.start();
@@ -72,6 +64,15 @@ public class Login extends HttpServlet {
 				}catch (Exception e){
 					e.printStackTrace();
 				}
+				if(userData.get("password").getAsString().equals(password)){
+					data.add("data", userData);
+					data.addProperty("login", true);
+					data.addProperty("message", "Login Successful");
+				}else{
+					data.addProperty("login", false);
+					data.addProperty("message", "Wrong Password");
+				}
+
 				finalResponse.add("data", data);
 			}else{
 				data.addProperty("login", false);

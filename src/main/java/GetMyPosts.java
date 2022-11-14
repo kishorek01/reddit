@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import reddit.Database;
+import reddit.StorageMethods;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -61,12 +62,7 @@ public class GetMyPosts extends HttpServlet {
 			}
 			
 		}catch(Exception e) {
-			finalResponse.addProperty("code",501);
-			res.addProperty("message","Unknown Error");
-			finalResponse.add("data", res);
-			out.print(finalResponse);
-			e.printStackTrace();
-			out.flush();
+			StorageMethods.throwUnknownError(request,response);
 		}
 
 	}
