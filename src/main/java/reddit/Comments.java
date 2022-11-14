@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Comments {
+public class Comments  {
     public String comment;
     public String username;
     public String commentid;

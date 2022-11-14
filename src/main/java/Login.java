@@ -28,39 +28,21 @@ public class Login extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password");
-		if (!StorageMethods.isUserInStorage(username)) {
-			getFromDB(request, response, username, password);
-		}else{
-			User user = StorageMethods.getUser(username);
-			System.out.println("Getting From In Memory");
-			JsonObject res=new JsonObject();
-			JsonObject finalResponse=new JsonObject();
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			PrintWriter out=response.getWriter();
-			if(user.password.equals(password)) {
-				JsonObject userData = new JsonObject();
-				userData.addProperty("username", user.username);
-				userData.addProperty("name", user.name);
-				userData.addProperty("password", user.password);
-				userData.addProperty("email", user.email);
-				userData.addProperty("created_at", user.created_at);
-				userData.addProperty("updated_at", user.updated_at);
-				res.add("data", userData);
-				res.addProperty("login", true);
-				res.addProperty("message", "Login Successful");
-				finalResponse.add("data", res);
-				finalResponse.addProperty("Code", 200);
-			}else{
-				res.addProperty("message","Wrong Password");
-				res.addProperty( "login", false);
-				finalResponse.add("data", res);
-				finalResponse.addProperty("code",203);
-				System.out.println("Wrong Password");
+		try {
+			if (!StorageMethods.isUserInStorage(username)) {
+				getFromDB(request, response, username, password);
+			} else {
+				User user = StorageMethods.getUser(username);
+				System.out.println("Getting From In Memory");
+				if (user.password.equals(password)) {
+					StorageMethods.throwUser(user,request,response);
+				} else {
+					StorageMethods.throwWrongPassword(request, response);
+					System.out.println("Wrong Password");
+				}
 			}
-			out.print(finalResponse);
-			out.flush();
-			out.flush();
+		}catch (Exception e){
+			StorageMethods.throwUnknownError(request,response);
 		}
 	}
 
@@ -99,12 +81,7 @@ public class Login extends HttpServlet {
 			out.print(finalResponse);
 			out.flush();
 		}catch(Exception e) {
-			finalResponse.addProperty("code",501);
-			data.addProperty("message","Unknown Error");
-			finalResponse.add("data", data);
-			out.print(finalResponse);
-			e.printStackTrace();
-			out.flush();
+			StorageMethods.throwUnknownError(request,response);
 		}
 	}
 

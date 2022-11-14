@@ -9,7 +9,10 @@ public class LoginUser {
         System.out.println("Got all the post for user "+ username+" and stored it in memory");
 
     }
-    public synchronized void getMessages(String username){
+    public synchronized void getMessages(String username) throws Exception{
+        System.out.println("Getting Messages Using Thread");
+        JsonObject result=Database.getMyMessages(username);
+        System.out.println("Got all the Messages for user "+ username+" and stored it in memory");
 
     }
 }

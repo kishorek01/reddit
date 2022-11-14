@@ -5,7 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Database {
@@ -100,6 +102,41 @@ public class Database {
 		return userdata;
 	}
 
+	public static synchronized JsonObject postLikes(String contentId,String username,Boolean status) throws Exception{
+		String sql="select * from likes where contentid='"+contentId+"' and username='"+username+"' and comment=false;";
+		sql="insert into likes(username,contentid,status) values('"+username+"','"+contentId+"',"+status+") RETURNING *;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		JsonObject likeData=new JsonObject();
+		if(resultSet.next()){
+			likeData.addProperty("username",resultSet.getString("username"));
+			likeData.addProperty("status",resultSet.getString("status").compareTo("t")==0);
+			likeData.addProperty("contentid", resultSet.getString("contentid"));
+			likeData.addProperty("comment",resultSet.getString("comment").compareTo("t")==0);
+			likeData.addProperty("likeid", resultSet.getInt("likeid"));
+			likeData.addProperty("created_at", resultSet.getString("created_at"));
+			likeData.addProperty("updated_at", resultSet.getString("updated_at"));
+
+		}
+		return likeData;
+	}
+
+	public static synchronized void isLikesPresent(String contentId,String username) throws Exception{
+		String sql="select * from likes where contentid='"+contentId+"' and username='"+username+"' and comment=false;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		JsonObject likeData=new JsonObject();
+		if(resultSet.next()){
+			likeData.addProperty("username",resultSet.getString("username"));
+			likeData.addProperty("status",resultSet.getString("status").compareTo("t")==0);
+			likeData.addProperty("contentid", resultSet.getString("contentid"));
+			likeData.addProperty("comment",resultSet.getString("comment").compareTo("t")==0);
+			likeData.addProperty("likeid", resultSet.getInt("likeid"));
+			likeData.addProperty("created_at", resultSet.getString("created_at"));
+			likeData.addProperty("updated_at", resultSet.getString("updated_at"));
+		}
+	}
+
 	public static synchronized JsonObject getMyPosts(String username) throws Exception {
 		String sql="select * from posts where created_by='"+username+"';";
 		Statement stmt=connection.createStatement();
@@ -109,13 +146,18 @@ public class Database {
 		return res;
 	}
 
-	public static synchronized JsonObject postComments(String username,String comment,String postID) throws Exception {
-		String commentID=RandomIDGenerator(username,"Post");
+	public static synchronized JsonObject postComments(String commentID,String username,String comment,String postID) throws Exception {
+//		String commentID=RandomIDGenerator(username,"Post");
 		String sql="insert into comments(commentid,username,comment,postid) values('"+commentID+"','"+username+"','"+comment+"',"+postID+") RETURNING *;";
 		statement=connection.createStatement();
 		ResultSet resultSet=statement.executeQuery(sql);
 		JsonArray arr=convertToJSONComments(resultSet);
 		return (JsonObject) arr.get(0);
+	}
+	public static synchronized void postBatchComments(String sql) throws Exception{
+		sql="insert into comments(commentid,username,comment,postid) values "+sql+" RETURNING *;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
 	}
 	public static synchronized JsonArray convertToJSONPosts(ResultSet resultSet)
 			throws Exception {
@@ -130,6 +172,15 @@ public class Database {
 			jsonArray.add(obj);
 		}
 		return jsonArray;
+	}
+
+	public static synchronized JsonObject updateLikes(String contentId,Boolean status,String username) throws Exception {
+		String commentID=RandomIDGenerator(username,"Post");
+		String sql="update likes set status="+status+" where contentid='"+commentID+"' and username='"+username+"' RETURNING *;";
+		statement=connection.createStatement();
+		ResultSet resultSet=statement.executeQuery(sql);
+		JsonArray arr=convertToJSONLikes(resultSet);
+		return (JsonObject) arr.get(0);
 	}
 
 	public static synchronized void addToInmemoryPosts(JsonObject postsData) throws Exception {
@@ -151,6 +202,21 @@ public class Database {
 		}
 		JsonObject res=getCommentsForPosts(postId);
 	}
+	public static synchronized void addToInMemoryMessages(JsonObject messageData) throws Exception{
+		String created_by = messageData.get("conversationid").getAsString();
+//		Posts post = new Posts(postId, content, created_by, created_at, updated_at);
+//		if (!StorageMethods.isPostinPosts(postId)) {
+//			StorageMethods.addPost(postId, post);
+//		}
+//		if(StorageMethods.isUserInStorage(created_by)) {
+//			System.out.println(postId+" "+created_by);
+//			StorageMethods.addPostToUsers(created_by, postId);
+//		}else{
+//			loginUser(created_by);
+//			StorageMethods.addPostToUsers(created_by, postId);
+//		}
+//		JsonObject res=getCommentsForPosts(postId);
+	}
 		public static synchronized JsonObject getCommentsForPosts(String postId) throws Exception {
 			System.out.println("Getting comments for post id "+postId);
 			String sql="select * from comments where postid='"+postId+"';";
@@ -161,12 +227,27 @@ public class Database {
 			System.out.println("comments Collected for post id "+postId);
 			return  res;
 		}
+		public static JsonArray converToJSONMessages(ResultSet resultSet) throws Exception{
+			JsonArray jsonArray = new JsonArray();
+			while (resultSet.next()) {
+				int total_columns = resultSet.getMetaData().getColumnCount();
+				JsonObject obj = new JsonObject();
+				List<String> childs=new ArrayList<>();
+				for (int i = 0; i < total_columns; i++) {
+					obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
+				}
+				addToInMemoryMessages(obj);
+				jsonArray.add(obj);
+			}
+			return jsonArray;
+		}
 	public static JsonArray convertToJSONComments(ResultSet resultSet)
 			throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		while (resultSet.next()) {
 			int total_columns = resultSet.getMetaData().getColumnCount();
 			JsonObject obj = new JsonObject();
+			List<String> childs=new ArrayList<>();
 			for (int i = 0; i < total_columns; i++) {
 				obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
 				if(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase().equalsIgnoreCase("childcomments")) {
@@ -176,14 +257,53 @@ public class Database {
 					String[] words = s.split(",");
 					Pattern pattern = Pattern.compile(" ");
 					words = pattern.split(s);
+					childs=Arrays.asList(words);
 					System.out.println(Arrays.toString(words));
 					obj.add(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), new Gson().toJsonTree(words).getAsJsonArray());
 				}
+			}
+			if(childs.size()!=0) {
+				getChildComments(childs);
 			}
 			addToInMemoryComments(obj);
 			jsonArray.add(obj);
 		}
 		return jsonArray;
+	}
+	public static void getChildComments(List commentIds) throws Exception {
+		System.out.println("Getting comments for comment id "+commentIds);
+		String sql="select * from comments where commentid in "+commentIds.toString()+";";
+		JsonObject res=new JsonObject();
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		res.add("data",convertToJSONComments(resultSet));
+		System.out.println("comments Collected for Comment id "+commentIds);
+	}
+	public static JsonArray convertToJSONLikes(ResultSet resultSet) throws Exception{
+		JsonArray jsonArray = new JsonArray();
+		while (resultSet.next()) {
+			int total_columns = resultSet.getMetaData().getColumnCount();
+			JsonObject obj = new JsonObject();
+			for (int i = 0; i < total_columns; i++) {
+				obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
+			}
+			addToInMemoryLikes(obj);
+			jsonArray.add(obj);
+		}
+		return jsonArray;
+	}
+
+	public synchronized static void addToInMemoryLikes(JsonObject likeData) throws Exception{
+		String username = likeData.get("username").getAsString();
+		Boolean comment = likeData.get("comment").getAsString().equalsIgnoreCase("t");
+		Boolean status = likeData.get("status").getAsString().equalsIgnoreCase("t");
+		String contentId=likeData.get("comtentid").getAsString();
+		if(comment){
+
+		}else{
+			StorageMethods.addLikesToPosts(contentId,status,username);
+		}
+
 	}
 
 	public synchronized static void addToInMemoryComments(JsonObject commentData) throws Exception {
@@ -199,7 +319,7 @@ public class Database {
 		JsonArray childcomments=commentData.get("childcomments").getAsJsonArray();
 		String postId=commentData.get("postid").getAsString();
 		Comments comments = new Comments(commentID, comment, username,postId,parrent,childcomments, created_at, updated_at);
-		if (!StorageMethods.isCommentinComments(postId)) {
+		if (!StorageMethods.isCommentInComments(postId)) {
 			StorageMethods.addComment(commentID,comments);
 		}
 		if(StorageMethods.isPostinPosts(postId)) {
@@ -218,6 +338,14 @@ public class Database {
 		res.add("data",convertToJSONPosts(rs));
 	}
 
+	public static synchronized void getCommentId(String commentId) throws Exception{
+		String sql="select * from comments where commentid='"+commentId+"'";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		JsonObject res=new JsonObject();
+		res.add("data",convertToJSONComments(resultSet));
+	}
+
 	public static synchronized String RandomIDGenerator(String username,String idType)
 	{
 		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
@@ -233,4 +361,13 @@ public class Database {
 
 	}
 
+
+	public static synchronized JsonObject getMyMessages(String username) throws Exception{
+		String sql="select * from conversations where user1='"+username+"' or user2='"+username+"';";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		JsonObject res=new JsonObject();
+		res.add("data",converToJSONMessages(resultSet));
+		return res;
+	}
 }

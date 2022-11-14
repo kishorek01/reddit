@@ -1,10 +1,9 @@
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import reddit.Database;
+import reddit.StorageMethods;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,29 +34,12 @@ public class PostComments extends HttpServlet {
         response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
 		PrintWriter out=response.getWriter();
-		JsonObject res=new JsonObject();
-		JsonObject finalResponse=new JsonObject();
+
 		try {
-			JsonObject commentData=Database.postComments(username,comment,postid);
-
-					res.add("data",commentData);
-					res.addProperty("commented", true);
-					res.addProperty("message","Commented Successful");
-					finalResponse.add("data", res);
-					finalResponse.addProperty("Code", 200);
-					out.print(finalResponse);
-					out.flush();
-
-				
-
-			
+//			JsonObject commentData=Database.postComments(username,comment,postid);
+			StorageMethods.postComments(username,comment,postid,request,response);
 		}catch(Exception e) {
-			finalResponse.addProperty("code",501);
-			res.addProperty("message","Unknown Error");
-			finalResponse.add("data", res);
-			out.print(finalResponse);
-			e.printStackTrace();
-			out.flush();
+			StorageMethods.throwUnknownError(request,response);
 		}
 
 		
