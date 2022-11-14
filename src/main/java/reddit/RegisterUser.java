@@ -14,6 +14,7 @@ public class RegisterUser {
         PrintWriter out=response.getWriter();
         JsonObject result=Database.registerUser(username,name,email,password);
         System.out.println("New User Created Successfully");
+        out.print(result);
         out.flush();
     }
 }

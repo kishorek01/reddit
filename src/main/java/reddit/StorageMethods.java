@@ -1,5 +1,12 @@
 package reddit;
 
+import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
 public class StorageMethods extends Storage{
     public static User getUser(String userName){
         if(users.containsKey(userName)){
@@ -48,5 +55,47 @@ public class StorageMethods extends Storage{
         if(!posts.get(postId).comments.contains(commentId)){
             posts.get(postId).comments.add(commentId);
         }
+    }
+    public static void throwEmailAlreadyExists(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println("Getting From In Memory");
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        res.addProperty("message","Email Already Exists");
+        res.addProperty( "created", false);
+        finalResponse.add("data", res);
+        finalResponse.addProperty("code",201);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        System.out.println("Email Already Exists");
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static void throwUsernameAlreadyExists(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        System.out.println("Getting From In Memory");
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        res.addProperty("message","Username Already Exists");
+        res.addProperty( "created", false);
+        finalResponse.add("data", res);
+        finalResponse.addProperty("code",201);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        System.out.println("Username Already Exists");
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static void throwUnknownError(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        finalResponse.addProperty("code", 501);
+        res.addProperty("message","Unknown Error");
+        finalResponse.add("data", res);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
     }
 }

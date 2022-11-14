@@ -1,7 +1,6 @@
-
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
-//import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,9 +11,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
  * Servlet implementation class GetMyPosts
@@ -38,40 +34,37 @@ public class GetMyPosts extends HttpServlet {
         response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
 		PrintWriter out=response.getWriter();
+		JsonObject res=new JsonObject();
+		JsonObject finalResponse=new JsonObject();
 		try {
 			connection=Database.initializeDatabase();
 			if(connection!=null) {
 				String sql="select * from posts where created_by='"+username+"';";
 				Statement stmt=connection.createStatement();
 				ResultSet rs=stmt.executeQuery(sql);
-				JsonObject res=new JsonObject();
-				JsonObject finalresponse=new JsonObject();
+
 					res.add("data",convertToJSON(rs));
 					res.addProperty("posts", true);
 					res.addProperty("message","Posts Get Successful");
-					finalresponse.add("data", res);
-					finalresponse.addProperty("Code", 200);
-					out.print(finalresponse);
+				finalResponse.add("data", res);
+				finalResponse.addProperty("Code", 200);
+					out.print(finalResponse);
 					out.flush();
 				
 			}else {
-				JsonObject res=new JsonObject();
-				JsonObject finalresponse=new JsonObject();
-				finalresponse.addProperty("code", 501);
+				finalResponse.addProperty("code", 501);
 				res.addProperty("message", "Database Connection Error");
-				finalresponse.add("data", res);
+				finalResponse.add("data", res);
 				System.out.println("Database Connected Error");
-				out.print(finalresponse);
+				out.print(finalResponse);
 				out.flush();
 			}
 			
 		}catch(Exception e) {
-			JsonObject res=new JsonObject();
-			JsonObject finalresponse=new JsonObject();
-			finalresponse.addProperty("code",501);
+			finalResponse.addProperty("code",501);
 			res.addProperty("message","Unknown Error");
-			finalresponse.add("data", res);
-			out.print(finalresponse);
+			finalResponse.add("data", res);
+			out.print(finalResponse);
 			e.printStackTrace();
 			out.flush();
 		}
