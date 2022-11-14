@@ -3,9 +3,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import reddit.Database;
-import reddit.Storage;
-import reddit.User;
+import reddit.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,10 +28,10 @@ public class Login extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password");
-		if (!Storage.isUserInStorage(username)) {
+		if (!StorageMethods.isUserInStorage(username)) {
 			getFromDB(request, response, username, password);
 		}else{
-			User user = Storage.getUser(username);
+			User user = StorageMethods.getUser(username);
 			System.out.println("Getting From In Memory");
 			JsonObject res=new JsonObject();
 			JsonObject finalResponse=new JsonObject();
@@ -76,13 +74,21 @@ public class Login extends HttpServlet {
 		try {
 			JsonObject userData= Database.loginUser(username);
 			if(userData.size()!=0){
-				if(userData.get("password").equals(password)){
+				if(userData.get("password").getAsString().equals(password)){
 					data.add("data", userData);
 					data.addProperty("login", true);
 					data.addProperty("message", "Login Successful");
 				}else{
 					data.addProperty("login", false);
 					data.addProperty("message", "Wrong Password");
+				}
+				LoginUser loginUser=new LoginUser();
+				LoginThread r1=new LoginThread(loginUser,username,password,request,response);
+				r1.start();
+				try{
+					r1.join();
+				}catch (Exception e){
+					e.printStackTrace();
 				}
 				finalResponse.add("data", data);
 			}else{

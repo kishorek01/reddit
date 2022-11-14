@@ -28,7 +28,7 @@ public class Register extends HttpServlet {
 		String email = request.getParameter("email").toString();
 		String password = request.getParameter("password").toString();
 		String name = request.getParameter("name").toString();
-		if(Storage.isEmailInStorage(email)){
+		if(StorageMethods.isEmailInStorage(email)){
 			System.out.println("Getting From In Memory");
 			JsonObject res=new JsonObject();
 			JsonObject finalResponse=new JsonObject();
@@ -42,10 +42,10 @@ public class Register extends HttpServlet {
 			PrintWriter out=response.getWriter();
 			out.print(finalResponse);
 			out.flush();
-		} else if (!Storage.isUserInStorage(username)) {
+		} else if (!StorageMethods.isUserInStorage(username)) {
 			createFromDB(request, response, username, email, password, name);
 		}else{
-			User user = Storage.getUser(username);
+			User user = StorageMethods.getUser(username);
 			System.out.println("Getting From In Memory");
 			JsonObject res=new JsonObject();
 			JsonObject finalResponse=new JsonObject();
@@ -89,22 +89,22 @@ public class Register extends HttpServlet {
 						finalresponse.add("data", res);
 						finalresponse.addProperty("code",201);
 						System.out.println("Username Already Exists");
-						if(!Storage.isUserInStorage(rs.getString("username"))) {
+						if(!StorageMethods.isUserInStorage(rs.getString("username"))) {
 							User getU = new User(rs.getString("username"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("created_at"), rs.getString("updated_at"));
-							Storage.setUser(getU);
+							StorageMethods.setUser(getU);
 						}
-						if(!Storage.isEmailInStorage(rs.getString("email"))) {
-							Storage.addEmail(rs.getString("email"));
+						if(!StorageMethods.isEmailInStorage(rs.getString("email"))) {
+							StorageMethods.addEmail(rs.getString("email"));
 						}
 						out.print(finalresponse);
 					}else if(email.compareTo(rs.getString("email"))==0) {
-						if(!Storage.isEmailInStorage(rs.getString("email"))) {
-							Storage.addEmail(rs.getString("email"));
+						if(!StorageMethods.isEmailInStorage(rs.getString("email"))) {
+							StorageMethods.addEmail(rs.getString("email"));
 						}
-						if(!Storage.isUserInStorage(rs.getString("username"))) {
+						if(!StorageMethods.isUserInStorage(rs.getString("username"))) {
 							User getU = new User(rs.getString("username"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getString("created_at"), rs.getString("updated_at"));
 
-							Storage.setUser(getU);
+							StorageMethods.setUser(getU);
 						}
 						res.addProperty("message","Email Already Exists");
 						res.addProperty( "created", false);
