@@ -159,6 +159,12 @@ public class Database {
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
+
+	public static synchronized void postBatchPosts(String sql) throws Exception{
+		sql="insert into posts(postid,created_by,content) values "+ sql+" RETURNING *;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+	}
 	public static synchronized JsonArray convertToJSONPosts(ResultSet resultSet)
 			throws Exception {
 		JsonArray jsonArray = new JsonArray();
@@ -271,7 +277,7 @@ public class Database {
 		return jsonArray;
 	}
 	public static void getChildComments(List commentIds) throws Exception {
-		System.out.println("Getting comments for comment id "+commentIds);
+		System.out.println("Getting comments for comment id Array "+commentIds);
 		String sql="select * from comments where commentid in "+commentIds.toString()+";";
 		JsonObject res=new JsonObject();
 		Statement statement1=connection.createStatement();
@@ -350,6 +356,21 @@ public class Database {
 	{
 		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
 		String result=username+","+idType+","+"";
+		int i;
+		for ( i=0; i<6; i++) {
+			//generating a random number using math.random()
+			int ch = (int)(AlphaNumericStr.length() * Math.random());
+			//adding Random character one by one at the end of s
+			result=result+AlphaNumericStr.charAt(ch);
+		}
+		return result;
+
+	}
+
+	public static synchronized String RandomIDGenerator(String username)
+	{
+		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+		String result=username+",";
 		int i;
 		for ( i=0; i<6; i++) {
 			//generating a random number using math.random()

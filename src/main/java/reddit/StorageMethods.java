@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 public class StorageMethods extends Storage{
     public static User getUser(String userName){
@@ -191,6 +192,24 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static void createPost(String username,String content,HttpServletRequest request, HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        String postId=Database.RandomIDGenerator(username);
+        Posts postData=new Posts(postId,content,username, String.valueOf(new Date().getTime()),String.valueOf(new Date().getTime()));
+        posts.put(postId,postData);
+        res.add("data",new Gson().toJsonTree(postData));
+        users.get(username).myPosts.add(postId);
+        Storage.postQueue.add(postId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("posted", true);
+        res.addProperty("message", "Posted Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
 
     public static synchronized void updateDBComments() throws Exception {
         String postssql="";
@@ -223,6 +242,39 @@ public class StorageMethods extends Storage{
 
         if(postssql.length()>0){
             Database.postBatchComments(postssql);
+            System.out.println("Data Added Successfully");
+        }
+    }
+
+    public static synchronized void updateDBPosts() throws Exception{
+        String postssql="";
+        String postKey = postQueue.poll();
+        while (postKey!=null){
+            String subsqlposts="";
+
+            if (postKey != null) {
+
+                System.out.println("Updating Post " + postKey);
+                    if(postssql.contains(")")){
+                        postssql=postssql+",";
+                    }
+                    subsqlposts=subsqlposts+"(";
+                    Posts postsData = posts.get(postKey);
+                    subsqlposts=subsqlposts+"'"+postKey+"',";
+                    subsqlposts=subsqlposts+"'"+postsData.created_by+"',";
+                    subsqlposts=subsqlposts+"'"+postsData.content+"'";
+                    subsqlposts=subsqlposts+")";
+//                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
+                    postssql=postssql+subsqlposts;
+
+            }
+
+            postKey = postQueue.poll();
+        }
+        System.out.println(postssql);
+
+        if(postssql.length()>0){
+            Database.postBatchPosts(postssql);
             System.out.println("Data Added Successfully");
         }
     }

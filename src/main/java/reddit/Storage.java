@@ -11,6 +11,7 @@ public class Storage {
     protected static ConcurrentHashMap<String,Posts> posts=new ConcurrentHashMap<>();
     protected static ConcurrentHashMap<String,Comments> comments= new ConcurrentHashMap<>();
     protected static ConcurrentLinkedQueue<String> commentQueue=new ConcurrentLinkedQueue<>();
+    protected static ConcurrentLinkedQueue<String> postQueue=new ConcurrentLinkedQueue<>();
     static {
 //        registerQueue.put("Register",new ConcurrentLinkedQueue<>());
 //        registerQueue.put("Posts",new ConcurrentLinkedQueue<>());

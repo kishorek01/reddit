@@ -14,9 +14,13 @@ public class TimerSchedule extends TimerTask {
     @Override
     public void run() {
         System.out.println("the Scheduler is running"+ new Date());
-        if(Storage.commentQueue.size()!=0){
+        if(Storage.commentQueue.size()!=0 || Storage.postQueue.size()!=0){
             try {
-                StorageMethods.updateDBComments();
+                if(Storage.postQueue.size()!=0) {
+                    StorageMethods.updateDBPosts();
+                }if(Storage.commentQueue.size()!=0) {
+                    StorageMethods.updateDBComments();
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
