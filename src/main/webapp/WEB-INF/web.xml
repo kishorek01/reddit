@@ -159,4 +159,34 @@
     <servlet-name>EditLike</servlet-name>
     <url-pattern>/editLike</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetMessages</display-name>
+    <servlet-name>GetMessages</servlet-name>
+    <servlet-class>GetMessages</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetMessages</servlet-name>
+    <url-pattern>/getMessages</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>PostMessage</display-name>
+    <servlet-name>PostMessage</servlet-name>
+    <servlet-class>PostMessage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PostMessage</servlet-name>
+    <url-pattern>/postMessage</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteMessage</display-name>
+    <servlet-name>DeleteMessage</servlet-name>
+    <servlet-class>DeleteMessage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteMessage</servlet-name>
+    <url-pattern>/deleteMessage</url-pattern>
+  </servlet-mapping>
 </web-app>

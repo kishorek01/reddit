@@ -1,9 +1,6 @@
 package reddit;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -241,20 +238,28 @@ public class Database {
 		ResultSet resultSet=statement1.executeQuery(sql);
 		convertToJSONLikes(resultSet);
 	}
-	public static synchronized void addToInMemoryMessages(JsonObject messageData) throws Exception{
-		String created_by = messageData.get("conversationid").getAsString();
-//		Posts post = new Posts(postId, content, created_by, created_at, updated_at);
-//		if (!StorageMethods.isPostinPosts(postId)) {
-//			StorageMethods.addPost(postId, post);
-//		}
-//		if(StorageMethods.isUserInStorage(created_by)) {
-//			System.out.println(postId+" "+created_by);
-//			StorageMethods.addPostToUsers(created_by, postId);
-//		}else{
-//			loginUser(created_by);
-//			StorageMethods.addPostToUsers(created_by, postId);
-//		}
-//		JsonObject res=getCommentsForPosts(postId);
+	public static synchronized void getMessagesFromConversationId(JsonObject messageData) throws Exception{
+		String conversationId = messageData.get("conversationid").getAsString();
+		String user1 = messageData.get("user1").getAsString();
+		String user2 = messageData.get("user2").getAsString();
+		String created_at = messageData.get("created_at").getAsString();
+		String sql="Select * from messages where conversationid='"+conversationId+"';";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		addMessagesToInMemory(resultSet);
+	}
+	public static synchronized void updateMessage(String conversationId,JsonObject message) throws Exception{
+		String sql="Update messages set messages='"+message+"' where conversationid='"+conversationId+"' RETURNING *;";
+		System.out.println(sql);
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+	}
+	public static synchronized void addMessagesToInMemory(ResultSet resultSet) throws Exception{
+		while (resultSet.next()){
+			String conversationId=resultSet.getString("conversationid");
+			JsonElement message=JsonParser.parseString(resultSet.getString("messages").toString());
+			StorageMethods.addMessagesToMemory(conversationId,message);
+		}
 	}
 		public static synchronized JsonObject getCommentsForPosts(String postId) throws Exception {
 			System.out.println("Getting comments for post id "+postId);
@@ -275,7 +280,8 @@ public class Database {
 				for (int i = 0; i < total_columns; i++) {
 					obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
 				}
-				addToInMemoryMessages(obj);
+
+				getMessagesFromConversationId(obj);
 				jsonArray.add(obj);
 			}
 			return jsonArray;

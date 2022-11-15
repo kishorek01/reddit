@@ -1,5 +1,7 @@
 package reddit;
 
+import com.google.gson.JsonObject;
+
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,6 +23,10 @@ public class Storage {
     protected static ConcurrentLinkedQueue<String> editPostQueue=new ConcurrentLinkedQueue<>();
     protected static ConcurrentLinkedQueue<String> newLikeQueue=new ConcurrentLinkedQueue<>();
     protected static ConcurrentLinkedQueue<String> editLikeQueue=new ConcurrentLinkedQueue<>();
+
+    protected static ConcurrentHashMap<String, JsonObject> messages=new ConcurrentHashMap<>();
+
+    protected static ConcurrentLinkedQueue<String> MessagesQueue=new ConcurrentLinkedQueue<>();
     static {
 //        registerQueue.put("Register",new ConcurrentLinkedQueue<>());
 //        registerQueue.put("Posts",new ConcurrentLinkedQueue<>());

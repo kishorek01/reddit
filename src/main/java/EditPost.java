@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 
 /**
  * Servlet implementation class EditPost
@@ -25,12 +23,8 @@ public class EditPost extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Connection connection=null;
         String content = request.getParameter("content");
         String postId= request.getParameter("postid");
-        response.setContentType("application/json");
-	    response.setCharacterEncoding("UTF-8");
-		PrintWriter out=response.getWriter();
 		try {
 
 			StorageMethods.editPost(postId,content,request,response);

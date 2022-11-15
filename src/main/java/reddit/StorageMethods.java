@@ -2,6 +2,7 @@ package reddit;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -582,6 +583,66 @@ public class StorageMethods extends Storage{
         }
     }
 
+    public static synchronized void getMessages(String conversationId,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        JsonObject message=messages.get(conversationId);
+        System.out.println("Getting message conversation : "+conversationId);
+        res.add("data",message);
+        System.out.println("Message Size  : "+message.size());
+        PrintWriter out=response.getWriter();
+        res.addProperty("Messages", true);
+        res.addProperty("message", "Messages Obtained Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static synchronized void postMessage(String conversationId,String username,String content,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        JsonObject newMessage=new JsonObject();
+        newMessage.addProperty("username",username);
+        newMessage.addProperty("message",content);
+        messages.get(conversationId).add("M"+(messages.get(conversationId).size()+1),newMessage);
+        System.out.println("Getting message conversation : "+conversationId);
+        MessagesQueue.add(conversationId);
+        res.add("data",messages.get(conversationId));
+        System.out.println("Message Size  : "+messages.get(conversationId).size());
+        PrintWriter out=response.getWriter();
+        res.addProperty("Messages", true);
+        res.addProperty("message", "Messages Added Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static synchronized void DeleteMessage(String conversationId,String username,String messageId,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        JsonObject newMessage=new JsonObject();
+        newMessage.addProperty("username",username);
+        newMessage.addProperty("message","");
+        messages.get(conversationId).add(messageId,newMessage);
+        System.out.println("Delete message conversation : "+conversationId);
+        MessagesQueue.add(conversationId);
+        res.add("data",messages.get(conversationId));
+        System.out.println("Message Size  : "+messages.get(conversationId).size());
+        PrintWriter out=response.getWriter();
+        res.addProperty("Messages", true);
+        res.addProperty("message", "Messages Added Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static synchronized void addMessagesToMemory(String conversationId, JsonElement message) throws Exception{
+        messages.put(conversationId,message.getAsJsonObject());
+    }
+
 
     public static synchronized void UpdateLikeDB() throws Exception{
         String editLikeSql="";
@@ -598,6 +659,17 @@ public class StorageMethods extends Storage{
                 System.out.println("Data Added Successfully");
 //            }
             likeKey = editLikeQueue.poll();
+        }
+    }
+
+
+    public static synchronized void updateMessagesDB() throws Exception{
+        String messagesSql="";
+        String messageKey=MessagesQueue.poll();
+        while (messageKey!=null){
+            JsonObject message=messages.get(messageKey).getAsJsonObject();
+            Database.updateMessage(messageKey,message);
+            messageKey=MessagesQueue.poll();
         }
     }
 
