@@ -29,7 +29,7 @@ public class Storage {
     protected static ConcurrentLinkedQueue<String> MessagesQueue=new ConcurrentLinkedQueue<>();
 
     protected static  ConcurrentHashMap<String,Conversation> conversations=new ConcurrentHashMap<>();
-    protected static ConcurrentLinkedQueue<String> newConversationQueue =new ConcurrentLinkedQueue<>();
+//    protected static ConcurrentLinkedQueue<String> newConversationQueue =new ConcurrentLinkedQueue<>();
     static {
 //        registerQueue.put("Register",new ConcurrentLinkedQueue<>());
 //        registerQueue.put("Posts",new ConcurrentLinkedQueue<>());
