@@ -10,6 +10,7 @@ public class Storage {
     protected static CopyOnWriteArrayList<String> registeredEmails=new CopyOnWriteArrayList<>();
     protected static ConcurrentHashMap<String,Posts> posts=new ConcurrentHashMap<>();
     protected static ConcurrentHashMap<String,Comments> comments= new ConcurrentHashMap<>();
+    protected static ConcurrentHashMap<String, ConcurrentHashMap<String,Comments>> commentsByPostId=new ConcurrentHashMap<>();
     protected static ConcurrentLinkedQueue<String> newCommentQueue=new ConcurrentLinkedQueue<>();
     protected static ConcurrentLinkedQueue<String> newPostQueue=new ConcurrentLinkedQueue<>();
 

@@ -1,13 +1,17 @@
 package reddit;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StorageMethods extends Storage{
     public static User getUser(String userName){
@@ -68,6 +72,8 @@ public class StorageMethods extends Storage{
             users.get(username).myPosts.add(postId);
         }
     }
+
+
     public static void addPostMemory(String postId) throws Exception {
         Database.getPostID(postId);
     }
@@ -110,7 +116,55 @@ public class StorageMethods extends Storage{
         res.addProperty("message", "Login Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("Code", 200);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
     }
+
+    public static void getMyPosts(String username,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        System.out.println("Getting from in Memory");
+        JsonArray postData;
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        ArrayList<String> myPosts=users.get(username).myPosts;
+        JsonObject commentData=new JsonObject();
+        ArrayList<Posts> arr=new ArrayList<>();
+        for(String i: myPosts){
+            arr.add(posts.get(i));
+            if(commentsByPostId.containsKey(posts.get(i).postid) && commentsByPostId.get(posts.get(i).postid).size()>0) {
+                Set<String> keys=commentsByPostId.get(posts.get(i).postid).keySet();
+                System.out.println("This id has comments " +posts.get(i).postid);
+//                System.out.println(new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
+                    commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
+//                    commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
+            }
+        }
+//            System.out.println(arr);
+            postData = new Gson().toJsonTree(arr).getAsJsonArray();
+//            System.out.println(postData);
+            res.add("data",postData);
+            res.add("commentData",commentData);
+        res.addProperty("post get", true);
+        res.addProperty("message", "Post get Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static void addCommentToCommentByPosts(String postId,Comments comment)
+    {
+        if(!commentsByPostId.containsKey(postId)){
+            commentsByPostId.put(postId,new ConcurrentHashMap<>());
+        }
+        if(!commentsByPostId.get(postId).containsKey(comment.commentid)){
+            commentsByPostId.get(postId).put(comment.commentid,comment);
+        }
+
+
+    }
+
 
     public static void throwWrongPassword(HttpServletRequest request,HttpServletResponse response) throws Exception{
         System.out.println("Getting From In Memory");
@@ -175,14 +229,27 @@ public class StorageMethods extends Storage{
         }
     }
 
-    public static void postComments(String username,String comment,String postID,HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public static void postComments(String username, String comment, String postID, String idType, String parentComment, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
-        String commentId=Database.RandomIDGenerator(username,"Post");
-        Comments commentData=new Comments(commentId,comment,username,postID);
-        comments.put(commentId,commentData);
-        res.add("data",new Gson().toJsonTree(commentData));
+        String commentId=Database.RandomIDGenerator(username,idType);
+        if(idType.contains("Post")) {
+            Comments commentData = new Comments(commentId, comment, username, postID);
+            comments.put(commentId, commentData);
+            res.add("data", new Gson().toJsonTree(commentData));
+        }else{
+            ArrayList<String> child = new ArrayList<>();
+            Comments commentData = new Comments(commentId, comment, username, postID,parentComment,child);
+            comments.put(commentId, commentData);
+            res.add("data", new Gson().toJsonTree(commentData));
+        }
         Storage.newCommentQueue.add(commentId);
+        if(posts.containsKey(postID)){
+            posts.get(postID).comments.add(commentId);
+        }else{
+            Database.getPostID(postID);
+            posts.get(postID).comments.add(commentId);
+        }
         PrintWriter out=response.getWriter();
         res.addProperty("commented", true);
         res.addProperty("message","Commented Successful");
@@ -210,41 +277,78 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static void editPost(String postId,String content,HttpServletRequest request, HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        posts.get(postId).content=content;
+        res.add("data",new Gson().toJsonTree(posts.get(postId),Posts.class));
+        Storage.editPostQueue.add(postId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("Edited", true);
+        res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
 
     public static synchronized void updateDBComments() throws Exception {
-        String postssql="";
+        String postssql = "";
+        String commentsql = "";
         String commentKey = newCommentQueue.poll();
-        while (commentKey!=null){
-            String subsqlposts="";
-
+        while (commentKey != null) {
+            String subsqlposts = "";
+            String subSqlComments = "";
             if (commentKey != null) {
 
-                System.out.println("Updating Comment " + commentKey);
                 if (commentKey.contains("post") || commentKey.contains("Post")) {
-                    if(postssql.contains(")")){
-                        postssql=postssql+",";
+                    System.out.println("Updating Post Comment " + commentKey);
+
+                    if (postssql.contains(")")) {
+                        postssql = postssql + ",";
                     }
-                    subsqlposts=subsqlposts+"(";
+                    subsqlposts = subsqlposts + "(";
                     Comments commentData = comments.get(commentKey);
-                    subsqlposts=subsqlposts+"'"+commentKey+"',";
-                    subsqlposts=subsqlposts+"'"+commentData.username+"',";
-                    subsqlposts=subsqlposts+"'"+commentData.comment+"',";
-                    subsqlposts=subsqlposts+"'"+commentData.postid+"'";
-                    subsqlposts=subsqlposts+")";
+                    subsqlposts = subsqlposts + "'" + commentKey + "',";
+                    subsqlposts = subsqlposts + "'" + commentData.username + "',";
+                    subsqlposts = subsqlposts + "'" + commentData.comment + "',";
+                    subsqlposts = subsqlposts + "'" + commentData.postid + "'";
+                    subsqlposts = subsqlposts + ")";
 //                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
-                    postssql=postssql+subsqlposts;
+                    postssql = postssql + subsqlposts;
+                } else {
+                    System.out.println("Updating Comment Comment " + commentKey);
+                        if (commentsql.contains(")")) {
+                            commentsql = commentsql + ",";
+                        }
+                        subSqlComments = subSqlComments + "(";
+                        Comments commentData = comments.get(commentKey);
+                        subSqlComments = subSqlComments + "'" + commentKey + "',";
+                        subSqlComments = subSqlComments + "'" + commentData.username + "',";
+                        subSqlComments = subSqlComments + "'" + commentData.parentcomment + "',";
+                        subSqlComments = subSqlComments + "'" + commentData.comment + "',";
+                        subSqlComments = subSqlComments + "'" + commentData.postid + "'";
+                        subSqlComments = subSqlComments + ")";
+                        Database.appendChildComment(commentData.parentcomment,commentKey,commentData.postid);
+//                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
+                        commentsql = commentsql + subSqlComments;
                 }
             }
-
             commentKey = newCommentQueue.poll();
         }
-        System.out.println(postssql);
+            System.out.println("Create new post Comment query "+postssql);
+        System.out.println("Create new CHild comment query "+commentsql);
 
-        if(postssql.length()>0){
-            Database.postBatchComments(postssql);
-            System.out.println("Data Added Successfully");
+            if (postssql.length() > 0) {
+                Database.postBatchComments(postssql);
+                System.out.println("Post Data Added Successfully");
+            }
+            if(commentsql.length()>0){
+                Database.postChildCommentsBatch(commentsql);
+                System.out.println("Comment Data Added Successfully");
+            }
         }
-    }
 
     public static synchronized void updateDBPosts() throws Exception{
         String postssql="";
@@ -277,6 +381,27 @@ public class StorageMethods extends Storage{
             Database.postBatchPosts(postssql);
             System.out.println("Data Added Successfully");
         }
+    }
+
+    public static synchronized void UpdateEditDBPosts() throws Exception{
+        String editPostSql="";
+        String postKey = editPostQueue.poll();
+        while (postKey!=null){
+
+                System.out.println("Updating Post " + postKey);
+            editPostSql=editPostSql+"SET ";
+                Posts postsData = posts.get(postKey);
+            editPostSql=editPostSql+"content='"+postsData.content+"' ";
+            editPostSql=editPostSql+"where postid='"+postKey+"'";
+            System.out.println(editPostSql);
+            if(editPostSql.length()>0){
+                Database.updatePosts(editPostSql);
+                System.out.println("Data Added Successfully");
+            }
+            postKey = newPostQueue.poll();
+        }
+
+
     }
 
 }

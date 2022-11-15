@@ -11,6 +11,7 @@ public class Posts {
     public String updated_at;
     public ArrayList<String> comments;
     public HashMap<String, ArrayList> votes;
+    public HashMap<String,Comments> commentData;
 
     Posts(String postId, String content, String created_by,String created_at,String updated_at) {
         this.postid = postId;
@@ -18,6 +19,7 @@ public class Posts {
         this.created_by = created_by;
         this.created_at=created_at;
         this.updated_at=updated_at;
+        this.commentData=new HashMap<>();
         this.votes = new HashMap();
         this.votes.put("upVotes", new ArrayList());
         this.votes.put("downVotes", new ArrayList());

@@ -1,17 +1,16 @@
-
-
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
-//import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import reddit.Database;
+import reddit.StorageMethods;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import com.google.gson.JsonObject;
-import reddit.Database;
 
 /**
  * Servlet implementation class CommentLikes
@@ -124,14 +123,7 @@ public class CommentLikes extends HttpServlet {
 			}
 			
 		}catch(Exception e) {
-			JsonObject res=new JsonObject();
-			JsonObject finalresponse=new JsonObject();
-			finalresponse.addProperty("code",501);
-			res.addProperty("message","Unknown Error");
-			finalresponse.add("data", res);
-			out.print(finalresponse); 
-			e.printStackTrace();
-			out.flush();
+			StorageMethods.throwUnknownError(request,response);
 		}
 
 

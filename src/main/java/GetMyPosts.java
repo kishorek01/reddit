@@ -4,14 +4,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import reddit.Database;
 import reddit.StorageMethods;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 /**
  * Servlet implementation class GetMyPosts
@@ -38,29 +36,7 @@ public class GetMyPosts extends HttpServlet {
 		JsonObject res=new JsonObject();
 		JsonObject finalResponse=new JsonObject();
 		try {
-			connection=Database.initializeDatabase();
-			if(connection!=null) {
-				String sql="select * from posts where created_by='"+username+"';";
-				Statement stmt=connection.createStatement();
-				ResultSet rs=stmt.executeQuery(sql);
-
-					res.add("data",convertToJSON(rs));
-					res.addProperty("posts", true);
-					res.addProperty("message","Posts Get Successful");
-				finalResponse.add("data", res);
-				finalResponse.addProperty("Code", 200);
-					out.print(finalResponse);
-					out.flush();
-				
-			}else {
-				finalResponse.addProperty("code", 501);
-				res.addProperty("message", "Database Connection Error");
-				finalResponse.add("data", res);
-				System.out.println("Database Connected Error");
-				out.print(finalResponse);
-				out.flush();
-			}
-			
+			StorageMethods.getMyPosts(username,request,response);
 		}catch(Exception e) {
 			StorageMethods.throwUnknownError(request,response);
 		}

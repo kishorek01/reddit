@@ -37,7 +37,7 @@ public class PostComments extends HttpServlet {
 
 		try {
 //			JsonObject commentData=Database.postComments(username,comment,postid);
-			StorageMethods.postComments(username,comment,postid,request,response);
+			StorageMethods.postComments(username,comment,postid,"Post",null,request,response);
 		}catch(Exception e) {
 			StorageMethods.throwUnknownError(request,response);
 		}

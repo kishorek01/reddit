@@ -1,7 +1,5 @@
 package reddit;
 
-import com.google.gson.JsonArray;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,21 +11,37 @@ public class Comments  {
     public String created_at;
     public String updated_at;
     public String parentcomment;
-    public JsonArray childcomments;
-    public HashMap<String, ArrayList> votes;
+    public ArrayList<String> childcomments;
+    public HashMap<String, ArrayList<String>> votes;
+    public HashMap<String,Comments> commentData;
 
     public Comments(String commentid,String comment, String commentedBy, String postId) {
         this.comment = comment;
         this.commentid=commentid;
         this.username = commentedBy;
         this.postid = postId;
-        this.childcomments = new JsonArray();
+        this.childcomments = new ArrayList<>();
         this.parentcomment=null;
         this.votes = new HashMap();
         this.votes.put("upVotes", new ArrayList());
         this.votes.put("downVotes", new ArrayList());
+        this.commentData=new HashMap<>();
     }
-    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, JsonArray childcomments,String created_at, String updated_at) {
+    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments) {
+        this.comment = comment;
+        this.commentid=commentid;
+        this.username = commentedBy;
+        this.postid = postId;
+        this.childcomments = childcomments;
+        this.parentcomment=parentcomment;
+        this.created_at="";
+        this.updated_at="";
+        this.votes = new HashMap();
+        this.votes.put("upVotes", new ArrayList());
+        this.votes.put("downVotes", new ArrayList());
+        this.commentData=new HashMap<>();
+    }
+    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments,String created_at, String updated_at) {
         this.comment = comment;
         this.commentid=commentid;
         this.username = commentedBy;
@@ -38,6 +52,7 @@ public class Comments  {
         this.updated_at=updated_at;
         this.votes = new HashMap();
         this.votes.put("upVotes", new ArrayList());
+        this.commentData=new HashMap<>();
         this.votes.put("downVotes", new ArrayList());
     }
 }
