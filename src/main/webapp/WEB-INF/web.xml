@@ -139,4 +139,14 @@
     <servlet-name>GetComments</servlet-name>
     <url-pattern>/getComments</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditComment</display-name>
+    <servlet-name>EditComment</servlet-name>
+    <servlet-class>EditComment</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditComment</servlet-name>
+    <url-pattern>/editComment</url-pattern>
+  </servlet-mapping>
 </web-app>

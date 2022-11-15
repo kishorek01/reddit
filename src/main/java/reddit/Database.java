@@ -157,6 +157,11 @@ public class Database {
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
+	public static synchronized void updateComment(String sql) throws Exception{
+		sql="UPDATE comments "+sql+" RETURNING *;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+	}
 
 	public static synchronized JsonObject postComments(String commentID,String username,String comment,String postID) throws Exception {
 //		String commentID=RandomIDGenerator(username,"Post");

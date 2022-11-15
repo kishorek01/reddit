@@ -120,6 +120,28 @@ public class StorageMethods extends Storage{
         out.print(finalResponse);
         out.flush();
     }
+    public static void getCommentsByPostID(String postId,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        System.out.println("Getting from in Memory");
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        JsonObject commentData;
+            if(commentsByPostId.containsKey(postId) && commentsByPostId.get(postId).size()>0) {
+                System.out.println("This id has comments " +postId);
+                commentData=new Gson().toJsonTree(commentsByPostId.get(postId)).getAsJsonObject();
+        }else {
+                commentData=new JsonObject();
+            }
+//            System.out.println(arr);
+//            System.out.println(postData);
+        res.add("data",commentData);
+        res.addProperty("Comment get", true);
+        res.addProperty("message", "Comment get Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
 
     public static void getMyPosts(String username,HttpServletRequest request, HttpServletResponse response) throws Exception{
         System.out.println("Getting from in Memory");
@@ -292,6 +314,22 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static void editComments(String username,String comment,String commentId,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        comments.get(commentId).comment=comment;
+        commentsByPostId.get(postId).get(commentId).comment=comment;
+        res.add("data",new Gson().toJsonTree(comments.get(commentId),Comments.class));
+        Storage.editCommentQueue.add(commentId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("Edited", true);
+        res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
 
     public static synchronized void updateDBComments() throws Exception {
         String postssql = "";
@@ -400,8 +438,25 @@ public class StorageMethods extends Storage{
             }
             postKey = newPostQueue.poll();
         }
+    }
 
+    public static synchronized void updateEditDBComments() throws Exception{
+        String editCommentSql="";
+        String commentKey = editCommentQueue.poll();
+        while (commentKey!=null){
 
+            System.out.println("Updating Comment " + commentKey);
+            editCommentSql=editCommentSql+"SET ";
+            Comments commentData = comments.get(commentKey);
+            editCommentSql=editCommentSql+"comment='"+commentData.comment+"' ";
+            editCommentSql=editCommentSql+"where commentid='"+commentKey+"'";
+            System.out.println(editCommentSql);
+            if(editCommentSql.length()>0){
+                Database.updateComment(editCommentSql);
+                System.out.println("Data Added Successfully");
+            }
+            commentKey = newPostQueue.poll();
+        }
     }
 
 }

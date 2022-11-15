@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 
 /**
  * Servlet implementation class PostComments
@@ -27,13 +25,9 @@ public class PostComments extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
-		Connection connection=null;
 		String username = request.getParameter("username").toLowerCase();
         String comment = request.getParameter("comment");
         String postid = request.getParameter("postid");
-        response.setContentType("application/json");
-	    response.setCharacterEncoding("UTF-8");
-		PrintWriter out=response.getWriter();
 
 		try {
 //			JsonObject commentData=Database.postComments(username,comment,postid);
