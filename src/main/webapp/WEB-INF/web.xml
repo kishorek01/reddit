@@ -151,6 +151,16 @@
   </servlet-mapping>
   <servlet>
     <description></description>
+    <display-name>DeleteComment</display-name>
+    <servlet-name>DeleteComment</servlet-name>
+    <servlet-class>DeleteComment</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteComment</servlet-name>
+    <url-pattern>/deleteComment</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
     <display-name>EditLike</display-name>
     <servlet-name>EditLike</servlet-name>
     <servlet-class>EditLike</servlet-class>

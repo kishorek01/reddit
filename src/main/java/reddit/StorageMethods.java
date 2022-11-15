@@ -432,6 +432,21 @@ public class StorageMethods extends Storage{
         out.print(finalResponse);
         out.flush();
     }
+    public static void deleteComments(String username,String commentId,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        comments.get(commentId).comment="";
+        commentsByPostId.get(postId).get(commentId).comment="";
+        res.add("data",new Gson().toJsonTree(comments.get(commentId),Comments.class));
+        Storage.editCommentQueue.add(commentId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("Edited", true);
+        res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
 
     public static void editLikes(String likeId,Boolean status,String contentId,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
