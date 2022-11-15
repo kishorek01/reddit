@@ -22,10 +22,6 @@ public class Comments  {
         this.postid = postId;
         this.childcomments = new ArrayList<>();
         this.parentcomment=null;
-        this.votes = new HashMap();
-        this.votes.put("upVotes", new ArrayList());
-        this.votes.put("downVotes", new ArrayList());
-        this.commentData=new HashMap<>();
     }
     public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments) {
         this.comment = comment;
@@ -36,10 +32,6 @@ public class Comments  {
         this.parentcomment=parentcomment;
         this.created_at="";
         this.updated_at="";
-        this.votes = new HashMap();
-        this.votes.put("upVotes", new ArrayList());
-        this.votes.put("downVotes", new ArrayList());
-        this.commentData=new HashMap<>();
     }
     public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments,String created_at, String updated_at) {
         this.comment = comment;
@@ -50,9 +42,5 @@ public class Comments  {
         this.parentcomment=parentcomment;
         this.created_at=created_at;
         this.updated_at=updated_at;
-        this.votes = new HashMap();
-        this.votes.put("upVotes", new ArrayList());
-        this.commentData=new HashMap<>();
-        this.votes.put("downVotes", new ArrayList());
     }
 }

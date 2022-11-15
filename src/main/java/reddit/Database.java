@@ -242,11 +242,23 @@ public class Database {
 		String conversationId = messageData.get("conversationid").getAsString();
 		String user1 = messageData.get("user1").getAsString();
 		String user2 = messageData.get("user2").getAsString();
+		Conversation convo=new Conversation(user1,user2,conversationId);
+		Storage.conversations.put(conversationId,convo);
 		String created_at = messageData.get("created_at").getAsString();
+		StorageMethods.addConversationstoUsers(user1,user2,conversationId);
 		String sql="Select * from messages where conversationid='"+conversationId+"';";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 		addMessagesToInMemory(resultSet);
+	}
+
+	public static synchronized void createConversation(String user1,String user2,String conversationId) throws Exception{
+		String sql="Insert into conversations(user1,user2,conversationid) values ('"+user1+"','"+user2+"','"+conversationId+"') RETURNING *";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		sql="Insert into messages(conversationid,messages) values ('"+conversationId+"','{}') RETURNING *";
+		statement1=connection.createStatement();
+		resultSet=statement1.executeQuery(sql);
 	}
 	public static synchronized void updateMessage(String conversationId,JsonObject message) throws Exception{
 		String sql="Update messages set messages='"+message+"' where conversationid='"+conversationId+"' RETURNING *;";

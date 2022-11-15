@@ -643,6 +643,61 @@ public class StorageMethods extends Storage{
         messages.put(conversationId,message.getAsJsonObject());
     }
 
+    public static synchronized Boolean isConversationPresent(String user1,String user2) throws Exception{
+        return users.get(user1).messages.containsKey(user2);
+    }
+
+    public static synchronized void getConversation(String user1,String user2,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        getMessages(user1,request,response);
+    }
+
+    public static synchronized void createConversation(String user1,String user2,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        String conversationId=Database.RandomConversationID(user1,user2);
+        if(!users.containsKey(user1)){
+            Database.loginUser(user1);
+        }
+        if(!users.containsKey(user2)){
+            Database.loginUser(user2);
+        }
+        System.out.println("All Users Logined");
+        Conversation newConversation=new Conversation(user1,user2,conversationId);
+        System.out.println("New Conversation Id + "+conversationId);
+        addConversationstoUsers(user1,user2,conversationId);
+//        Storage.newConversationQueue.add(conversationId);
+        try {
+            Storage.conversations.put(conversationId, newConversation);
+            JsonObject newMessage = new JsonObject();
+            Database.createConversation(user1, user2, conversationId);
+            messages.put(conversationId, newMessage);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        System.out.println("Creating message conversation : "+conversationId);
+        MessagesQueue.add(conversationId);
+        res.add("data",messages.get(conversationId));
+        System.out.println("Message Size  : "+messages.get(conversationId).size());
+        PrintWriter out=response.getWriter();
+        res.addProperty("Messages", true);
+        res.addProperty("message", "Messages Created Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static synchronized void addConversationstoUsers(String user1,String user2,String conversationId) throws Exception{
+        if(!users.containsKey(user1)){
+            Database.loginUser(user1);
+        }
+        if(!users.containsKey(user2)){
+            Database.loginUser(user2);
+        }
+        users.get(user1).messages.put(user2,conversationId);
+        users.get(user2).messages.put(user1,conversationId);
+    }
+
 
     public static synchronized void UpdateLikeDB() throws Exception{
         String editLikeSql="";
