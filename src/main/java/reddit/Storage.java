@@ -35,6 +35,12 @@ public class Storage {
 //        registerQueue.put("Posts",new ConcurrentLinkedQueue<>());
 //        registerQueue.put("Comments",new ConcurrentLinkedQueue<>());
 //        registerQueue.put("Messages",new ConcurrentLinkedQueue<>());
+        System.out.println("First Time Timer Called");
+        try {
+            JsonObject res=Database.getAllPosts();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         TimerSchedule t1=new TimerSchedule("Task");
         Timer t=new Timer();
         t.scheduleAtFixedRate(t1, 0,10000);

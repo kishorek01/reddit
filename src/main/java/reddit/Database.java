@@ -136,7 +136,23 @@ public class Database {
 	}
 
 	public static synchronized JsonObject getMyPosts(String username) throws Exception {
-		String sql="select * from posts where created_by='"+username+"' order by created_at;";
+		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
+		Statement stmt=connection.createStatement();
+		ResultSet rs=stmt.executeQuery(sql);
+		JsonObject res=new JsonObject();
+		res.add("data",convertToJSONPosts(rs));
+		return res;
+	}
+	public static synchronized JsonObject getAllPostsExcept(String username) throws Exception {
+		String sql="select * from posts where created_by!='"+username+"' order by created_at desc;";
+		Statement stmt=connection.createStatement();
+		ResultSet rs=stmt.executeQuery(sql);
+		JsonObject res=new JsonObject();
+		res.add("data",convertToJSONPosts(rs));
+		return res;
+	}
+	public static synchronized JsonObject getAllPosts() throws Exception {
+		String sql="select * from posts order by created_at desc;";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();

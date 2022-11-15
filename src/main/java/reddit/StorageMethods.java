@@ -162,6 +162,7 @@ public class StorageMethods extends Storage{
 //                    commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
             }
         }
+
 //            System.out.println(arr);
             postData = new Gson().toJsonTree(arr).getAsJsonArray();
 //            System.out.println(postData);
@@ -176,12 +177,40 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static synchronized void getAllPosts(HttpServletRequest request,HttpServletResponse response) throws Exception{
+        System.out.println("Getting from in Memory");
+        JsonArray postData;
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        JsonObject commentData=new JsonObject();
+        ArrayList<Posts> arr=new ArrayList<>();
+        Set<String> myPosts=posts.keySet();
+        for(String i: myPosts){
+            arr.add(posts.get(i));
+//            if(commentsByPostId.containsKey(posts.get(i).postid) && commentsByPostId.get(posts.get(i).postid).size()>0) {
+//                Set<String> keys=commentsByPostId.get(posts.get(i).postid).keySet();
+//                System.out.println("This id has comments " +posts.get(i).postid);
+//                commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
+//            }
+            //Commented FOr ONly SHowing Post in Homepage no Comments;
+        }
+        postData = new Gson().toJsonTree(arr).getAsJsonArray();
+        res.add("data",postData);
+        res.add("commentData",commentData);
+        res.addProperty("post get", true);
+        res.addProperty("message", "Post get Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
 
     public static void getLikesFromMemory(String contentId,HttpServletRequest request, HttpServletResponse response) throws Exception{
         System.out.println("Getting from in Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
-        ArrayList<Posts> arr=new ArrayList<>();
         JsonObject likeData;
         if(likesByContentId.containsKey(contentId) && likesByContentId.get(contentId).size()>0) {
             System.out.println("This id has likes " +contentId);
@@ -686,6 +715,8 @@ public class StorageMethods extends Storage{
         out.print(finalResponse);
         out.flush();
     }
+
+
 
     public static synchronized void addConversationstoUsers(String user1,String user2,String conversationId) throws Exception{
         if(!users.containsKey(user1)){
