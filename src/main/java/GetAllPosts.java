@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 
 /**
  * Servlet implementation class GetAllPosts

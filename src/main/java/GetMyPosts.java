@@ -1,4 +1,3 @@
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -9,7 +8,6 @@ import reddit.StorageMethods;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
 
 /**
  * Servlet implementation class GetMyPosts
@@ -42,21 +40,5 @@ public class GetMyPosts extends HttpServlet {
 		}
 
 	}
-	public static JsonArray convertToJSON(ResultSet resultSet)
-            throws Exception {
-		JsonArray jsonArray = new JsonArray();
-        while (resultSet.next()) {
-            int total_columns = resultSet.getMetaData().getColumnCount();
-            JsonObject obj = new JsonObject();
-            for (int i = 0; i < total_columns; i++) {
-                obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
-                if(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase().equalsIgnoreCase("postid")) {
-                	obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getInt(i+1));
-                }
-            }
-          jsonArray.add(obj);
-        }
-        return jsonArray;
-    }
 
 }
