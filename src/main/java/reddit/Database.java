@@ -104,8 +104,8 @@ public class Database {
 	}
 
 	public static synchronized JsonObject postLikes(String contentId,String username,Boolean status) throws Exception{
-		String sql="select * from likes where contentid='"+contentId+"' and username='"+username+"' and comment=false;";
-		sql="insert into likes(username,contentid,status) values('"+username+"','"+contentId+"',"+status+") RETURNING *;";
+//		String sql="select * from likes where contentid='"+contentId+"' and username='"+username+"' and comment=false;";
+		String sql="insert into likes(username,contentid,status) values('"+username+"','"+contentId+"',"+status+") RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 		JsonObject likeData=new JsonObject();
@@ -187,6 +187,12 @@ public class Database {
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
+
+	public static synchronized void postBatchLikes(String sql) throws Exception{
+		sql="insert into likes(likeid,contentid,username,status,comment) values "+ sql+" RETURNING *;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+	}
 	public static synchronized JsonArray convertToJSONPosts(ResultSet resultSet)
 			throws Exception {
 		JsonArray jsonArray = new JsonArray();
@@ -202,13 +208,11 @@ public class Database {
 		return jsonArray;
 	}
 
-	public static synchronized JsonObject updateLikes(String contentId,Boolean status,String username) throws Exception {
-		String commentID=RandomIDGenerator(username,"Post");
-		String sql="update likes set status="+status+" where contentid='"+commentID+"' and username='"+username+"' RETURNING *;";
+	public static synchronized void updateLikes(String likeId,Boolean status,String username) throws Exception {
+		String sql="update likes set status="+status+" where likeid='"+likeId+"' RETURNING *;";
 		statement=connection.createStatement();
 		ResultSet resultSet=statement.executeQuery(sql);
-		JsonArray arr=convertToJSONLikes(resultSet);
-		return (JsonObject) arr.get(0);
+//		JsonArray arr=convertToJSONLikes(resultSet);
 	}
 
 	public static synchronized void addToInmemoryPosts(JsonObject postsData) throws Exception {
@@ -228,7 +232,14 @@ public class Database {
 			loginUser(created_by);
 			StorageMethods.addPostToUsers(created_by, postId);
 		}
+		getLikesForContent(postId);
 		JsonObject res=getCommentsForPosts(postId);
+	}
+	public static void getLikesForContent(String contentId) throws Exception{
+		String sql="select * from likes where contentid='"+contentId+"';";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		convertToJSONLikes(resultSet);
 	}
 	public static synchronized void addToInMemoryMessages(JsonObject messageData) throws Exception{
 		String created_by = messageData.get("conversationid").getAsString();
@@ -333,7 +344,7 @@ public class Database {
 		res.add("data",convertToJSONComments(resultSet));
 		System.out.println("comments Collected for Comment id "+commentIds);
 	}
-	public static JsonArray convertToJSONLikes(ResultSet resultSet) throws Exception{
+	public static void convertToJSONLikes(ResultSet resultSet) throws Exception{
 		JsonArray jsonArray = new JsonArray();
 		while (resultSet.next()) {
 			int total_columns = resultSet.getMetaData().getColumnCount();
@@ -344,18 +355,23 @@ public class Database {
 			addToInMemoryLikes(obj);
 			jsonArray.add(obj);
 		}
-		return jsonArray;
+//		return jsonArray;
 	}
 
 	public synchronized static void addToInMemoryLikes(JsonObject likeData) throws Exception{
 		String username = likeData.get("username").getAsString();
 		Boolean comment = likeData.get("comment").getAsString().equalsIgnoreCase("t");
 		Boolean status = likeData.get("status").getAsString().equalsIgnoreCase("t");
-		String contentId=likeData.get("comtentid").getAsString();
+		String contentId=likeData.get("contentid").getAsString();
+		String likeid=likeData.get("likeid").getAsString();
+		String created_at=likeData.get("created_at").getAsString();
+		String updated_at=likeData.get("updated_at").getAsString();
 		if(comment){
-
+			Like newLike=new Like(likeid,contentId,username,status,true,created_at,updated_at);
+			StorageMethods.addCommentLikes(likeid,contentId,newLike);
 		}else{
-			StorageMethods.addLikesToPosts(contentId,status,username);
+			Like newLike=new Like(likeid,contentId,username,status,false,created_at,updated_at);
+			StorageMethods.addPostLikes(likeid,contentId,newLike);
 		}
 
 	}
@@ -389,6 +405,7 @@ public class Database {
 			getPostID(postId);
 			StorageMethods.addCommentToPosts(commentID, postId);
 		}
+		getLikesForContent(commentID);
 	}
 	public static synchronized void getPostID(String postID) throws  Exception{
 		String sql="select * from posts where postid='"+postID+"';";
@@ -425,6 +442,21 @@ public class Database {
 	{
 		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
 		String result=username+",";
+		int i;
+		for ( i=0; i<6; i++) {
+			//generating a random number using math.random()
+			int ch = (int)(AlphaNumericStr.length() * Math.random());
+			//adding Random character one by one at the end of s
+			result=result+AlphaNumericStr.charAt(ch);
+		}
+		return result;
+
+	}
+
+	public static synchronized String RandomIDLikeGenerator(String username)
+	{
+		String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+		String result=username+",Like,";
 		int i;
 		for ( i=0; i<6; i++) {
 			//generating a random number using math.random()

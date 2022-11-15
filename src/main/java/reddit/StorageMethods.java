@@ -175,6 +175,29 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+
+    public static void getLikesFromMemory(String contentId,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        System.out.println("Getting from in Memory");
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        ArrayList<Posts> arr=new ArrayList<>();
+        JsonObject likeData;
+        if(likesByContentId.containsKey(contentId) && likesByContentId.get(contentId).size()>0) {
+            System.out.println("This id has likes " +contentId);
+            likeData=new Gson().toJsonTree(likesByContentId.get(contentId)).getAsJsonObject();
+        }else {
+            likeData=new JsonObject();
+        }
+        res.add("data",likeData);
+        res.addProperty("post get", true);
+        res.addProperty("message", "Post get Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
     public static void addCommentToCommentByPosts(String postId,Comments comment)
     {
         if(!commentsByPostId.containsKey(postId)){
@@ -232,23 +255,73 @@ public class StorageMethods extends Storage{
     }
 
 
-    public static void addLikesToPosts(String contentId,Boolean status,String username){
-        String typeData="downVotes";
-        if(status){
-            typeData="upVotes";
+    public static void addLikesToPosts(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
+        String LikeId=Database.RandomIDLikeGenerator(username);
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        Like newLike=new Like(LikeId,contentId,username,status,false);
+        likes.put(LikeId,newLike);
+        if(!likesByContentId.containsKey(contentId)){
+            likesByContentId.put(contentId,new ConcurrentHashMap<>());
         }
-        if(posts.get(contentId).votes.get(typeData).contains(username)) {
-            posts.get(contentId).votes.get(typeData).add(username);
+        if(!likesByContentId.get(contentId).containsKey(newLike.likeid)){
+            likesByContentId.get(contentId).put(newLike.likeid,newLike);
         }
+        newLikeQueue.add(LikeId);
+        res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
+        PrintWriter out=response.getWriter();
+        res.addProperty("Edited", true);
+        res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+
     }
-    public static void addLikesToComments(String contentId,Boolean status,String username){
-        String typeData="downVotes";
-        if(status){
-            typeData="upVotes";
+    public static void addPostLikes(String likeId,String contentId,Like like) throws IOException {
+        likes.put(likeId,like);
+        if(!likesByContentId.containsKey(contentId)){
+            likesByContentId.put(contentId,new ConcurrentHashMap<>());
         }
-        if(comments.get(contentId).votes.get(typeData).contains(username)) {
-            posts.get(contentId).votes.get(typeData).add(username);
+        if(!likesByContentId.get(contentId).containsKey(like.likeid)){
+            likesByContentId.get(contentId).put(like.likeid,like);
         }
+
+
+    }
+    public static void addLikesToComments(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
+        String LikeId=Database.RandomIDLikeGenerator(username);
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        Like newLike=new Like(LikeId,contentId,username,status,true);
+        likes.put(LikeId,newLike);
+        if(!likesByContentId.containsKey(contentId)){
+            likesByContentId.put(contentId,new ConcurrentHashMap<>());
+        }
+        if(!likesByContentId.get(contentId).containsKey(newLike.likeid)){
+            likesByContentId.get(contentId).put(newLike.likeid,newLike);
+        }
+        newLikeQueue.add(LikeId);
+        res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
+        PrintWriter out=response.getWriter();
+        res.addProperty("Edited", true);
+        res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static void addCommentLikes(String likeId,String contentId,Like like) throws IOException {
+        likes.put(likeId,like);
+        if(!likesByContentId.containsKey(contentId)){
+            likesByContentId.put(contentId,new ConcurrentHashMap<>());
+        }
+        if(!likesByContentId.get(contentId).containsKey(like.likeid)){
+            likesByContentId.get(contentId).put(like.likeid,like);
+        }
+
+
     }
 
     public static void postComments(String username, String comment, String postID, String idType, String parentComment, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -324,6 +397,23 @@ public class StorageMethods extends Storage{
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("Code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static void editLikes(String likeId,Boolean status,String contentId,HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        likes.get(likeId).status=status;
+        System.out.println("Edit Like here "+likes.get(likeId).status);
+        likesByContentId.get(contentId).get(likeId).status=status;
+        res.add("data",new Gson().toJsonTree(likes.get(likeId),Like.class));
+        Storage.editLikeQueue.add(likeId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("Liked", true);
+        res.addProperty("message", "Liked Edited Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("Code", 200);
         out.print(finalResponse);
@@ -421,6 +511,40 @@ public class StorageMethods extends Storage{
         }
     }
 
+    public static synchronized void createNewLike() throws Exception{
+        String likeSql="";
+        String likeKey = newLikeQueue.poll();
+        while (likeKey!=null){
+            String subsqlposts="";
+
+            if (likeKey != null) {
+
+                System.out.println("Createing Like " + likeKey);
+                if(likeSql.contains(")")){
+                    likeSql=likeSql+",";
+                }
+                subsqlposts=subsqlposts+"(";
+                Like likeData = likes.get(likeKey);
+                subsqlposts=subsqlposts+"'"+likeKey+"',";
+                subsqlposts=subsqlposts+"'"+likeData.contentid+"',";
+                subsqlposts=subsqlposts+"'"+likeData.username+"',";
+                subsqlposts=subsqlposts+""+likeData.status+",";
+                subsqlposts=subsqlposts+""+likeData.comment+"";
+                subsqlposts=subsqlposts+")";
+                likeSql=likeSql+subsqlposts;
+
+            }
+
+            likeKey = newLikeQueue.poll();
+        }
+        System.out.println(likeSql);
+
+        if(likeSql.length()>0){
+            Database.postBatchLikes(likeSql);
+            System.out.println("Data Added Successfully");
+        }
+    }
+
     public static synchronized void UpdateEditDBPosts() throws Exception{
         String editPostSql="";
         String postKey = editPostQueue.poll();
@@ -444,7 +568,6 @@ public class StorageMethods extends Storage{
         String editCommentSql="";
         String commentKey = editCommentQueue.poll();
         while (commentKey!=null){
-
             System.out.println("Updating Comment " + commentKey);
             editCommentSql=editCommentSql+"SET ";
             Comments commentData = comments.get(commentKey);
@@ -458,5 +581,26 @@ public class StorageMethods extends Storage{
             commentKey = newPostQueue.poll();
         }
     }
+
+
+    public static synchronized void UpdateLikeDB() throws Exception{
+        String editLikeSql="";
+        String likeKey = editLikeQueue.poll();
+        while (likeKey!=null){
+            System.out.println("Updating Comment " + likeKey);
+//            editLikeSql=editLikeSql+"SET ";
+            Like likeData = likes.get(likeKey);
+//            editLikeSql=editLikeSql+"comment='"+commentData.comment+"' ";
+//            editLikeSql=editLikeSql+"where likeid='"+likeKey+"'";
+//            System.out.println(editLikeSql);
+//            if(editLikeSql.length()>0){
+                Database.updateLikes(likeKey,likeData.status,likeData.username);
+                System.out.println("Data Added Successfully");
+//            }
+            likeKey = editLikeQueue.poll();
+        }
+    }
+
+
 
 }
