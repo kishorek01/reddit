@@ -21,17 +21,29 @@ public class Register extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = request.getParameter("username").toString().toLowerCase();
-		String email = request.getParameter("email").toString();
-		String password = request.getParameter("password").toString();
-		String name = request.getParameter("name").toString();
-		if(StorageMethods.isEmailInStorage(email)){
-			StorageMethods.throwEmailAlreadyExists(request,response);
-		} else if (!StorageMethods.isUserInStorage(username)) {
-			createFromDB(request, response, username, email, password, name);
-		}else{
-			StorageMethods.throwUsernameAlreadyExists(request,response);
-
+		try {
+			String username = request.getParameter("username").toString().toLowerCase();
+			String email = request.getParameter("email").toString();
+			String password = request.getParameter("password").toString();
+			String name = request.getParameter("name").toString();
+			int i=0;
+			while (i<=1) {
+				if (StorageMethods.isEmailInStorage(email)) {
+					StorageMethods.throwEmailAlreadyExists(request, response);
+					i=2;
+				} else if (!StorageMethods.isUserInStorage(username)) {
+					if (!Database.isDatainDB(username, email)) {
+						createFromDB(request, response, username, email, password, name);
+						i=2;
+					}
+				} else {
+					StorageMethods.throwUsernameAlreadyExists(request, response);
+					i=2;
+				}
+				i++;
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -47,21 +59,21 @@ public class Register extends HttpServlet {
 			JsonObject checkData=Database.isUserInDB(username,email);
 			if(checkData.isJsonNull()) {
 				if (username.equalsIgnoreCase(checkData.get("username").getAsString())) {
-					StorageMethods.throwUsernameAlreadyExists(request,response);
-					if (!StorageMethods.isUserInStorage(username)) {
-						User getU = new User(username, name, email, password, checkData.get("created_at").getAsString(), checkData.get("updated_at").getAsString());
+					if (!StorageMethods.isUserInStorage(checkData.get("username").getAsString())) {
+						User getU = new User(checkData.get("username").getAsString(), checkData.get("name").getAsString(), checkData.get("email").getAsString(), checkData.get("password").getAsString(), checkData.get("created_at").getAsString(), checkData.get("updated_at").getAsString());
 						StorageMethods.setUser(getU);
 					}
-					if (!StorageMethods.isEmailInStorage(email)) {
-						StorageMethods.addEmail(email);
+					if (!StorageMethods.isEmailInStorage(checkData.get("email").getAsString())) {
+						StorageMethods.addEmail(checkData.get("email").getAsString());
 					}
-					out.print(finalResponse);
+					StorageMethods.throwUsernameAlreadyExists(request,response);
+
 				} else if (email.equals(checkData.get("email").getAsString())) {
-					if (!StorageMethods.isEmailInStorage(email)) {
-						StorageMethods.addEmail(email);
+					if (!StorageMethods.isEmailInStorage(checkData.get("email").getAsString())) {
+						StorageMethods.addEmail(checkData.get("email").getAsString());
 					}
-					if (!StorageMethods.isUserInStorage(username)) {
-						User getU = new User(username, name, email, password, checkData.get("created_at").getAsString(), checkData.get("updated_at").getAsString());
+					if (!StorageMethods.isUserInStorage(checkData.get("username").getAsString())) {
+						User getU = new User(checkData.get("username").getAsString(), checkData.get("name").getAsString(), checkData.get("email").getAsString(), checkData.get("password").getAsString(), checkData.get("created_at").getAsString(), checkData.get("updated_at").getAsString());
 
 						StorageMethods.setUser(getU);
 					}
@@ -75,7 +87,7 @@ public class Register extends HttpServlet {
 				try{
 					r1.join();
 				}catch (Exception e){
-					throw e;
+					e.printStackTrace();
 				}
 			}
 			out.flush();
@@ -84,6 +96,7 @@ public class Register extends HttpServlet {
 
 		}catch(Exception e)
 		{
+			e.printStackTrace();
 			StorageMethods.throwUnknownError(request,response);
 		}
 	}

@@ -57,7 +57,7 @@ public class StorageMethods extends Storage{
         res.addProperty("liked", true);
         res.addProperty("message","Post Liked/Unliked Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
 
@@ -105,6 +105,7 @@ public class StorageMethods extends Storage{
     public static void throwUser(User user,HttpServletRequest request, HttpServletResponse response) throws Exception{
         JsonObject userData = new JsonObject();
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         userData.addProperty("username", user.username);
         userData.addProperty("name", user.name);
@@ -116,7 +117,7 @@ public class StorageMethods extends Storage{
         res.addProperty("login", true);
         res.addProperty("message", "Login Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -138,7 +139,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Comment get", true);
         res.addProperty("message", "Comment get Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -171,7 +172,7 @@ public class StorageMethods extends Storage{
         res.addProperty("post get", true);
         res.addProperty("message", "Post get Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -200,7 +201,7 @@ public class StorageMethods extends Storage{
         res.addProperty("post get", true);
         res.addProperty("message", "Post get Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -222,7 +223,7 @@ public class StorageMethods extends Storage{
         res.addProperty("post get", true);
         res.addProperty("message", "Post get Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -303,7 +304,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
 
@@ -337,7 +338,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -379,7 +380,7 @@ public class StorageMethods extends Storage{
         res.addProperty("commented", true);
         res.addProperty("message","Commented Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -397,7 +398,7 @@ public class StorageMethods extends Storage{
         res.addProperty("posted", true);
         res.addProperty("message", "Posted Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -412,7 +413,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -428,7 +429,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -443,7 +444,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Edited", true);
         res.addProperty("message", "Post Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -460,7 +461,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Liked", true);
         res.addProperty("message", "Liked Edited Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -638,7 +639,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Obtained Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -658,7 +659,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Added Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -678,7 +679,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Added Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }
@@ -726,7 +727,7 @@ public class StorageMethods extends Storage{
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Created Successful");
         finalResponse.add("data", res);
-        finalResponse.addProperty("Code", 200);
+        finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
     }

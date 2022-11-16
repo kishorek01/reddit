@@ -71,12 +71,33 @@ public class Database {
 			userdata.addProperty("email", resultSet.getString("email"));
 			userdata.addProperty("created_at", resultSet.getString("created_at"));
 			userdata.addProperty("updated_at", resultSet.getString("updated_at"));
+			if(!StorageMethods.isUserInStorage(resultSet.getString("username"))) {
+				User getU = new User(resultSet.getString("username"), resultSet.getString("name"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("created_at"), resultSet.getString("updated_at"));
+				StorageMethods.setUser(getU);
+			}
+			if(!StorageMethods.isEmailInStorage(resultSet.getString("email"))){
+				StorageMethods.addEmail(resultSet.getString("email"));
+			}
+		}
+		return userdata;
+	}
+
+	public static synchronized Boolean isDatainDB(String username,String email) throws SQLException{
+		String sql="Select * from users where username='"+username+"' or email='"+email+"';";
+		statement=connection.createStatement();
+		ResultSet resultSet=statement.executeQuery(sql);
+		JsonObject userdata=new JsonObject();
+		if(resultSet.next()) {
 			if(!StorageMethods.isUserInStorage(username)) {
 				User getU = new User(resultSet.getString("username"), resultSet.getString("name"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("created_at"), resultSet.getString("updated_at"));
 				StorageMethods.setUser(getU);
 			}
+			if(!StorageMethods.isEmailInStorage(email)){
+				StorageMethods.addEmail(email);
+			}
+			return true;
 		}
-		return userdata;
+		return false;
 	}
 
 	public static synchronized JsonObject loginUser(String username) throws SQLException{

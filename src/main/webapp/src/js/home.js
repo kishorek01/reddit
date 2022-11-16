@@ -1,5 +1,11 @@
-
-
+function setCookie(cname, cvalue) {
+  const d = new Date();
+  exdays=1;
+//  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));//days
+d.setTime(d.getTime() + (60*60*1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires ;
+}
 function getCookie(cname) {
   let name = cname + "=";
   let ca = document.cookie.split(';');
@@ -17,15 +23,11 @@ function getCookie(cname) {
 
 function checkCookie() {
   let user = getCookie("username");
-  if (user != "") {
-    document.location = "home.html";
+  if (user != "" && user!=null) {
+    setCookie("username",user);
   } else {
   document.location = "login.html";
-//    user = prompt("Please enter your name:", "");
-//    if (user != "" && user != null) {
-//      setCookie("username", user, 1);
-//    }
   }
 }
+
 checkCookie();
-//setCookie("username","kishore",1)
