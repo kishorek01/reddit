@@ -79,3 +79,52 @@ margin-bottom:20px !important;
   background-color: #555;
   color: white;
 }
+.postArea{
+height: 100%;
+background: #e4e4e4;
+width:calc(100% - 250px);
+padding-left: 250px;
+overflow: auto;
+padding-bottom: 40px;
+overflow-x:hidden;
+}
+
+.posts{
+padding: 20px;
+background: white;
+border-radius: 5px;
+width: 600px;
+height: 130px;
+display: grid;
+grid-template-rows: 50px 60px;
+margin: 0px 50px;
+  margin-top: 0px;
+margin-top: 0px;
+cursor: pointer;
+margin-top: 30px;
+}
+
+.posts h3{
+margin:0;
+}
+
+.posts p{
+margin:0;
+}
+.details{
+display: flex;
+gap: 20px;
+}
+
+.details p{
+padding:0;
+margin:0;
+}
+
+
+.postContent{
+width: 100%;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}

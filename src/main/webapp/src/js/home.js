@@ -59,6 +59,10 @@ function startTime() {
 
 startTime();
 
+function openPost(postId){
+console.log("Opening post "+postId);
+alert(postId);
+}
 
 function getAllPosts(){
 let data=[];
@@ -68,12 +72,17 @@ axios.get('/getAllPosts')
   data=response.data.data;
   data.sort(custom_sort);
   console.log(data);
-  return data;
+  for(var i=0;i<data.length;i++){
+  var postId=data[i].postid;
+  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+  }
+
   })
   .catch(function (error) {
     console.log(error);
   });
 }
 function custom_sort(a, b) {
-    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
 }
+

@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <script type="text/javascript" src="src/js/home.js"></script>
     <link rel="icon" type="image/x-icon" href="https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png">
     <link rel="stylesheet" type="text/css" crossorigin="anonymous"  href="src/css/index.css"></link>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"></link>
-    <script src="src/js/home.js"></script>
-    <script>
-        var postData=getAllPosts();
-    </script>
-
 </head>
 <body style="padding:0px;">
+<script>
+        getAllPosts();
+    </script>
 <div class="sidebar">
     <a class="active" href="#">Home</a>
         <a href="myposts.html">My Posts</a>
     <a href="messages.html">Messages</a>
     <a onclick="logout()" href="#">Logout</a>
+</div>
+<div id="postArea" class="postArea">
+
 </div>
 </body>
 </html>

@@ -86,6 +86,16 @@ public class StorageMethods extends Storage{
             posts.get(postId).comments.add(commentId);
         }
     }
+    public static void addLikeToPosts(String likeId,String postId){
+        if(!posts.get(postId).likes.contains(likeId)){
+            posts.get(postId).likes.add(likeId);
+        }
+    }
+    public static void addLikeToComment(String likeId,String commentId){
+        if(!comments.get(commentId).likes.contains(likeId)){
+            comments.get(commentId).likes.add(likeId);
+        }
+    }
     public static void throwEmailAlreadyExists(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("Getting From In Memory");
         JsonObject res=new JsonObject();

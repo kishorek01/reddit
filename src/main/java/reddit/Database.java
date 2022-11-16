@@ -424,9 +424,23 @@ public class Database {
 		if(comment){
 			Like newLike=new Like(likeid,contentId,username,status,true,created_at,updated_at);
 			StorageMethods.addCommentLikes(likeid,contentId,newLike);
+			if(StorageMethods.isCommentInComments(contentId)) {
+				System.out.println(contentId + " " + likeid);
+				StorageMethods.addLikeToComment(likeid, contentId);
+			}else{
+				getCommentId(contentId);
+				StorageMethods.addLikeToComment(contentId, likeid);
+			}
 		}else{
 			Like newLike=new Like(likeid,contentId,username,status,false,created_at,updated_at);
 			StorageMethods.addPostLikes(likeid,contentId,newLike);
+			if(StorageMethods.isPostinPosts(contentId)) {
+				System.out.println(contentId + " " + likeid);
+				StorageMethods.addLikeToPosts(likeid, contentId);
+			}else{
+				getPostID(contentId);
+				StorageMethods.addLikeToPosts(contentId, likeid);
+			}
 		}
 
 	}

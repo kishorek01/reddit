@@ -9,6 +9,7 @@ public class Posts {
     public String created_at;
     public String updated_at;
     public ArrayList<String> comments;
+    public ArrayList<String> likes;
 
     Posts(String postId, String content, String created_by,String created_at,String updated_at) {
         this.postid = postId;
@@ -17,5 +18,6 @@ public class Posts {
         this.created_at=created_at;
         this.updated_at=updated_at;
         this.comments = new ArrayList();
+        this.likes=new ArrayList<>();
     }
 }
