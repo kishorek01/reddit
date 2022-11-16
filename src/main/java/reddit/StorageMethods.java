@@ -136,7 +136,7 @@ public class StorageMethods extends Storage{
 //            System.out.println(arr);
 //            System.out.println(postData);
         res.add("data",commentData);
-        res.addProperty("Comment get", true);
+        res.addProperty("Commentget", true);
         res.addProperty("message", "Comment get Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);
@@ -169,7 +169,7 @@ public class StorageMethods extends Storage{
 //            System.out.println(postData);
             res.add("data",postData);
             res.add("commentData",commentData);
-        res.addProperty("post get", true);
+        res.addProperty("postget", true);
         res.addProperty("message", "Post get Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);
@@ -181,9 +181,7 @@ public class StorageMethods extends Storage{
     public static synchronized void getAllPosts(HttpServletRequest request,HttpServletResponse response) throws Exception{
         System.out.println("Getting from in Memory");
         JsonArray postData;
-        JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
-        JsonObject commentData=new JsonObject();
         ArrayList<Posts> arr=new ArrayList<>();
         Set<String> myPosts=posts.keySet();
         for(String i: myPosts){
@@ -196,11 +194,9 @@ public class StorageMethods extends Storage{
             //Commented FOr ONly SHowing Post in Homepage no Comments;
         }
         postData = new Gson().toJsonTree(arr).getAsJsonArray();
-        res.add("data",postData);
-        res.add("commentData",commentData);
-        res.addProperty("post get", true);
-        res.addProperty("message", "Post get Successful");
-        finalResponse.add("data", res);
+        finalResponse.addProperty("postget", true);
+        finalResponse.addProperty("message", "Post get Successful");
+        finalResponse.add("data", postData);
         finalResponse.addProperty("code", 200);
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
@@ -220,7 +216,7 @@ public class StorageMethods extends Storage{
             likeData=new JsonObject();
         }
         res.add("data",likeData);
-        res.addProperty("post get", true);
+        res.addProperty("postget", true);
         res.addProperty("message", "Post get Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);

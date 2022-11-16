@@ -30,4 +30,44 @@ function checkCookie() {
   }
 }
 
-checkCookie();
+
+function logout(){
+let user = getCookie("username");
+document.cookie=document.cookie+";max-age=0";
+    cookie1=document.cookie;
+    console.log("Logging Out");
+    user = getCookie("username");
+        if (user != "" && user!=null) {
+          console.log("Cookie Not Deleted");
+        } else {
+        console.log("Cookie Deleted");
+        document.location = "login.html";
+        }
+}
+
+function startTime() {
+    console.log("Loop Started");
+  let user = getCookie("username");
+    if (user != "" && user!=null) {
+      console.log("Cookie Active");
+    } else {
+    console.log("Cookie Expired");
+    document.location = "login.html";
+    }
+  setTimeout(function() {startTime()}, 1000);
+}
+
+startTime();
+
+
+function getAllPosts(){
+const data=[];
+console.log("Getting All Posts");
+axios.get('/getAllPosts')
+  .then(function (response) {
+  console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
