@@ -61,13 +61,19 @@ startTime();
 
 
 function getAllPosts(){
-const data=[];
+let data=[];
 console.log("Getting All Posts");
 axios.get('/getAllPosts')
   .then(function (response) {
-  console.log(response);
+  data=response.data.data;
+  data.sort(custom_sort);
+  console.log(data);
+  return data;
   })
   .catch(function (error) {
     console.log(error);
   });
+}
+function custom_sort(a, b) {
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 }
