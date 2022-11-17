@@ -217,7 +217,7 @@ public class Database {
 	}
 
 	public static synchronized void postBatchPosts(String sql) throws Exception{
-		sql="insert into posts(postid,created_by,content) values "+ sql+" RETURNING *;";
+		sql="insert into posts(postid,created_by,content,created_at,updated_at) values "+ sql+" RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}

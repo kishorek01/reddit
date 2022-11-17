@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -395,7 +395,11 @@ public class StorageMethods extends Storage{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         String postId=Database.RandomIDGenerator(username);
-        Posts postData=new Posts(postId,content,username, String.valueOf(new Date().getTime()),String.valueOf(new Date().getTime()));
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
+        Posts postData=new Posts(postId,content,username, date,date);
         posts.put(postId,postData);
         res.add("data",new Gson().toJsonTree(postData));
         users.get(username).myPosts.add(postId);
@@ -546,7 +550,9 @@ public class StorageMethods extends Storage{
                     Posts postsData = posts.get(postKey);
                     subsqlposts=subsqlposts+"'"+postKey+"',";
                     subsqlposts=subsqlposts+"'"+postsData.created_by+"',";
-                    subsqlposts=subsqlposts+"'"+postsData.content+"'";
+                    subsqlposts=subsqlposts+"'"+postsData.content+"',";
+                    subsqlposts=subsqlposts+"'"+postsData.created_at+"',";
+                    subsqlposts=subsqlposts+"'"+postsData.updated_at+"'";
                     subsqlposts=subsqlposts+")";
 //                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
                     postssql=postssql+subsqlposts;

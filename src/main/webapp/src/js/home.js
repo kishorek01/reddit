@@ -59,16 +59,6 @@ function startTime() {
 
 //startTime();
 
-function changed() {
-  if (user != "" && user!=null) {
-        console.log("Cookie Active");
-      } else {
-      console.log("Cookie Expired");
-      document.location = "login.html";
-      }
-}
-
-document.cookie.addEventListener('change', changed)
 
 function openPost(postId){
 console.log("Opening post "+postId);

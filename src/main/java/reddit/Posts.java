@@ -17,7 +17,7 @@ public class Posts {
         this.created_by = created_by;
         this.created_at=created_at;
         this.updated_at=updated_at;
-        this.comments = new ArrayList();
+        this.comments = new ArrayList<>();
         this.likes=new ArrayList<>();
     }
 }
