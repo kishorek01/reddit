@@ -1,4 +1,3 @@
-import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,17 +5,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-
+import java.io.PrintWriter;
 /**
- * Servlet implementation class PostComments
+ * Servlet implementation class CreatePost
  */
-public class DeleteComment extends HttpServlet {
+public class DeletePost extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    Gson gson = new Gson();
+
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public DeleteComment() {
+    public DeletePost() {
         super();
     }
 
@@ -24,22 +23,21 @@ public class DeleteComment extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         String username=SessionManager.validateSession(request,response);
         if(username!=null) {
-            String commentId = request.getParameter("commentid");
             String postId = request.getParameter("postid");
-
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
             try {
-                StorageMethods.deleteComments(username, commentId, postId, request, response);
+                StorageMethods.deletePost(username,postId, request, response);
+
             } catch (Exception e) {
+                e.printStackTrace();
                 StorageMethods.throwUnknownError(request, response);
             }
         }else{
             StorageMethods.throwSessionExpired(request,response);
         }
-
-
     }
-
 }

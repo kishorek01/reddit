@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -117,6 +118,9 @@ public class StorageMethods extends Storage{
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
+        HttpSession session = request.getSession();
+        session.setAttribute("username",user.username);
+        session.setMaxInactiveInterval(10*60);
         userData.addProperty("username", user.username);
         userData.addProperty("name", user.name);
         userData.addProperty("password", user.password);
@@ -291,6 +295,17 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static void throwSessionExpired(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        finalResponse.addProperty("code", 500);
+        res.addProperty("message","Session Expired");
+        finalResponse.add("data", res);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
 
     public static void addLikesToPosts(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
         String LikeId=Database.RandomIDLikeGenerator(username);
@@ -413,6 +428,51 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static synchronized void removePostFromCommentsAndLikes(String postId) throws Exception{
+        Set<String> comK=comments.keySet();
+        for(String key:comK){
+            if(comments.get(key).postid.equals(postId)){
+                comments.remove(key);
+            }
+        }
+        Set<String> likK=likes.keySet();
+        for(String key:likK){
+            if(likes.get(key).contentid.equals(postId)){
+                likes.remove(key);
+            }
+        }
+    }
+
+    public static synchronized void deletePost(String username,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        try{
+            Database.deletePost(postId);
+            users.get(username).myPosts.remove(postId);
+            posts.remove(postId);
+            if(commentsByPostId.containsKey(postId)) {
+                commentsByPostId.remove(postId);
+            }
+            if(likesByContentId.containsKey(postId)) {
+                likesByContentId.remove(postId);
+            }
+            removePostFromCommentsAndLikes(postId);
+            res.addProperty("Deleted", true);
+            res.addProperty("message", "Post Deleted Successfully");
+            finalResponse.add("data", res);
+            finalResponse.addProperty("code", 200);
+        }catch (Exception e){
+            e.printStackTrace();
+            res.addProperty("Deleted", false);
+            res.addProperty("message", "Unable to Delete Post");
+            finalResponse.add("data", res);
+            finalResponse.addProperty("code", 300);
+        }
+        PrintWriter out=response.getWriter();
+
+        out.print(finalResponse);
+        out.flush();
+    }
     public static void editPost(String postId,String content,HttpServletRequest request, HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();

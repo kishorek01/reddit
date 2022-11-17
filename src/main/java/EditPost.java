@@ -23,14 +23,19 @@ public class EditPost extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String content = request.getParameter("content");
-        String postId= request.getParameter("postid");
-		try {
+		String username=SessionManager.validateSession(request,response);
+		if(username!=null) {
+			String content = request.getParameter("content");
+			String postId = request.getParameter("postid");
+			try {
 
-			StorageMethods.editPost(postId,content,request,response);
+				StorageMethods.editPost(postId, content, request, response);
 //				String sql="update posts set content='"+content+"' where postid='"+postid+"' RETURNING *;";
-		}catch(Exception e) {
-			StorageMethods.throwUnknownError(request,response);
+			} catch (Exception e) {
+				StorageMethods.throwUnknownError(request, response);
+			}
+		}else {
+			StorageMethods.throwSessionExpired(request,response);
 		}
 
 	}

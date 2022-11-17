@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 
 /**
  * Servlet implementation class EditPost
@@ -25,17 +23,17 @@ public class GetMessages extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection connection=null;
-        String conversationId = request.getParameter("conversationid");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out=response.getWriter();
-        try {
+        String username=SessionManager.validateSession(request,response);
+        if(username!=null) {
+            String conversationId = request.getParameter("conversationid");
+            try {
 
-            StorageMethods.getMessages(conversationId,request,response);
-//				String sql="update posts set content='"+content+"' where postid='"+postid+"' RETURNING *;";
-        }catch(Exception e) {
-            StorageMethods.throwUnknownError(request,response);
+                StorageMethods.getMessages(conversationId, request, response);
+            } catch (Exception e) {
+                StorageMethods.throwUnknownError(request, response);
+            }
+        }else {
+            StorageMethods.throwSessionExpired(request,response);
         }
 
     }

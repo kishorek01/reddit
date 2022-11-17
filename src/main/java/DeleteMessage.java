@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import reddit.StorageMethods;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 
 /**
  * Servlet implementation class EditPost
@@ -25,19 +23,17 @@ public class DeleteMessage extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection connection=null;
-        String conversationId = request.getParameter("conversationid");
-        String username = request.getParameter("username");
-        String messageId=request.getParameter("messageid");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out=response.getWriter();
-        try {
-
-            StorageMethods.DeleteMessage(conversationId,username,messageId,request,response);
-//				String sql="update posts set content='"+content+"' where postid='"+postid+"' RETURNING *;";
-        }catch(Exception e) {
-            StorageMethods.throwUnknownError(request,response);
+        String username=SessionManager.validateSession(request,response);
+        if(username!=null) {
+            String conversationId = request.getParameter("conversationid");
+            String messageId = request.getParameter("messageid");
+            try {
+                StorageMethods.DeleteMessage(conversationId, username, messageId, request, response);
+            } catch (Exception e) {
+                StorageMethods.throwUnknownError(request, response);
+            }
+        }else {
+            StorageMethods.throwSessionExpired(request,response);
         }
 
     }

@@ -3,6 +3,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import reddit.*;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class Login extends HttpServlet {
 				User user = StorageMethods.getUser(username);
 				System.out.println("Getting From In Memory");
 				if (user.password.equals(password)) {
+
 					StorageMethods.throwUser(user,request,response);
 				} else {
 					StorageMethods.throwWrongPassword(request, response);
@@ -65,6 +67,9 @@ public class Login extends HttpServlet {
 					e.printStackTrace();
 				}
 				if(userData.get("password").getAsString().equals(password)){
+					HttpSession session = request.getSession();
+					session.setAttribute("username",username);
+					session.setMaxInactiveInterval(10*60);
 					data.add("data", userData);
 					data.addProperty("login", true);
 					data.addProperty("message", "Login Successful");

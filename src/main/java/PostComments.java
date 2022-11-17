@@ -24,16 +24,18 @@ public class PostComments extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		String username = request.getParameter("username").toLowerCase();
-        String comment = request.getParameter("comment");
-        String postid = request.getParameter("postid");
 
-		try {
-//			JsonObject commentData=Database.postComments(username,comment,postid);
-			StorageMethods.postComments(username,comment,postid,"Post",null,request,response);
-		}catch(Exception e) {
-			StorageMethods.throwUnknownError(request,response);
+		String username=SessionManager.validateSession(request,response);
+		if(username!=null) {
+			String comment = request.getParameter("comment");
+			String postid = request.getParameter("postid");
+			try {
+				StorageMethods.postComments(username, comment, postid, "Post", null, request, response);
+			} catch (Exception e) {
+				StorageMethods.throwUnknownError(request, response);
+			}
+		}else{
+			StorageMethods.throwSessionExpired(request,response);
 		}
 
 		

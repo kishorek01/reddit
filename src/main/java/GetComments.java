@@ -22,23 +22,17 @@ public class GetComments extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String postid = request.getParameter("postid");
-		String parentcomment=request.getParameter("parentcomment");
-
-		try {
-//			JsonObject commentData= Database.getCommentsForPosts(postid);
-			StorageMethods.getCommentsByPostID(postid,request,response);
-//				String sql;
-//				if(parentcomment.equalsIgnoreCase("null")) {
-//					sql="select * from comments where postid="+postid+";";
-//				}else {
-//					int cid=Integer.parseInt(parentcomment);
-//					sql="select * from comments where postid="+postid+" and parentcomment="+cid+";";
-//				}
-			
-		}catch(Exception e) {
-			StorageMethods.throwUnknownError(request,response);
-
+		String username=SessionManager.validateSession(request,response);
+		if(username!=null) {
+			String postid = request.getParameter("postid");
+			String parentcomment = request.getParameter("parentcomment");
+			try {
+				StorageMethods.getCommentsByPostID(postid, request, response);
+			} catch (Exception e) {
+				StorageMethods.throwUnknownError(request, response);
+			}
+		}else {
+			StorageMethods.throwSessionExpired(request,response);
 		}
 
 	}

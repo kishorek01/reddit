@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>My Posts</title>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/x-icon" href="https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png">
   <link rel="stylesheet" type="text/css" crossorigin="anonymous"  href="src/css/index.css"></link>
-  <script src="src/js/home.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"></link>
-  <link rel="icon" type="image/x-icon" href="https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png">
+  <script type="text/javascript" src="src/js/home.js"></script>
 
+  <script>
+        getMyPosts();
+    </script>
 
 </head>
 <body style="padding:0px;">
@@ -19,5 +25,31 @@
   <a href="messages.html">Messages</a>
   <a onclick="logout()" href="#">Logout</a>
 </div>
+<div class="deleteArea" id="deleteArea">
+  <div class="modal">
+    <h2>Confirm Delete Post</h2>
+    <textarea disabled style="background:#f5f5f5" id="deletePostInput" class="textAreaSize"></textarea>
+    <div id="deleteScan">
+      <button onclick="closeDeleteModel()" class="cancelBtn">Cancel</button>
+<!--      <button id="deletePostBTN" class="publishPost">Delete</button>-->
+    </div>
+  </div>
+</div>
+<div class="modalArea" id="modalArea">
+  <div class="modal">
+    <h2>Create New Post</h2>
+    <textarea placeholder="Enter Your Post Here" id="createPostInput" class="textAreaSize"></textarea>
+    <div>
+    <button onclick="closeCreateModel()" class="cancelBtn">Cancel</button>
+    <button onclick="publish()" class="publishPost">Publish</button>
+    </div>
+  </div>
+</div>
+
+<div id="postArea" class="postArea">
+  <button onclick="openCreateModel()" class="createPost">Create Post</button>
+</div>
+
+
 </body>
 </html>

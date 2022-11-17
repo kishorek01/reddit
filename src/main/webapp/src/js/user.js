@@ -51,9 +51,11 @@ toastr.options = {
 }
 const data=response.data.data.data;
 if(data){
-console.log(document.cookie);
-    setCookie("username",data.username);
-    console.log("Cookie Created");
+//console.log(document.cookie);
+//    setCookie("username",data.username);
+//    console.log("Cookie Created");
+    document.location="home.html";
+
 }
 
 toastr["success"](response.data.data.message, "Success");
@@ -107,6 +109,7 @@ axios.post('/registerUser',params)
       "hideMethod": "fadeOut"
     }
 toastr["error"](response.data.data.message, "Error");
+document.location="login.html";
 }else if(response.data.code==200){
 toastr.options = {
   "closeButton": true,
@@ -131,7 +134,6 @@ console.log(document.cookie);
 //    document.location="home.html";
     console.log("Account Created");
     toastr["success"](response.data.data.message, "Success");
-    document.location="login.html";
 
 }
 
@@ -161,7 +163,6 @@ function setCookie(cname, cvalue) {
 //  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));//days
 d.setTime(d.getTime() + (60*60*1000));
   let expires = "expires="+d.toUTCString();
-  alert(d.toUTCString());
   document.cookie = cname + "=" + cvalue + ";" + expires ;
       document.location="home.html";
 

@@ -59,6 +59,15 @@ public class Database {
 		return finalResponse;
 	}
 
+	public static synchronized  void deletePost(String postId) throws SQLException{
+		String sql="delete from posts where postid='"+postId+"';";
+		statement=connection.createStatement();
+		statement.execute(sql);
+		sql="delete from likes where contentid='"+postId+"';";
+		statement=connection.createStatement();
+		statement.execute(sql);
+	}
+
 	public static synchronized JsonObject isUserInDB(String username,String email) throws SQLException{
 		String sql="Select * from users where username='"+username+"' or email='"+email+"';";
 		statement=connection.createStatement();

@@ -24,17 +24,21 @@ public class EditLike extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username=SessionManager.validateSession(request,response);
+        if(username!=null) {
+            String likeid = request.getParameter("likeid");
+            String contentId = request.getParameter("contentid");
+            boolean status = Boolean.parseBoolean(request.getParameter("status"));
 
-        String likeid= request.getParameter("likeid");
-        String contentId= request.getParameter("contentid");
-        boolean status= Boolean.parseBoolean(request.getParameter("status"));
-
-        try {
-            System.out.println("Edit Like Here");
+            try {
+                System.out.println("Edit Like Here");
 //			JsonObject commentData=Database.postComments(username,comment,postid);
-            StorageMethods.editLikes(likeid,status,contentId,request,response);
-        }catch(Exception e) {
-            StorageMethods.throwUnknownError(request,response);
+                StorageMethods.editLikes(likeid, status, contentId, request, response);
+            } catch (Exception e) {
+                StorageMethods.throwUnknownError(request, response);
+            }
+        }else {
+            StorageMethods.throwSessionExpired(request,response);
         }
 
 

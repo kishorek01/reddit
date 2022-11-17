@@ -25,16 +25,20 @@ public class EditComment extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String username = request.getParameter("username").toLowerCase();
-        String comment = request.getParameter("comment");
-        String commentId = request.getParameter("commentid");
-        String postId=request.getParameter("postid");
+        String username=SessionManager.validateSession(request,response);
+        if(username!=null) {
+            String comment = request.getParameter("comment");
+            String commentId = request.getParameter("commentid");
+            String postId = request.getParameter("postid");
 
-        try {
+            try {
 //			JsonObject commentData=Database.postComments(username,comment,postid);
-            StorageMethods.editComments(username,comment,commentId,postId,request,response);
-        }catch(Exception e) {
-            StorageMethods.throwUnknownError(request,response);
+                StorageMethods.editComments(username, comment, commentId, postId, request, response);
+            } catch (Exception e) {
+                StorageMethods.throwUnknownError(request, response);
+            }
+        }else{
+            StorageMethods.throwSessionExpired(request,response);
         }
 
 

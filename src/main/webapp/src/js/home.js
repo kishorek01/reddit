@@ -1,63 +1,12 @@
-function setCookie(cname, cvalue) {
-  const d = new Date();
-  exdays=1;
-//  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));//days
-d.setTime(d.getTime() + (60*60*1000));
-  let expires = "expires="+d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires ;
-}
-function getCookie(cname) {
-  let name = cname + "=";
-  let ca = document.cookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
-function checkCookie() {
-  let user = getCookie("username");
-  if (user != "" && user!=null) {
-    setCookie("username",user);
-  } else {
-  document.location = "login.html";
-  }
-}
-
 
 function logout(){
-let user = getCookie("username");
-document.cookie=document.cookie+";max-age=0";
-    cookie1=document.cookie;
+document.cookie.split(';').forEach(function(c) {
+  document.cookie = c.trim().split('=')[0] + '=;' + 'expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+});
     console.log("Logging Out");
-    user = getCookie("username");
-        if (user != "" && user!=null) {
-          console.log("Cookie Not Deleted");
-        } else {
         console.log("Cookie Deleted");
         document.location = "login.html";
-        }
 }
-
-function startTime() {
-    console.log("Loop Started");
-  let user = getCookie("username");
-    if (user != "" && user!=null) {
-      console.log("Cookie Active");
-    } else {
-    console.log("Cookie Expired");
-    document.location = "login.html";
-    }
-  setTimeout(function() {startTime()}, 1000);
-}
-
-//startTime();
 
 
 function openPost(postId){
@@ -65,17 +14,103 @@ console.log("Opening post "+postId);
 alert(postId);
 }
 
+function editPost(postId){
+console.log("Editing post "+postId);
+alert(postId);
+}
+
+function deletePost(postId,data){
+console.log("Deleting post "+postId);
+document.getElementById("deleteArea").style.display= "block";
+document.getElementById("deletePostInput").value=data;
+document.getElementById("deleteScan").innerHTML+="<button onclick=\"confirmDelete(\'"+postId+"\')\" class=\"publishPost\">Delete</button>"
+}
+
+function confirmDelete(postId){
+console.log(postId);
+if(postId!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+axios.post('/deletePost',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+window.location.reload();
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+function closeDeleteModel(){
+console.log("Closing Delete Model");
+document.getElementById("deleteArea").style.display="none";
+document.getElementById("deletePostInput").value="";
+}
+
 function getAllPosts(){
 let data=[];
 console.log("Getting All Posts");
 axios.get('/getAllPosts')
   .then(function (response) {
+    if(response.data.code==500){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
   data=response.data.data;
   data.sort(custom_sort);
   console.log(data);
   for(var i=0;i<data.length;i++){
   var postId=data[i].postid;
-  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+//  var date=new Date(data[i].created_at).toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
+//  console.log(date);
+//  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
+//  console.log(time);
+  let agoTime=moment(data[i].created_at).fromNow();
+  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+  }
+}
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+function getMyPosts(){
+let data=[];
+console.log("Getting All Posts");
+axios.get('/getMyPosts')
+  .then(function (response) {
+  if(response.data.code==500){
+  toastr["error"](response.data.data.message, "Error");
+  console.log(response.data.data.message);
+  setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+  }else{
+  data=response.data.data.data;
+    console.log(data);
+
+  data.sort(custom_sort);
+  for(var i=0;i<data.length;i++){
+  var postId=data[i].postid;
+//  var date=new Date(data[i].created_at).toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
+//  console.log(date);
+//  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
+//  console.log(time);
+  let agoTime=moment(data[i].created_at).fromNow();
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  }
   }
 
   })
@@ -87,3 +122,52 @@ function custom_sort(a, b) {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
 }
 
+
+
+function openCreateModel(){
+console.log("Creating the post");
+document.getElementById("modalArea").style.display = "block";
+}
+
+function closeCreateModel(){
+console.log("Cancelling the post");
+document.getElementById("modalArea").style.display = "none";
+document.getElementById("createPostInput").value = "";
+}
+
+
+function publish(){
+console.log("Cancelling the post");
+var post=document.getElementById("createPostInput").value;
+post=post.replace("'", "`");
+console.log(post);
+if(post!=""){
+const params = new URLSearchParams();
+params.append('content', post);
+axios.post('/createPost',params)
+  .then(function (response) {
+    if(response.data.code==500){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+  data=response.data;
+  if(data.code==200){
+  console.log(data);
+  data=data.data.data;
+  toastr["success"](response.data.data.message, "Success");
+  document.getElementById("modalArea").style.display = "none";
+  document.getElementById("createPostInput").value = "";
+  let agoTime=moment(data.created_at).fromNow();
+  var postId=data.postid;
+document.getElementById("postArea").innerHTML="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.likes.length+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\')\">Delete</p></div></div>"+document.getElementById("postArea").innerHTML;
+  }
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}

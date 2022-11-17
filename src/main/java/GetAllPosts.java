@@ -22,13 +22,19 @@ public class GetAllPosts extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		try {
+		String username=SessionManager.validateSession(request,response);
+		if(username!=null) {
+			try {
 			StorageMethods.getAllPosts(request,response);
 		}catch(Exception e) {
 			StorageMethods.throwUnknownError(request,response);
 		}
+		}else{
+			StorageMethods.throwSessionExpired(request,response);
+		}
 
-		
+
+
 
 
 	}

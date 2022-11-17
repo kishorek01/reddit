@@ -44,6 +44,16 @@
   </servlet-mapping>
   <servlet>
     <description></description>
+    <display-name>DeletePost</display-name>
+    <servlet-name>DeletePost</servlet-name>
+    <servlet-class>DeletePost</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeletePost</servlet-name>
+    <url-pattern>/deletePost</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
     <display-name>EditPost</display-name>
     <servlet-name>EditPost</servlet-name>
     <servlet-class>EditPost</servlet-class>
