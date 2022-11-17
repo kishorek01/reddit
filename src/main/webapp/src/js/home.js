@@ -14,15 +14,19 @@ console.log("Opening post "+postId);
 alert(postId);
 }
 
-function editPost(postId){
+function editPost(postId,data){
 console.log("Editing post "+postId);
-alert(postId);
+document.getElementById("editArea").style.display= "block";
+document.getElementById("editPostInput").value=data;
+document.getElementById("editScan").innerHTML="<button onclick=\"closeEditModel()\" class=\"cancelBtn\">Cancel</button>";
+document.getElementById("editScan").innerHTML+="<button onclick=\"confirmEdit(\'"+postId+"\')\" class=\"publishPost\">Publish Again</button>"
 }
 
 function deletePost(postId,data){
 console.log("Deleting post "+postId);
 document.getElementById("deleteArea").style.display= "block";
 document.getElementById("deletePostInput").value=data;
+document.getElementById("deleteScan").innerHTML="<button onclick=\"closeDeleteModel()\" class=\"cancelBtn\">Cancel</button>";
 document.getElementById("deleteScan").innerHTML+="<button onclick=\"confirmDelete(\'"+postId+"\')\" class=\"publishPost\">Delete</button>"
 }
 
@@ -48,10 +52,40 @@ window.location.reload();
   });
 }
 }
+
+function confirmEdit(postId){
+var data=document.getElementById("editPostInput").value;
+console.log(postId);
+if(postId!="" && data!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('content',data);
+axios.post('/editPost',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+window.location.reload();
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
 function closeDeleteModel(){
 console.log("Closing Delete Model");
 document.getElementById("deleteArea").style.display="none";
 document.getElementById("deletePostInput").value="";
+}
+function closeEditModel(){
+console.log("Closing Delete Model");
+document.getElementById("editArea").style.display="none";
+document.getElementById("editPostInput").value="";
 }
 
 function getAllPosts(){
@@ -103,13 +137,15 @@ axios.get('/getMyPosts')
 
   data.sort(custom_sort);
   for(var i=0;i<data.length;i++){
+  data[i].content = data[i].content.replace(/(\r\n|\n|\r)/gm, "");
+
   var postId=data[i].postid;
 //  var date=new Date(data[i].created_at).toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
 //  console.log(date);
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
   }
   }
 
