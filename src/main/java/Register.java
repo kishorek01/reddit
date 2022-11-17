@@ -22,6 +22,7 @@ public class Register extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			response.setContentType("application/json");
 			String username = request.getParameter("username").toString().toLowerCase();
 			String email = request.getParameter("email").toString();
 			String password = request.getParameter("password").toString();

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,6 +55,7 @@ public class StorageMethods extends Storage{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         PrintWriter out=response.getWriter();
+        response.setContentType("application/json");
         res.add("data",likeData);
         res.addProperty("liked", true);
         res.addProperty("message","Post Liked/Unliked Successful");
@@ -150,6 +152,7 @@ public class StorageMethods extends Storage{
 //            System.out.println(arr);
 //            System.out.println(postData);
         res.add("data",commentData);
+        response.setContentType("application/json");
         res.addProperty("Commentget", true);
         res.addProperty("message", "Comment get Successful");
         finalResponse.add("data", res);
@@ -163,6 +166,7 @@ public class StorageMethods extends Storage{
         System.out.println("Getting from in Memory");
         JsonArray postData;
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         ArrayList<String> myPosts=users.get(username).myPosts;
         JsonObject commentData=new JsonObject();
@@ -198,6 +202,7 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         ArrayList<Posts> arr=new ArrayList<>();
         Set<String> myPosts=posts.keySet();
+        response.setContentType("application/json");
         for(String i: myPosts){
             arr.add(posts.get(i));
 //            if(commentsByPostId.containsKey(posts.get(i).postid) && commentsByPostId.get(posts.get(i).postid).size()>0) {
@@ -222,6 +227,7 @@ public class StorageMethods extends Storage{
         System.out.println("Getting from in Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
+        response.setContentType("application/json");
         JsonObject likeData;
         if(likesByContentId.containsKey(contentId) && likesByContentId.get(contentId).size()>0) {
             System.out.println("This id has likes " +contentId);
@@ -286,6 +292,7 @@ public class StorageMethods extends Storage{
 
     public static void throwUnknownError(HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         finalResponse.addProperty("code", 501);
         res.addProperty("message","Unknown Error");
@@ -313,6 +320,7 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         Like newLike=new Like(LikeId,contentId,username,status,false);
         likes.put(LikeId,newLike);
+        response.setContentType("application/json");
         if(!likesByContentId.containsKey(contentId)){
             likesByContentId.put(contentId,new ConcurrentHashMap<>());
         }
@@ -344,6 +352,7 @@ public class StorageMethods extends Storage{
     public static void addLikesToComments(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
         String LikeId=Database.RandomIDLikeGenerator(username);
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         Like newLike=new Like(LikeId,contentId,username,status,true);
         likes.put(LikeId,newLike);
@@ -398,6 +407,7 @@ public class StorageMethods extends Storage{
             posts.get(postID).comments.add(commentId);
         }
         PrintWriter out=response.getWriter();
+        response.setContentType("application/json");
         res.addProperty("commented", true);
         res.addProperty("message","Commented Successful");
         finalResponse.add("data", res);
@@ -421,6 +431,7 @@ public class StorageMethods extends Storage{
         Storage.newPostQueue.add(postId);
         PrintWriter out=response.getWriter();
         res.addProperty("posted", true);
+        response.setContentType("application/json");
         res.addProperty("message", "Posted Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);
@@ -445,6 +456,7 @@ public class StorageMethods extends Storage{
 
     public static synchronized void deletePost(String username,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         try{
             Database.deletePost(postId);
@@ -476,6 +488,7 @@ public class StorageMethods extends Storage{
     public static void editPost(String postId,String content,HttpServletRequest request, HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
+        response.setContentType("application/json");
         posts.get(postId).content=content;
         res.add("data",new Gson().toJsonTree(posts.get(postId),Posts.class));
         Storage.editPostQueue.add(postId);
@@ -490,6 +503,7 @@ public class StorageMethods extends Storage{
 
     public static void editComments(String username,String comment,String commentId,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         comments.get(commentId).comment=comment;
         commentsByPostId.get(postId).get(commentId).comment=comment;
@@ -506,6 +520,7 @@ public class StorageMethods extends Storage{
     public static void deleteComments(String username,String commentId,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
+        response.setContentType("application/json");
         comments.get(commentId).comment="";
         commentsByPostId.get(postId).get(commentId).comment="";
         res.add("data",new Gson().toJsonTree(comments.get(commentId),Comments.class));
@@ -521,6 +536,7 @@ public class StorageMethods extends Storage{
 
     public static void editLikes(String likeId,Boolean status,String contentId,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         likes.get(likeId).status=status;
         System.out.println("Edit Like here "+likes.get(likeId).status);
@@ -702,6 +718,7 @@ public class StorageMethods extends Storage{
 
     public static synchronized void getMessages(String conversationId,HttpServletRequest request,HttpServletResponse response) throws Exception{
         JsonObject res=new JsonObject();
+        response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         JsonObject message=messages.get(conversationId);
         System.out.println("Getting message conversation : "+conversationId);
@@ -716,11 +733,39 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
+    public static synchronized void getConversations(String username,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        JsonObject res=new JsonObject();
+        JsonObject finalResponse=new JsonObject();
+        HashMap<String,String> message=users.get(username).messages;
+        JsonArray conversations=new JsonArray();
+        if(message.size()!=0){
+            Set<String> keys=message.keySet();
+            JsonObject obj=new JsonObject();
+            for(String key: keys){
+                obj.addProperty("username",key);
+                obj.addProperty("conversationid",message.get(key));
+                conversations.add(obj);
+            }
+        }
+        System.out.println("Getting message conversation : "+conversations);
+        res.add("data",conversations);
+        System.out.println("Message Size  : "+conversations.size());
+        response.setContentType("application/json");
+        PrintWriter out=response.getWriter();
+        res.addProperty("Conversations", true);
+        res.addProperty("conversations", "Conversations Obtained Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
     public static synchronized void postMessage(String conversationId,String username,String content,HttpServletRequest request, HttpServletResponse response) throws Exception{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         JsonObject newMessage=new JsonObject();
         newMessage.addProperty("username",username);
+        response.setContentType("application/json");
         newMessage.addProperty("message",content);
         messages.get(conversationId).add("M"+(messages.get(conversationId).size()+1),newMessage);
         System.out.println("Getting message conversation : "+conversationId);
@@ -741,6 +786,7 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         JsonObject newMessage=new JsonObject();
         newMessage.addProperty("username",username);
+        response.setContentType("application/json");
         newMessage.addProperty("message","");
         messages.get(conversationId).add(messageId,newMessage);
         System.out.println("Delete message conversation : "+conversationId);
@@ -769,6 +815,7 @@ public class StorageMethods extends Storage{
     }
 
     public static synchronized void createConversation(String user1,String user2,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        response.setContentType("application/json");
         String conversationId=Database.RandomConversationID(user1,user2);
         if(!users.containsKey(user1)){
             Database.loginUser(user1);

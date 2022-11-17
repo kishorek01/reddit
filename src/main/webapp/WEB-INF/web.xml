@@ -24,6 +24,16 @@
   </servlet-mapping>
   <servlet>
     <description></description>
+    <display-name>CheckSession</display-name>
+    <servlet-name>CheckSession</servlet-name>
+    <servlet-class>CheckSession</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CheckSession</servlet-name>
+    <url-pattern>/checkSession</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
     <display-name>Login</display-name>
     <servlet-name>Login</servlet-name>
     <servlet-class>Login</servlet-class>
@@ -41,6 +51,26 @@
   <servlet-mapping>
     <servlet-name>CreatePost</servlet-name>
     <url-pattern>/createPost</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetConversations</display-name>
+    <servlet-name>GetConversations</servlet-name>
+    <servlet-class>GetConversations</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetConversations</servlet-name>
+    <url-pattern>/getConversations</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Logout</display-name>
+    <servlet-name>Logout</servlet-name>
+    <servlet-class>Logout</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Logout</servlet-name>
+    <url-pattern>/logout</url-pattern>
   </servlet-mapping>
   <servlet>
     <description></description>
