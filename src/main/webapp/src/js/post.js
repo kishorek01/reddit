@@ -106,7 +106,16 @@ let parentComments=Object.keys(data)
  }
  function createCommentFor(parent,data,fullData,mlef){
  var mle=50*mlef;
-document.getElementById(parent).innerHTML+="<div style=\"margin-left:"+mle+"px;\" id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+data.comment+"</p></div></div>";
+ var owner=getCookie("user");
+ var message=data.comment;
+ if(message==null || message==""){
+ message="This Comment was Deleted";
+ }
+ if(owner==data.username && message!="This Comment was Deleted" ){
+ document.getElementById(parent).innerHTML+="<div style=\"margin-left:"+mle+"px;\" id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"    display: flex;gap: 20px;\"><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div></div>";
+ }else{
+document.getElementById(parent).innerHTML+="<div style=\"margin-left:"+mle+"px;\" id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div></div>";
+}
 if(data.childcomments.length>0){
 mlef=mlef+1;
 for(var j=0;j<data.childcomments.length;j++){
@@ -217,6 +226,7 @@ let comment=document.getElementById("createPostInput").value;
 let querySearch=window.location.search;
 querySearch=querySearch.replace("?id=","");
 let postId=querySearch;
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
 if(postId!="" && comment!=""){
 const params = new URLSearchParams();
 params.append('postid', postId);
@@ -243,4 +253,139 @@ window.location.reload();
 function closeCreateComment(){
 document.getElementById("modalArea").style.display="none";
 document.getElementById("createPostInput").value="";
+}
+
+function openChildComment(commentId){
+document.getElementById("modalChildArea").style.display="block";
+document.getElementById("childCommentId").value=commentId;
+}
+
+function closeChildCreateComment(){
+document.getElementById("modalChildArea").style.display="none";
+document.getElementById("createChildPostInput").value="";
+document.getElementById("childCommentId").value="";
+}
+
+function publishChildComment(){
+let comment=document.getElementById("createChildPostInput").value;
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+let postId=querySearch;
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+let parentcomment=document.getElementById("childCommentId").value;
+if(postId!="" && comment!="" && parentcomment!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('comment',comment);
+params.append('parentcomment',parentcomment);
+axios.post('/childComments',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      document.getElementById("createChildPostInput").value="";
+      document.getElementById("childCommentId").value="";
+window.location.reload();
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+
+
+
+
+
+
+function openEditComment(commentId,comment){
+document.getElementById("modalEditArea").style.display="block";
+document.getElementById("editCommentId").value=commentId;
+document.getElementById("EditCommentInput").value=comment;
+}
+
+function closeEditComment(){
+document.getElementById("modalEditArea").style.display="none";
+document.getElementById("EditCommentInput").value="";
+document.getElementById("editCommentId").value="";
+}
+
+function publishEditComment(){
+let comment=document.getElementById("EditCommentInput").value;
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+let postId=querySearch;
+let commentid=document.getElementById("editCommentId").value;
+if(postId!="" && comment!="" && commentid!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('comment',comment);
+params.append('commentid',commentid);
+axios.post('/editComment',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      document.getElementById("EditCommentInput").value="";
+      document.getElementById("editCommentId").value="";
+window.location.reload();
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+
+
+
+function openDeleteComment(commentId,comment){
+document.getElementById("modalDeleteArea").style.display="block";
+document.getElementById("deleteCommentId").value=commentId;
+document.getElementById("deleteCommentInput").value=comment;
+}
+
+function closeDeleteComment(){
+document.getElementById("modalDeleteArea").style.display="none";
+document.getElementById("deleteCommentInput").value="";
+document.getElementById("deleteCommentId").value="";
+}
+
+function deleteComment(){
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+let postId=querySearch;
+let commentid=document.getElementById("deleteCommentId").value;
+if(postId!="" && commentid!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('commentid',commentid);
+axios.post('/deleteComment',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      document.getElementById("deleteCommentInput").value="";
+      document.getElementById("deleteCommentId").value="";
+window.location.reload();
+
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
 }

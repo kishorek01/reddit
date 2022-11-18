@@ -396,8 +396,8 @@ color:purple;
 .postsComments{
     background: white;
     display: grid;
-    grid-template-rows: 30px 45px;
-    cursor: pointer;
+    grid-template-rows: 30px 30px 40px;
+    cursor: default;
     margin-top: 10px;
     border-bottom: 1px solid gray;
     margin-left: 0px;

@@ -34,17 +34,50 @@
     </div>
   </div>
 </div>
+<div class="modalArea" id="modalChildArea">
+  <div class="modal">
+    <h2>Create Comment</h2>
+    <input id="childCommentId" hidden value=""></input>
+    <textarea placeholder="Enter Your Post Here" id="createChildPostInput" class="textAreaSize"></textarea>
+    <div>
+      <button onclick="closeChildCreateComment()" class="cancelBtn">Cancel</button>
+      <button onclick="publishChildComment()" class="publishPost">Publish</button>
+    </div>
+  </div>
+</div>
+<div class="modalArea" id="modalEditArea">
+  <div class="modal">
+    <h2>Edit Comment</h2>
+    <input id="editCommentId" hidden value=""></input>
+    <textarea placeholder="Enter Your Post Here" id="EditCommentInput" class="textAreaSize"></textarea>
+    <div>
+      <button onclick="closeEditComment()" class="cancelBtn">Cancel</button>
+      <button onclick="publishEditComment()" class="publishPost">Publish</button>
+    </div>
+  </div>
+</div>
+<div class="modalArea" id="modalDeleteArea">
+  <div class="modal">
+    <h2>Confirm Delete Comment</h2>
+    <input id="deleteCommentId" hidden value=""></input>
+    <textarea style="background-color:#e4e4e4;" disabled placeholder="Enter Your Post Here" id="deleteCommentInput" class="textAreaSize"></textarea>
+    <div>
+      <button onclick="closeDeleteComment()" class="cancelBtn">Cancel</button>
+      <button onclick="deleteComment()" class="publishPost">Delete</button>
+    </div>
+  </div>
+</div>
 <a class="goBack" href="home.html">Go back</a>
 <div style="height: calc(100vh - 10px);" id="messageArea" class="messageArea">
   <div class="parentPostArea">
-    <div style="box-shadow: 0px 0px 0px 1px grey;" id="postId" class="posts">
+    <div style="cursor:default;box-shadow: 0px 0px 0px 1px grey;" id="postId" class="posts">
       <h3 id="postOwner"></h3>
       <span id="postedTime"></span>
       <p id="postContent" class="postContent"></p>
       <div id="postButtonTag" class="details">
         <p id="postLikes"></p>
         <p id="postComments"></p>
-        <p onclick="openCreateComment()" style="font-size: 17px;font-style: italic;color: blue;text-decoration: underline;">Comment</p>
+        <p onclick="openCreateComment()" style="font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;">Comment</p>
       </div>
     </div>
   </div>
