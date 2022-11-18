@@ -10,7 +10,7 @@ axios.get('/logout')
       }else{
   data=response.data;
   if(data.code==200){
-  console.log(response.data);
+//  console.log(response.data);
     toastr["success"]("Logout Successful","Success");
   setTimeout(function(){
   document.location="login.html";
@@ -34,7 +34,7 @@ params.append('conversationid', conversationId);
 params.append('message', message);
 axios.post('/postMessage',params)
   .then(function (response) {
-  console.log(response);
+//  console.log(response);
     if(response.data){
     if(response.data.code==201){
 toastr["error"](response.data.data.message, "Error");
@@ -42,7 +42,7 @@ document.location="login.html";
 }else if(response.data.code==200){
 document.getElementById("MessagesInput").value="";
 
-console.log(response.data);
+//console.log(response.data);
 //loadMessages(response.data.data.data);
 }
     }
@@ -62,14 +62,14 @@ params.append('conversationid', conversationId);
 params.append('messageid',messageId)
 axios.post('/deleteMessage',params)
   .then(function (response) {
-  console.log(response);
+//  console.log(response);
     if(response.data){
     if(response.data.code==201){
 toastr["error"](response.data.data.message, "Error");
 document.location="login.html";
 }else if(response.data.code==200){
 document.getElementById("MessagesInput").value="";
-console.log(response.data);
+//console.log(response.data);
 //loadMessages(response.data.data.data);
 }
     }
@@ -134,7 +134,7 @@ document.getElementById("postComments").innerHTML=data.comments.length+" Comment
 }
 function loadMessages(data){
 document.getElementById("messageArea").innerHTML="";
-  console.log(data);
+//  console.log(data);
   var keys=Object.keys(data);
   var owner=getCookie("user");
   for(var i=0;i<keys.length;i++){
@@ -159,7 +159,7 @@ let querySearch=window.location.search;
 querySearch=querySearch.replace("?id=","");
 let postId=querySearch;
 let data=[];
-console.log("Getting All Conversations");
+//console.log("Getting All Conversations");
 axios.get('/getPost',{
 params:{
 postid:postId
@@ -175,7 +175,7 @@ postid:postId
       }else{
   data=response.data.data;
   let dat={}
-  console.log(data)
+//  console.log(data)
   if(data.comments.length === 0){
     document.getElementById("messageArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Messages Found</p></div>";
   }else{

@@ -11,7 +11,7 @@ axios.get('/logout')
       }else{
   data=response.data;
   if(data.code==200){
-  console.log(response.data);
+//  console.log(response.data);
     toastr["success"]("Logout Successful","Success");
   setTimeout(function(){
   document.location="login.html";
@@ -26,15 +26,15 @@ axios.get('/logout')
 
 
 function openPost(postId){
-console.log("Opening post "+postId);
+//console.log("Opening post "+postId);
 let urlParams =window.origin+"/post.html?id="+postId;
-console.log(urlParams);
+//console.log(urlParams);
 window.location.href=urlParams;
 //alert(postId);
 }
 
 function editPost(postId,data){
-console.log("Editing post "+postId);
+//console.log("Editing post "+postId);
 document.getElementById("editArea").style.display= "block";
 document.getElementById("editPostInput").value=data;
 document.getElementById("editScan").innerHTML="<button onclick=\"closeEditModel()\" class=\"cancelBtn\">Cancel</button>";
@@ -42,7 +42,7 @@ document.getElementById("editScan").innerHTML+="<button onclick=\"confirmEdit(\'
 }
 
 function deletePost(postId,data){
-console.log("Deleting post "+postId);
+//console.log("Deleting post "+postId);
 document.getElementById("deleteArea").style.display= "block";
 document.getElementById("deletePostInput").value=data;
 document.getElementById("deleteScan").innerHTML="<button onclick=\"closeDeleteModel()\" class=\"cancelBtn\">Cancel</button>";
@@ -50,7 +50,7 @@ document.getElementById("deleteScan").innerHTML+="<button onclick=\"confirmDelet
 }
 
 function confirmDelete(postId){
-console.log(postId);
+//console.log(postId);
 if(postId!=""){
 const params = new URLSearchParams();
 params.append('postid', postId);
@@ -74,7 +74,7 @@ window.location.reload();
 
 function confirmEdit(postId){
 var data=document.getElementById("editPostInput").value;
-console.log(postId);
+//console.log(postId);
 if(postId!="" && data!=""){
 const params = new URLSearchParams();
 params.append('postid', postId);
@@ -97,19 +97,19 @@ window.location.reload();
 }
 }
 function closeDeleteModel(){
-console.log("Closing Delete Model");
+//console.log("Closing Delete Model");
 document.getElementById("deleteArea").style.display="none";
 document.getElementById("deletePostInput").value="";
 }
 function closeEditModel(){
-console.log("Closing Delete Model");
+//console.log("Closing Delete Model");
 document.getElementById("editArea").style.display="none";
 document.getElementById("editPostInput").value="";
 }
 
 function getAllPosts(){
 let data=[];
-console.log("Getting All Posts");
+//console.log("Getting All Posts");
 axios.get('/getAllPosts')
   .then(function (response) {
     if(response.data.code==500){
@@ -120,7 +120,7 @@ axios.get('/getAllPosts')
 
       }else{
   data=response.data.data;
-  console.log(data);
+//  console.log(data);
   if(data.length==0){
     document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
     }else
@@ -147,21 +147,21 @@ axios.get('/getAllPosts')
 
 function getMyPosts(){
 let data=[];
-console.log("Getting My Posts");
+//console.log("Getting My Posts");
 axios.get('/getMyPosts')
   .then(function (response) {
   if(response.data.code==500){
   toastr["error"](response.data.data.message, "Error");
-  console.log(response.data.data.message);
+//  console.log(response.data.data.message);
   setTimeout(function(){
   document.location="login.html";
   },3000);
 
   }else{
   data=response.data.data.data;
-    console.log(data);
+//    console.log(data);
 
-  console.log(data.length)
+//  console.log(data.length)
   if(data.length==0){
   document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
   }else
@@ -194,22 +194,22 @@ function custom_sort(a, b) {
 
 
 function openCreateModel(){
-console.log("Creating the post");
+//console.log("Creating the post");
 document.getElementById("modalArea").style.display = "block";
 }
 
 function closeCreateModel(){
-console.log("Cancelling the post");
+//console.log("Cancelling the post");
 document.getElementById("modalArea").style.display = "none";
 document.getElementById("createPostInput").value = "";
 }
 
 
 function publish(){
-console.log("Cancelling the post");
+//console.log("Cancelling the post");
 var post=document.getElementById("createPostInput").value;
 post=post.replace("'", "`");
-console.log(post);
+//console.log(post);
 if(post!=""){
 const params = new URLSearchParams();
 params.append('content', post);
@@ -224,7 +224,7 @@ axios.post('/createPost',params)
       }else{
   data=response.data;
   if(data.code==200){
-  console.log(data);
+//  console.log(data);
   data=data.data.data;
   toastr["success"](response.data.data.message, "Success");
   document.getElementById("modalArea").style.display = "none";
