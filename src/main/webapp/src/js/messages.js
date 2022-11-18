@@ -57,3 +57,30 @@ let urlParams =window.origin+"/chat.html?id="+conversationid;
 console.log(urlParams);
 window.location.href=urlParams;
 }
+
+function createConversation(){
+var user=document.getElementById('NewMessagesInput').value;
+if(user!=""){
+const params = new URLSearchParams();
+params.append('user2',user)
+axios.post('/createConversations',params)
+  .then(function (response) {
+  console.log(response);
+    if(response.data){
+    if(response.data.code==201){
+toastr["error"](response.data.data.message, "Error");
+document.location="login.html";
+}else if(response.data.code==200){
+let convId=response.data.data.data;
+document.getElementById("NewMessagesInput").value="";
+openMessage(convId);
+}else{
+toastr["error"](response.data.data.message, "Error");
+}
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+  }
+}

@@ -728,7 +728,6 @@ public class StorageMethods extends Storage{
         JsonObject message=messages.get(conversationId);
         System.out.println("Getting message conversation : "+conversationId);
         res.add("data",message);
-        System.out.println("Message Size  : "+message.size());
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Obtained Successful");
@@ -813,11 +812,30 @@ public class StorageMethods extends Storage{
     }
 
     public static synchronized Boolean isConversationPresent(String user1,String user2) throws Exception{
+        if(!users.containsKey(user2)){
+            Database.loginUser(user2);
+        }
+        if(!users.containsKey(user1)){
+            Database.loginUser(user1);
+        }
         return users.get(user1).messages.containsKey(user2);
     }
 
     public static synchronized void getConversation(String user1,String user2,HttpServletRequest request,HttpServletResponse response) throws Exception{
-        getMessages(user1,request,response);
+        String conversationId=users.get(user1).messages.get(user2);
+        JsonObject res=new JsonObject();
+        response.setContentType("application/json");
+        JsonObject finalResponse=new JsonObject();
+        System.out.println("Getting message conversation : "+conversationId);
+        res.addProperty("data",conversationId);
+        PrintWriter out=response.getWriter();
+        res.addProperty("Messages", true);
+        res.addProperty("message", "Messages Obtained Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("code", 200);
+        out.print(finalResponse);
+        out.flush();
+//        getMessage(user1,request,response);
     }
 
     public static synchronized void createConversation(String user1,String user2,HttpServletRequest request,HttpServletResponse response) throws Exception{
@@ -846,7 +864,7 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         System.out.println("Creating message conversation : "+conversationId);
         MessagesQueue.add(conversationId);
-        res.add("data",messages.get(conversationId));
+        res.addProperty("data",conversationId);
         System.out.println("Message Size  : "+messages.get(conversationId).size());
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);

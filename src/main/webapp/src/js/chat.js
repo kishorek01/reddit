@@ -119,7 +119,9 @@ conversationid:conversationId
 
       }else{
   data=response.data.data;
-  if(data.data.length==0){
+  let dat={}
+  console.log(data)
+  if(Object.keys(data.data).length === 0){
     document.getElementById("messageArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Messages Found</p></div>";
   }else{
   data=data.data;

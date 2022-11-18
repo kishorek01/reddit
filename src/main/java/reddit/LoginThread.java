@@ -9,6 +9,11 @@ public class LoginThread extends Thread{
     LoginUser loginUser;
     HttpServletResponse response;
     HttpServletRequest request;
+    public LoginThread(LoginUser loginUser, String username, String password){
+        this.loginUser=loginUser;
+        this.username=username;
+        this.password=password;
+    }
     public LoginThread(LoginUser loginUser, String username, String password, HttpServletRequest request, HttpServletResponse response){
         this.loginUser=loginUser;
         this.username=username;
