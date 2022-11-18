@@ -10,7 +10,7 @@ axios.get('/logout')
       }else{
   data=response.data;
   if(data.code==200){
-  console.log(response.data);
+//  console.log(response.data);
     toastr["success"]("Logout Successful","Success");
   setTimeout(function(){
   document.location="login.html";
@@ -25,7 +25,7 @@ axios.get('/logout')
 
 function getConversations(){
 let data=[];
-console.log("Getting All Conversations");
+//console.log("Getting All Conversations");
 axios.get('/getConversations')
   .then(function (response) {
     if(response.data.code==500){
@@ -40,7 +40,7 @@ axios.get('/getConversations')
     document.getElementById("messageArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Messages Found</p></div>";
   }else{
   data=data.data;
-  console.log(data);
+//  console.log(data);
   for(var i=0;i<data.length;i++){
   document.getElementById("messageArea").innerHTML+="<div onclick=openMessage(\""+data[i].conversationid+"\") class=\"messageList\" id=\""+data[i].conversationid+"\"><p>"+data[i].username+"</p></div>";
   }
@@ -54,7 +54,7 @@ axios.get('/getConversations')
 
 function openMessage(conversationid){
 let urlParams =window.origin+"/chat.html?id="+conversationid;
-console.log(urlParams);
+//console.log(urlParams);
 window.location.href=urlParams;
 }
 
@@ -65,7 +65,7 @@ const params = new URLSearchParams();
 params.append('user2',user)
 axios.post('/createConversations',params)
   .then(function (response) {
-  console.log(response);
+//  console.log(response);
     if(response.data){
     if(response.data.code==201){
 toastr["error"](response.data.data.message, "Error");

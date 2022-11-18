@@ -1,8 +1,8 @@
 function login(){
-console.log("Login");
+//console.log("Login");
 const username=document.getElementById("InputUserName").value;
 const password=document.getElementById("InputPassword").value;
-console.log(username,password);
+//console.log(username,password);
 if(username!="" && password!=""){
 axios.get('/login', {
 params:{
@@ -11,7 +11,7 @@ params:{
     }
   })
   .then(function (response) {
-  console.log(response.data);
+//  console.log(response.data);
     if(response.data){
     if(response.data.code!=200){
     toastr.options = {
@@ -66,7 +66,7 @@ toastr["success"](response.data.data.message, "Success");
     }
   })
   .catch(function (error) {
-    console.log(error);
+//    console.log(error);
   });
 }else if(username==""){
 toastr["error"]("Enter your UserName", "Error");
@@ -77,12 +77,12 @@ toastr["error"]("Enter Your Password","Error");
 
 
 function register(){
-console.log("Register");
+//console.log("Register");
 const name=document.getElementById("InputName").value;
 const email=document.getElementById("InputEmail").value;
 const username=document.getElementById("InputUserName").value;
 const password=document.getElementById("InputPassword").value;
-console.log(name,username,email,password);
+//console.log(name,username,email,password);
 if(username!="" && password!="" && email!="" && name!=""){
 if(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
 const params = new URLSearchParams();
@@ -133,9 +133,9 @@ toastr.options = {
 }
 const data=response.data.data.data;
 if(data){
-console.log(document.cookie);
+//console.log(document.cookie);
 //    document.location="home.html";
-    console.log("Account Created");
+//    console.log("Account Created");
     toastr["success"](response.data.data.message, "Success");
      setTimeout(function(){
       document.location="login.html";
