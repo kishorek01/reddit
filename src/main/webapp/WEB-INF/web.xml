@@ -242,4 +242,14 @@
     <servlet-name>DeleteMessage</servlet-name>
     <url-pattern>/deleteMessage</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetPost</display-name>
+    <servlet-name>GetPost</servlet-name>
+    <servlet-class>GetPost</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetPost</servlet-name>
+    <url-pattern>/getPost</url-pattern>
+  </servlet-mapping>
 </web-app>

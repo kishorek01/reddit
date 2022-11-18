@@ -27,7 +27,10 @@ axios.get('/logout')
 
 function openPost(postId){
 console.log("Opening post "+postId);
-alert(postId);
+let urlParams =window.origin+"/post.html?id="+postId;
+console.log(urlParams);
+window.location.href=urlParams;
+//alert(postId);
 }
 
 function editPost(postId,data){

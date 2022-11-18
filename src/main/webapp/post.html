@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Details</title>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/x-icon" href="https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png">
+  <link rel="stylesheet" type="text/css" crossorigin="anonymous"  href="src/css/index.css"></link>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"></link>
+  <script src="src/js/post.js"></script>
+  <script>
+        getPostDetail();
+    </script>
+
+</head>
+<body style="padding:0px;">
+<div class="sidebar">
+  <a class="active" href="#">Home</a>
+  <a href="myposts.html">My Posts</a>
+  <a href="messages.html">Messages</a>
+  <a onclick="logout()" href="#">Logout</a>
+</div>
+<a class="goBack" href="home.html">Go back</a>
+<div id="messageArea" class="messageArea">
+  <div class="parentPostArea">
+    <div style="box-shadow: 0px 0px 0px 1px grey;" id="postId" class="posts">
+      <h3 id="postOwner"></h3>
+      <span id="postedTime"></span>
+      <p id="postContent" class="postContent"></p>
+      <div class="details">
+        <p id="postLikes"></p>
+        <p id="postComments"></p>
+      </div>
+    </div>
+  </div>
+  <div id="commentAreaBox">
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -69,7 +69,6 @@ public class StorageMethods extends Storage{
     }
 
     public static Boolean isCommentInComments(String commentID){
-        System.out.println("Checkimg for comment in Comments");
         return comments.containsKey(commentID);
     }
     public static void addPostToUsers(String username,String postId){
@@ -333,10 +332,11 @@ public class StorageMethods extends Storage{
             likesByContentId.get(contentId).put(newLike.likeid,newLike);
         }
         newLikeQueue.add(LikeId);
+        posts.get(contentId).likes.add(LikeId);
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
-        res.addProperty("message", "Post Edited Successful");
+        res.addProperty("message", "Like Edited Successful");
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);
         out.print(finalResponse);
@@ -368,6 +368,7 @@ public class StorageMethods extends Storage{
             likesByContentId.get(contentId).put(newLike.likeid,newLike);
         }
         newLikeQueue.add(LikeId);
+        comments.get(contentId).likes.add(LikeId);
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
@@ -394,23 +395,43 @@ public class StorageMethods extends Storage{
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         String commentId=Database.RandomIDGenerator(username,idType);
-        if(idType.contains("Post")) {
+        if(idType.equalsIgnoreCase("Post")) {
             Comments commentData = new Comments(commentId, comment, username, postID);
             comments.put(commentId, commentData);
+            if(posts.containsKey(postID)){
+                posts.get(postID).comments.add(commentId);
+            }else{
+                Database.getPostID(postID);
+                posts.get(postID).comments.add(commentId);
+            }
+            if(!commentsByPostId.containsKey(postID)){
+                commentsByPostId.put(postID,new ConcurrentHashMap<>());
+            }
+            if(!commentsByPostId.get(postID).containsKey(commentData.commentid)){
+                commentsByPostId.get(postID).put(commentData.commentid,commentData);
+            }
             res.add("data", new Gson().toJsonTree(commentData));
         }else{
             ArrayList<String> child = new ArrayList<>();
             Comments commentData = new Comments(commentId, comment, username, postID,parentComment,child);
             comments.put(commentId, commentData);
+            if(comments.containsKey(parentComment)){
+                comments.get(parentComment).childcomments.add(commentId);
+            }else{
+                Database.getCommentId(parentComment);
+                comments.get(parentComment).childcomments.add(commentId);
+            }
+            if(!commentsByPostId.containsKey(postID)){
+                commentsByPostId.put(postID,new ConcurrentHashMap<>());
+            }
+            if(!commentsByPostId.get(postID).containsKey(commentData.commentid)){
+                commentsByPostId.get(postID).put(commentData.commentid,commentData);
+            }
             res.add("data", new Gson().toJsonTree(commentData));
         }
+
         Storage.newCommentQueue.add(commentId);
-        if(posts.containsKey(postID)){
-            posts.get(postID).comments.add(commentId);
-        }else{
-            Database.getPostID(postID);
-            posts.get(postID).comments.add(commentId);
-        }
+
         PrintWriter out=response.getWriter();
         response.setContentType("application/json");
         res.addProperty("commented", true);
@@ -420,6 +441,7 @@ public class StorageMethods extends Storage{
         out.print(finalResponse);
         out.flush();
     }
+
 
     public static void createPost(String username,String content,HttpServletRequest request, HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
@@ -731,6 +753,43 @@ public class StorageMethods extends Storage{
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Obtained Successful");
+        finalResponse.add("data", res);
+        finalResponse.addProperty("code", 200);
+        out.print(finalResponse);
+        out.flush();
+    }
+
+    public static synchronized void getPost(String postId,HttpServletRequest request,HttpServletResponse response) throws Exception{
+        JsonObject res=new JsonObject();
+        response.setContentType("application/json");
+        JsonObject finalResponse=new JsonObject();
+        Posts post=posts.get(postId);
+        res.add("post",new Gson().toJsonTree(post,Posts.class).getAsJsonObject());
+        JsonObject commentData=new JsonObject();
+        JsonObject likeData=new JsonObject();
+        if(commentsByPostId.containsKey(postId)) {
+            Set<String> comkeys = commentsByPostId.get(postId).keySet();
+            for(String key:comkeys){
+                commentData.add(key,new Gson().toJsonTree(comments.get(key),Comments.class).getAsJsonObject());
+                JsonArray newArr=new JsonArray();
+                for(String k:comments.get(key).childcomments){
+                    newArr.add(k);
+                }
+                commentData.get(key).getAsJsonObject().add("childcomments",newArr);
+            }
+
+        }
+        if(likesByContentId.containsKey(postId)){
+            Set<String> likeKeys = likesByContentId.get(postId).keySet();
+            System.out.println(likeKeys);
+            for(String key:likeKeys){
+                likeData.add(key,new Gson().toJsonTree(likes.get(key),Like.class).getAsJsonObject());
+            }
+        }
+        res.add("comments",commentData);
+        res.add("likes",commentData);
+//        res.add("data",message);
+        PrintWriter out=response.getWriter();
         finalResponse.add("data", res);
         finalResponse.addProperty("code", 200);
         out.print(finalResponse);

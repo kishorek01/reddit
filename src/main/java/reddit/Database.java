@@ -1,11 +1,13 @@
 package reddit;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 public class Database {
 	public static Connection connection=null;
@@ -217,7 +219,7 @@ public class Database {
 		String sql="insert into comments(commentid,username,comment,postid) values('"+commentID+"','"+username+"','"+comment+"',"+postID+") RETURNING *;";
 		statement=connection.createStatement();
 		ResultSet resultSet=statement.executeQuery(sql);
-		JsonArray arr=convertToJSONComments(resultSet);
+		JsonArray arr=convertToJSONComments(resultSet,true);
 		return (JsonObject) arr.get(0);
 	}
 	public static synchronized void appendChildComment(String parentcomment,String commentID,String postId) throws Exception{
@@ -327,11 +329,11 @@ public class Database {
 	}
 		public static synchronized JsonObject getCommentsForPosts(String postId) throws Exception {
 //			System.out.println("Getting comments for post id "+postId);
-			String sql="select * from comments where postid='"+postId+"';";
+			String sql="select * from comments where postid='"+postId+"' order by created_at;";
 			JsonObject res=new JsonObject();
 			Statement statement1=connection.createStatement();
 			ResultSet resultSet=statement1.executeQuery(sql);
-			res.add("data",convertToJSONComments(resultSet));
+			res.add("data",convertToJSONComments(resultSet,true));
 //			System.out.println("comments Collected for post id "+postId);
 			return  res;
 		}
@@ -350,7 +352,7 @@ public class Database {
 			}
 			return jsonArray;
 		}
-	public static JsonArray convertToJSONComments(ResultSet resultSet)
+	public static JsonArray convertToJSONComments(ResultSet resultSet,Boolean status)
 			throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		while (resultSet.next()) {
@@ -362,36 +364,43 @@ public class Database {
 				obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getString(i+1));
 				if(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase().equalsIgnoreCase("childcomments")) {
 //					System.out.println("Child Comment here" +resultSet.getString(i+1));
-					String s=resultSet.getString(i+1);
+					Array s=resultSet.getArray(i+1);
+					System.out.println(Arrays.asList((String[]) s.getArray()));
 					String news=resultSet.getString(i+1);
-					if(s.length()>2) {
-						s = s.replace("{", "");
-						s = s.replace("}", "");
-//						System.out.println(s);
-						if(s.contains("\"")){
-							s=s.replaceAll("\"","'");
-							System.out.println(s);
-						}
-						news=s;
-						if(news.contains("'")){
-							news=news.replaceAll("'","");
-						}
-						String[] words = s.split(",");
-						String[] newWords=news.split(",");
-						Pattern pattern = Pattern.compile(" ");
-						words = pattern.split(s);
-						newWords=pattern.split(news);
-						childs.addAll(Arrays.asList(words));
-						childsNew.addAll(Arrays.asList(newWords));
-						System.out.println(Arrays.toString(words));
+					childsNew.addAll(Arrays.asList((String[]) s.getArray()));
+//					if(s.length()>2) {
+//						s = s.replace("{", "");
+//						s = s.replace("}", "");
+////						System.out.println(s);
+//						if(s.contains("\"")){
+//							s=s.replaceAll("\"","'");
+//							System.out.println(s);
+//						}
+//						news=s;
+//						if(news.contains("'")){
+//							news=news.replaceAll("'","");
+//						}
+//						String[] words = s.split(",");
+//						String[] newWords=news.split(",");
+//						Pattern pattern = Pattern.compile(" ");
+//						words = pattern.split(s);
+//						newWords=pattern.split(news);
+//						childs.addAll(Arrays.asList(words));
+//						childsNew.addAll(Arrays.asList(newWords));
+//						System.out.println(Arrays.toString(words));
+//					}
+					JsonArray nre=new JsonArray();
+					for(String child:childsNew){
+						nre.add(child);
 					}
-					obj.add(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), new Gson().toJsonTree(childsNew).getAsJsonArray());
+					obj.add(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), nre);
 				}
 			}
-			if(childs.size()!=0) {
-				getChildComments(childs);
+			if(childsNew.size()!=0) {
+				getChildComments(childsNew);
 			}
-			addToInMemoryComments(obj);
+			System.out.println(((Object)childsNew).getClass().getSimpleName()+" "+childsNew.size());
+			addToInMemoryComments(obj,status,childsNew);
 			jsonArray.add(obj);
 		}
 		return jsonArray;
@@ -400,18 +409,18 @@ public class Database {
 //		System.out.println("Getting comments for comment id Array "+commentIds);
 		String sql="select * from comments where commentid in (";
 		for(int i=0;i<commentIds.size();i++){
-			String id=commentIds.get(i).toString();
+			String id="'"+commentIds.get(i).toString()+"'";
 			sql=sql+id;
 			if(i!=commentIds.size()-1){
 				sql=sql+",";
 			}
 		}
-		sql=sql+");";
-//		System.out.println(sql);
+		sql=sql+") order by created_at;";
+		System.out.println(sql);
 		JsonObject res=new JsonObject();
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
-		res.add("data",convertToJSONComments(resultSet));
+		res.add("data",convertToJSONComments(resultSet,false));
 //		System.out.println("comments Collected for Comment id "+commentIds);
 	}
 	public static void convertToJSONLikes(ResultSet resultSet) throws Exception{
@@ -460,7 +469,7 @@ public class Database {
 
 	}
 
-	public synchronized static void addToInMemoryComments(JsonObject commentData) throws Exception {
+	public synchronized static void addToInMemoryComments(JsonObject commentData,Boolean status,ArrayList<String> children) throws Exception {
 		String username = commentData.get("username").getAsString();
 		String comment = commentData.get("comment").getAsString();
 		String created_at = commentData.get("created_at").getAsString();
@@ -471,22 +480,18 @@ public class Database {
 			parrent = commentData.get("parentcomment").getAsString();
 		}
 		JsonArray childcomments=commentData.get("childcomments").getAsJsonArray();
-		ArrayList<String> childs=new ArrayList<>();
-		for(JsonElement child:childcomments){
-			childs.add(child.getAsString());
-		}
+
+		System.out.println("Childs Here are"+ children);
 		String postId=commentData.get("postid").getAsString();
-		Comments comments = new Comments(commentID, comment, username,postId,parrent,childs, created_at, updated_at);
+		Comments comments = new Comments(commentID, comment, username,postId,parrent,children, created_at, updated_at);
 		StorageMethods.addCommentToCommentByPosts(postId,comments);
 		if (!StorageMethods.isCommentInComments(postId)) {
 			StorageMethods.addComment(commentID,comments);
 		}
-		if(StorageMethods.isPostinPosts(postId)) {
-//			System.out.println(postId + " " + commentID);
-			StorageMethods.addCommentToPosts(commentID, postId);
-		}else{
-			getPostID(postId);
-			StorageMethods.addCommentToPosts(commentID, postId);
+		if(status) {
+
+				StorageMethods.addCommentToPosts(commentID, postId);
+
 		}
 		getLikesForContent(commentID);
 	}
@@ -499,11 +504,11 @@ public class Database {
 	}
 
 	public static synchronized void getCommentId(String commentId) throws Exception{
-		String sql="select * from comments where commentid='"+commentId+"'";
+		String sql="select * from comments where commentid='"+commentId+"' order by created_at";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 		JsonObject res=new JsonObject();
-		res.add("data",convertToJSONComments(resultSet));
+		res.add("data",convertToJSONComments(resultSet,false));
 	}
 
 	public static synchronized String RandomIDGenerator(String username,String idType)

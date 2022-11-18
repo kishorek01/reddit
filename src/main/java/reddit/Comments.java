@@ -22,7 +22,7 @@ public class Comments  {
         this.parentcomment=null;
         this.likes=new ArrayList<>();
     }
-    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments) {
+    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList<String> childcomments) {
         this.comment = comment;
         this.commentid=commentid;
         this.username = commentedBy;
@@ -33,7 +33,7 @@ public class Comments  {
         this.likes=new ArrayList<>();
         this.updated_at="";
     }
-    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList childcomments,String created_at, String updated_at) {
+    public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList<String> childcomments,String created_at, String updated_at) {
         this.comment = comment;
         this.commentid=commentid;
         this.username = commentedBy;
