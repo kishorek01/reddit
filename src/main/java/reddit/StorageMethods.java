@@ -406,6 +406,7 @@ public class StorageMethods extends Storage{
             }
             if(!commentsByPostId.containsKey(postID)){
                 commentsByPostId.put(postID,new ConcurrentHashMap<>());
+
             }
             if(!commentsByPostId.get(postID).containsKey(commentData.commentid)){
                 commentsByPostId.get(postID).put(commentData.commentid,commentData);
@@ -417,9 +418,13 @@ public class StorageMethods extends Storage{
             comments.put(commentId, commentData);
             if(comments.containsKey(parentComment)){
                 comments.get(parentComment).childcomments.add(commentId);
+                posts.get(postID).comments.add(commentId);
+
             }else{
                 Database.getCommentId(parentComment);
                 comments.get(parentComment).childcomments.add(commentId);
+                posts.get(postID).comments.add(commentId);
+
             }
             if(!commentsByPostId.containsKey(postID)){
                 commentsByPostId.put(postID,new ConcurrentHashMap<>());

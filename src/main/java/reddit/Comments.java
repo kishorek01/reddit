@@ -1,5 +1,6 @@
 package reddit;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Comments  {
@@ -16,6 +17,12 @@ public class Comments  {
     public Comments(String commentid,String comment, String commentedBy, String postId) {
         this.comment = comment;
         this.commentid=commentid;
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
+        this.created_at=date;
+        this.updated_at=date;
         this.username = commentedBy;
         this.postid = postId;
         this.childcomments = new ArrayList<>();
@@ -25,13 +32,17 @@ public class Comments  {
     public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList<String> childcomments) {
         this.comment = comment;
         this.commentid=commentid;
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
         this.username = commentedBy;
         this.postid = postId;
         this.childcomments = childcomments;
         this.parentcomment=parentcomment;
-        this.created_at="";
+        this.created_at=date;
         this.likes=new ArrayList<>();
-        this.updated_at="";
+        this.updated_at=date;
     }
     public Comments(String commentid, String comment, String commentedBy, String postId, String parentcomment, ArrayList<String> childcomments,String created_at, String updated_at) {
         this.comment = comment;
