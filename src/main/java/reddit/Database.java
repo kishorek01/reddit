@@ -117,7 +117,7 @@ public class Database {
 		return false;
 	}
 
-	public static synchronized JsonObject loginUser(String username) throws SQLException{
+	public static synchronized JsonObject loginUser(String username) throws Exception {
 
 		String sql="Select * from users where username='"+username+"';";
 		statement=connection.createStatement();
@@ -132,6 +132,7 @@ public class Database {
 			userdata.addProperty("updated_at", resultSet.getString("updated_at"));
 				User getU = new User(resultSet.getString("username"), resultSet.getString("name"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("created_at"), resultSet.getString("updated_at"));
 				StorageMethods.setUser(getU);
+				JsonObject obh=getMyPosts(resultSet.getString("username"));
 
 		}
 		return userdata;
