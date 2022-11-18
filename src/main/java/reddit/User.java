@@ -1,4 +1,5 @@
 package reddit;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,11 +23,15 @@ public class User {
         this.messages=new HashMap<>();
     }
     public User(){
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
         this.name="";
         this.email="";
         this.password="";
-        this.created_at="";
-        this.updated_at="";
+        this.created_at=date;
+        this.updated_at=date;
         this.username="";
         this.myPosts=new ArrayList<>();
         this.messages=new HashMap<>();

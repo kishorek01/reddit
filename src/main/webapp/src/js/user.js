@@ -11,8 +11,9 @@ params:{
     }
   })
   .then(function (response) {
+  console.log(response.data);
     if(response.data){
-    if(response.data.code==203){
+    if(response.data.code!=200){
     toastr.options = {
       "closeButton": true,
       "debug": false,
@@ -54,11 +55,13 @@ if(data){
 //console.log(document.cookie);
 //    setCookie("username",data.username);
 //    console.log("Cookie Created");
-    document.location="home.html";
+toastr["success"](response.data.data.message, "Success");
 
+ setTimeout(function(){
+      document.location="home.html";
+      },2000);
 }
 
-toastr["success"](response.data.data.message, "Success");
 }
     }
   })
@@ -134,6 +137,10 @@ console.log(document.cookie);
 //    document.location="home.html";
     console.log("Account Created");
     toastr["success"](response.data.data.message, "Success");
+     setTimeout(function(){
+      document.location="login.html";
+      },2000);
+
 
 }
 

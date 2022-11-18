@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StorageMethods extends Storage{
+
     public static User getUser(String userName){
         if(users.containsKey(userName)){
             return users.get(userName);
@@ -46,7 +48,7 @@ public class StorageMethods extends Storage{
         comments.put(commentId,comment);
     }
     public static Boolean isPostinPosts(String postId){
-        System.out.println("Adding POst"+postId+ " to inmemory");
+//        System.out.println("Adding POst"+postId+ " to inmemory");
         return posts.containsKey(postId);
     }
 
@@ -72,7 +74,7 @@ public class StorageMethods extends Storage{
     }
     public static void addPostToUsers(String username,String postId){
         if(!users.get(username).myPosts.contains(postId)) {
-            System.out.println("Adding POst"+postId+ " to inmemory of users");
+//            System.out.println("Adding POst"+postId+ " to inmemory of users");
             users.get(username).myPosts.add(postId);
         }
     }
@@ -100,7 +102,7 @@ public class StorageMethods extends Storage{
         }
     }
     public static void throwEmailAlreadyExists(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("Getting From In Memory");
+//        System.out.println("Getting From In Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         res.addProperty("message","Email Already Exists");
@@ -121,6 +123,9 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         HttpSession session = request.getSession();
+        Cookie loginCookie = new Cookie("user",user.username);
+        loginCookie.setMaxAge(30*60);
+        response.addCookie(loginCookie);
         session.setAttribute("username",user.username);
         session.setMaxInactiveInterval(10*60);
         userData.addProperty("username", user.username);
@@ -139,7 +144,7 @@ public class StorageMethods extends Storage{
         out.flush();
     }
     public static void getCommentsByPostID(String postId,HttpServletRequest request, HttpServletResponse response) throws Exception{
-        System.out.println("Getting from in Memory");
+//        System.out.println("Getting from in Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         JsonObject commentData;
@@ -163,7 +168,7 @@ public class StorageMethods extends Storage{
     }
 
     public static void getMyPosts(String username,HttpServletRequest request, HttpServletResponse response) throws Exception{
-        System.out.println("Getting from in Memory");
+//        System.out.println("Getting from in Memory");
         JsonArray postData;
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
@@ -197,7 +202,7 @@ public class StorageMethods extends Storage{
     }
 
     public static synchronized void getAllPosts(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        System.out.println("Getting from in Memory");
+//        System.out.println("Getting from in Memory");
         JsonArray postData;
         JsonObject finalResponse=new JsonObject();
         ArrayList<Posts> arr=new ArrayList<>();
@@ -224,7 +229,7 @@ public class StorageMethods extends Storage{
 
 
     public static void getLikesFromMemory(String contentId,HttpServletRequest request, HttpServletResponse response) throws Exception{
-        System.out.println("Getting from in Memory");
+//        System.out.println("Getting from in Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         response.setContentType("application/json");
@@ -259,7 +264,7 @@ public class StorageMethods extends Storage{
 
 
     public static void throwWrongPassword(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        System.out.println("Getting From In Memory");
+//        System.out.println("Getting From In Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         res.addProperty("message","Wrong Password");
@@ -275,7 +280,7 @@ public class StorageMethods extends Storage{
     }
 
     public static void throwUsernameAlreadyExists(HttpServletRequest request,HttpServletResponse response) throws IOException{
-        System.out.println("Getting From In Memory");
+//        System.out.println("Getting From In Memory");
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
         res.addProperty("message","Username Already Exists");
@@ -740,14 +745,15 @@ public class StorageMethods extends Storage{
         JsonArray conversations=new JsonArray();
         if(message.size()!=0){
             Set<String> keys=message.keySet();
-            JsonObject obj=new JsonObject();
+            System.out.println(keys);
             for(String key: keys){
+                System.out.println(key);
+                JsonObject obj=new JsonObject();
                 obj.addProperty("username",key);
                 obj.addProperty("conversationid",message.get(key));
                 conversations.add(obj);
             }
         }
-        System.out.println("Getting message conversation : "+conversations);
         res.add("data",conversations);
         System.out.println("Message Size  : "+conversations.size());
         response.setContentType("application/json");
@@ -862,6 +868,9 @@ public class StorageMethods extends Storage{
         }
         users.get(user1).messages.put(user2,conversationId);
         users.get(user2).messages.put(user1,conversationId);
+//        System.out.println(user1+" "+users.get(user1).messages);
+//        System.out.println(user2+" "+users.get(user2).messages);
+//        System.out.println("Messges and conversations are added");
     }
 
 

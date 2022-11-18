@@ -11,10 +11,11 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"></link>
-  <script src="src/js/messages.js"></script>
+  <script src="src/js/chat.js"></script>
   <script>
-        getConversations();
+        getMessages();
     </script>
+
 </head>
 <body style="padding:0px;">
 <div class="sidebar">
@@ -23,12 +24,25 @@
   <a class="active" href="#">Messages</a>
   <a onclick="logout()" href="#">Logout</a>
 </div>
-<div id="topMessageBar" class="topMessageBar">
-  <input id="NewMessagesInput" placeholder="Enter Username Here" class="MessagesInput"></input>
-  <button id="sendBtn" onclick="createConversation()" class="sendBtn">Search</button>
-</div>
-<div style="height: calc(100vh - 60px);padding-top:50px;" id="messageArea" class="messageArea">
+<a class="goBack" href="messages.html">Go back</a>
+<div id="messageArea" class="messageArea">
 
 </div>
+<div id="messageBar" class="messageBar">
+  <input id="MessagesInput" placeholder="Enter Your Message Here" class="MessagesInput"></input>
+  <button id="sendBtn" onclick="sendMessage()" class="sendBtn">Send[Enter]</button>
+</div>
+<script>
+// Execute a function when the user presses a key on the keyboard
+document.querySelector('#MessagesInput').addEventListener("keypress", function(event) {
+  // If the user presses the "Enter" key on the keyboard
+  if (event.key === "Enter") {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("sendBtn").click();
+  }
+});
+  </script>
 </body>
 </html>

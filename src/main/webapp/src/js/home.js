@@ -117,8 +117,14 @@ axios.get('/getAllPosts')
 
       }else{
   data=response.data.data;
-  data.sort(custom_sort);
   console.log(data);
+  if(data.length==0){
+    document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+    }else
+    {
+    document.getElementById("postArea").innerHTML="";
+      data.sort(custom_sort);
+
   for(var i=0;i<data.length;i++){
   var postId=data[i].postid;
 //  var date=new Date(data[i].created_at).toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
@@ -127,6 +133,7 @@ axios.get('/getAllPosts')
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
   document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+  }
   }
 }
   })
@@ -137,7 +144,7 @@ axios.get('/getAllPosts')
 
 function getMyPosts(){
 let data=[];
-console.log("Getting All Posts");
+console.log("Getting My Posts");
 axios.get('/getMyPosts')
   .then(function (response) {
   if(response.data.code==500){
@@ -151,7 +158,13 @@ axios.get('/getMyPosts')
   data=response.data.data.data;
     console.log(data);
 
-  data.sort(custom_sort);
+  console.log(data.length)
+  if(data.length==0){
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+  }else
+  {
+    data.sort(custom_sort);
+
   for(var i=0;i<data.length;i++){
   data[i].content = data[i].content.replace(/(\r\n|\n|\r)/gm, "");
 
@@ -162,6 +175,7 @@ axios.get('/getMyPosts')
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
   document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  }
   }
   }
 
@@ -213,6 +227,7 @@ axios.post('/createPost',params)
   document.getElementById("modalArea").style.display = "none";
   document.getElementById("createPostInput").value = "";
   let agoTime=moment(data.created_at).fromNow();
+  window.location.reload();
   var postId=data.postid;
 document.getElementById("postArea").innerHTML="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.likes.length+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\')\">Delete</p></div></div>"+document.getElementById("postArea").innerHTML;
   }
