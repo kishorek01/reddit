@@ -27,13 +27,13 @@ public class EditLike extends HttpServlet {
         String username=SessionManager.validateSession(request,response);
         if(username!=null) {
             String likeid = request.getParameter("likeid");
-            String contentId = request.getParameter("contentid");
+            String postid = request.getParameter("postid");
             boolean status = Boolean.parseBoolean(request.getParameter("status"));
 
             try {
                 System.out.println("Edit Like Here");
 //			JsonObject commentData=Database.postComments(username,comment,postid);
-                StorageMethods.editLikes(likeid, status, contentId, request, response);
+                StorageMethods.editLikes(likeid, status, postid, request, response);
             } catch (Exception e) {
                 StorageMethods.throwUnknownError(request, response);
             }

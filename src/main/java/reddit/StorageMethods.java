@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -110,7 +111,7 @@ public class StorageMethods extends Storage{
         finalResponse.addProperty("code",201);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        System.out.println("Email Already Exists");
+//        System.out.println("Email Already Exists");
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -148,7 +149,7 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         JsonObject commentData;
             if(commentsByPostId.containsKey(postId) && commentsByPostId.get(postId).size()>0) {
-                System.out.println("This id has comments " +postId);
+//                System.out.println("This id has comments " +postId);
                 commentData=new Gson().toJsonTree(commentsByPostId.get(postId)).getAsJsonObject();
         }else {
                 commentData=new JsonObject();
@@ -179,7 +180,7 @@ public class StorageMethods extends Storage{
             arr.add(posts.get(i));
             if(commentsByPostId.containsKey(posts.get(i).postid) && commentsByPostId.get(posts.get(i).postid).size()>0) {
                 Set<String> keys=commentsByPostId.get(posts.get(i).postid).keySet();
-                System.out.println("This id has comments " +posts.get(i).postid);
+//                System.out.println("This id has comments " +posts.get(i).postid);
 //                System.out.println(new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
                     commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
 //                    commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
@@ -234,7 +235,7 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         JsonObject likeData;
         if(likesByContentId.containsKey(contentId) && likesByContentId.get(contentId).size()>0) {
-            System.out.println("This id has likes " +contentId);
+//            System.out.println("This id has likes " +contentId);
             likeData=new Gson().toJsonTree(likesByContentId.get(contentId)).getAsJsonObject();
         }else {
             likeData=new JsonObject();
@@ -272,7 +273,7 @@ public class StorageMethods extends Storage{
         finalResponse.addProperty("code",203);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        System.out.println("Email Already Exists");
+//        System.out.println("Email Already Exists");
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -288,7 +289,7 @@ public class StorageMethods extends Storage{
         finalResponse.addProperty("code",201);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        System.out.println("Username Already Exists");
+//        System.out.println("Username Already Exists");
         PrintWriter out=response.getWriter();
         out.print(finalResponse);
         out.flush();
@@ -318,21 +319,21 @@ public class StorageMethods extends Storage{
     }
 
 
-    public static void addLikesToPosts(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
+    public static void addLikesToPosts(String postid,String commentid,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
         String LikeId=Database.RandomIDLikeGenerator(username);
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
-        Like newLike=new Like(LikeId,contentId,username,status,false);
+        Like newLike=new Like(LikeId,postid,username,status,commentid);
         likes.put(LikeId,newLike);
         response.setContentType("application/json");
-        if(!likesByContentId.containsKey(contentId)){
-            likesByContentId.put(contentId,new ConcurrentHashMap<>());
+        if(!likesByContentId.containsKey(postid)){
+            likesByContentId.put(postid,new ConcurrentHashMap<>());
         }
-        if(!likesByContentId.get(contentId).containsKey(newLike.likeid)){
-            likesByContentId.get(contentId).put(newLike.likeid,newLike);
+        if(!likesByContentId.get(postid).containsKey(newLike.likeid)){
+            likesByContentId.get(postid).put(newLike.likeid,newLike);
         }
         newLikeQueue.add(LikeId);
-        posts.get(contentId).likes.add(LikeId);
+        posts.get(postid).likes.add(LikeId);
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
@@ -354,21 +355,23 @@ public class StorageMethods extends Storage{
 
 
     }
-    public static void addLikesToComments(String contentId,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
+    public static void addLikesToComments(String postId,String commentid,Boolean status,String username,HttpServletRequest request,HttpServletResponse response) throws IOException {
         String LikeId=Database.RandomIDLikeGenerator(username);
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
-        Like newLike=new Like(LikeId,contentId,username,status,true);
+        Like newLike=new Like(LikeId,postId,username,status,commentid);
         likes.put(LikeId,newLike);
-        if(!likesByContentId.containsKey(contentId)){
-            likesByContentId.put(contentId,new ConcurrentHashMap<>());
+        if(!likesByContentId.containsKey(postId)){
+            likesByContentId.put(postId,new ConcurrentHashMap<>());
         }
-        if(!likesByContentId.get(contentId).containsKey(newLike.likeid)){
-            likesByContentId.get(contentId).put(newLike.likeid,newLike);
+        if(!likesByContentId.get(postId).containsKey(newLike.likeid)){
+            likesByContentId.get(postId).put(newLike.likeid,newLike);
         }
         newLikeQueue.add(LikeId);
-        comments.get(contentId).likes.add(LikeId);
+        if(!Objects.equals(commentid, "") && commentid!=null) {
+        comments.get(commentid).likes.add(LikeId);
+        }
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
@@ -478,12 +481,7 @@ public class StorageMethods extends Storage{
                 comments.remove(key);
             }
         }
-        Set<String> likK=likes.keySet();
-        for(String key:likK){
-            if(likes.get(key).contentid.equals(postId)){
-                likes.remove(key);
-            }
-        }
+
     }
 
     public static synchronized void deletePost(String username,String postId,HttpServletRequest request,HttpServletResponse response) throws IOException{
@@ -566,13 +564,13 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
-    public static void editLikes(String likeId,Boolean status,String contentId,HttpServletRequest request,HttpServletResponse response) throws IOException{
+    public static void editLikes(String likeId,Boolean status,String postid,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         likes.get(likeId).status=status;
-        System.out.println("Edit Like here "+likes.get(likeId).status);
-        likesByContentId.get(contentId).get(likeId).status=status;
+//        System.out.println("Edit Like here "+likes.get(likeId).status);
+        likesByContentId.get(postid).get(likeId).status=status;
         res.add("data",new Gson().toJsonTree(likes.get(likeId),Like.class));
         Storage.editLikeQueue.add(likeId);
         PrintWriter out=response.getWriter();
@@ -595,7 +593,7 @@ public class StorageMethods extends Storage{
             if (commentKey != null) {
 
                 if (commentKey.contains("post") || commentKey.contains("Post")) {
-                    System.out.println("Updating Post Comment " + commentKey);
+//                    System.out.println("Updating Post Comment " + commentKey);
 
                     if (postssql.contains(")")) {
                         postssql = postssql + ",";
@@ -610,7 +608,7 @@ public class StorageMethods extends Storage{
 //                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
                     postssql = postssql + subsqlposts;
                 } else {
-                    System.out.println("Updating Comment Comment " + commentKey);
+//                    System.out.println("Updating Comment Comment " + commentKey);
                         if (commentsql.contains(")")) {
                             commentsql = commentsql + ",";
                         }
@@ -629,16 +627,16 @@ public class StorageMethods extends Storage{
             }
             commentKey = newCommentQueue.poll();
         }
-            System.out.println("Create new post Comment query "+postssql);
-        System.out.println("Create new CHild comment query "+commentsql);
+//            System.out.println("Create new post Comment query "+postssql);
+//        System.out.println("Create new CHild comment query "+commentsql);
 
             if (postssql.length() > 0) {
                 Database.postBatchComments(postssql);
-                System.out.println("Post Data Added Successfully");
+//                System.out.println("Post Data Added Successfully");
             }
             if(commentsql.length()>0){
                 Database.postChildCommentsBatch(commentsql);
-                System.out.println("Comment Data Added Successfully");
+//                System.out.println("Comment Data Added Successfully");
             }
         }
 
@@ -650,7 +648,7 @@ public class StorageMethods extends Storage{
 
             if (postKey != null) {
 
-                System.out.println("Updating Post " + postKey);
+//                System.out.println("Updating Post " + postKey);
                     if(postssql.contains(")")){
                         postssql=postssql+",";
                     }
@@ -669,11 +667,11 @@ public class StorageMethods extends Storage{
 
             postKey = newPostQueue.poll();
         }
-        System.out.println(postssql);
+//        System.out.println(postssql);
 
         if(postssql.length()>0){
             Database.postBatchPosts(postssql);
-            System.out.println("Data Added Successfully");
+//            System.out.println("Data Added Successfully");
         }
     }
 
@@ -685,17 +683,21 @@ public class StorageMethods extends Storage{
 
             if (likeKey != null) {
 
-                System.out.println("Createing Like " + likeKey);
+//                System.out.println("Createing Like " + likeKey);
                 if(likeSql.contains(")")){
                     likeSql=likeSql+",";
                 }
                 subsqlposts=subsqlposts+"(";
                 Like likeData = likes.get(likeKey);
                 subsqlposts=subsqlposts+"'"+likeKey+"',";
-                subsqlposts=subsqlposts+"'"+likeData.contentid+"',";
+                subsqlposts=subsqlposts+"'"+likeData.postid+"',";
                 subsqlposts=subsqlposts+"'"+likeData.username+"',";
                 subsqlposts=subsqlposts+""+likeData.status+",";
-                subsqlposts=subsqlposts+""+likeData.comment+"";
+                if(likeData.commentid!=null){
+                    subsqlposts = subsqlposts + "'" + likeData.commentid + "'";
+                }else {
+                    subsqlposts = subsqlposts  + null;
+                }
                 subsqlposts=subsqlposts+")";
                 likeSql=likeSql+subsqlposts;
 
@@ -703,11 +705,11 @@ public class StorageMethods extends Storage{
 
             likeKey = newLikeQueue.poll();
         }
-        System.out.println(likeSql);
+//        System.out.println(likeSql);
 
         if(likeSql.length()>0){
             Database.postBatchLikes(likeSql);
-            System.out.println("Data Added Successfully");
+//            System.out.println("Data Added Successfully");
         }
     }
 
@@ -716,15 +718,15 @@ public class StorageMethods extends Storage{
         String postKey = editPostQueue.poll();
         while (postKey!=null){
 
-                System.out.println("Updating Post " + postKey);
+//                System.out.println("Updating Post " + postKey);
             editPostSql=editPostSql+"SET ";
                 Posts postsData = posts.get(postKey);
             editPostSql=editPostSql+"content='"+postsData.content+"' ";
             editPostSql=editPostSql+"where postid='"+postKey+"'";
-            System.out.println(editPostSql);
+//            System.out.println(editPostSql);
             if(editPostSql.length()>0){
                 Database.updatePosts(editPostSql);
-                System.out.println("Data Added Successfully");
+//                System.out.println("Data Added Successfully");
             }
             postKey = newPostQueue.poll();
         }
@@ -734,15 +736,15 @@ public class StorageMethods extends Storage{
         String editCommentSql="";
         String commentKey = editCommentQueue.poll();
         while (commentKey!=null){
-            System.out.println("Updating Comment " + commentKey);
+//            System.out.println("Updating Comment " + commentKey);
             editCommentSql=editCommentSql+"SET ";
             Comments commentData = comments.get(commentKey);
             editCommentSql=editCommentSql+"comment='"+commentData.comment+"' ";
             editCommentSql=editCommentSql+"where commentid='"+commentKey+"'";
-            System.out.println(editCommentSql);
+//            System.out.println(editCommentSql);
             if(editCommentSql.length()>0){
                 Database.updateComment(editCommentSql);
-                System.out.println("Data Added Successfully");
+//                System.out.println("Data Added Successfully");
             }
             commentKey = newPostQueue.poll();
         }
@@ -753,7 +755,7 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         JsonObject message=messages.get(conversationId);
-        System.out.println("Getting message conversation : "+conversationId);
+//        System.out.println("Getting message conversation : "+conversationId);
         res.add("data",message);
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
@@ -769,6 +771,14 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         Posts post=posts.get(postId);
+        JsonArray likeArr=new JsonArray();
+        if(likesByContentId.containsKey(postId)) {
+            res.add("likesobj", new Gson().toJsonTree(likesByContentId.get(postId)).getAsJsonObject());
+            for (String key : likesByContentId.get(postId).keySet()) {
+                likeArr.add(new Gson().toJsonTree(likes.get(key)).getAsJsonObject());
+            }
+        }
+        res.add("likes",likeArr);
         res.add("post",new Gson().toJsonTree(post,Posts.class).getAsJsonObject());
         JsonObject commentData=new JsonObject();
         JsonObject likeData=new JsonObject();
@@ -784,15 +794,8 @@ public class StorageMethods extends Storage{
             }
 
         }
-        if(likesByContentId.containsKey(postId)){
-            Set<String> likeKeys = likesByContentId.get(postId).keySet();
-            System.out.println(likeKeys);
-            for(String key:likeKeys){
-                likeData.add(key,new Gson().toJsonTree(likes.get(key),Like.class).getAsJsonObject());
-            }
-        }
+
         res.add("comments",commentData);
-        res.add("likes",commentData);
 //        res.add("data",message);
         PrintWriter out=response.getWriter();
         finalResponse.add("data", res);
@@ -808,9 +811,9 @@ public class StorageMethods extends Storage{
         JsonArray conversations=new JsonArray();
         if(message.size()!=0){
             Set<String> keys=message.keySet();
-            System.out.println(keys);
+//            System.out.println(keys);
             for(String key: keys){
-                System.out.println(key);
+//                System.out.println(key);
                 JsonObject obj=new JsonObject();
                 obj.addProperty("username",key);
                 obj.addProperty("conversationid",message.get(key));
@@ -818,7 +821,7 @@ public class StorageMethods extends Storage{
             }
         }
         res.add("data",conversations);
-        System.out.println("Message Size  : "+conversations.size());
+//        System.out.println("Message Size  : "+conversations.size());
         response.setContentType("application/json");
         PrintWriter out=response.getWriter();
         res.addProperty("Conversations", true);
@@ -837,10 +840,10 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         newMessage.addProperty("message",content);
         messages.get(conversationId).add("M"+(messages.get(conversationId).size()+1),newMessage);
-        System.out.println("Getting message conversation : "+conversationId);
+//        System.out.println("Getting message conversation : "+conversationId);
         MessagesQueue.add(conversationId);
         res.add("data",messages.get(conversationId));
-        System.out.println("Message Size  : "+messages.get(conversationId).size());
+//        System.out.println("Message Size  : "+messages.get(conversationId).size());
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Added Successful");
@@ -858,10 +861,10 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         newMessage.addProperty("message","");
         messages.get(conversationId).add(messageId,newMessage);
-        System.out.println("Delete message conversation : "+conversationId);
+//        System.out.println("Delete message conversation : "+conversationId);
         MessagesQueue.add(conversationId);
         res.add("data",messages.get(conversationId));
-        System.out.println("Message Size  : "+messages.get(conversationId).size());
+//        System.out.println("Message Size  : "+messages.get(conversationId).size());
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Added Successful");
@@ -890,7 +893,7 @@ public class StorageMethods extends Storage{
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
-        System.out.println("Getting message conversation : "+conversationId);
+//        System.out.println("Getting message conversation : "+conversationId);
         res.addProperty("data",conversationId);
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
@@ -911,9 +914,9 @@ public class StorageMethods extends Storage{
         if(!users.containsKey(user2)){
             Database.loginUser(user2);
         }
-        System.out.println("All Users Logined");
+//        System.out.println("All Users Logined");
         Conversation newConversation=new Conversation(user1,user2,conversationId);
-        System.out.println("New Conversation Id + "+conversationId);
+//        System.out.println("New Conversation Id + "+conversationId);
         addConversationstoUsers(user1,user2,conversationId);
 //        Storage.newConversationQueue.add(conversationId);
         try {
@@ -926,10 +929,10 @@ public class StorageMethods extends Storage{
         }
         JsonObject res=new JsonObject();
         JsonObject finalResponse=new JsonObject();
-        System.out.println("Creating message conversation : "+conversationId);
+//        System.out.println("Creating message conversation : "+conversationId);
         MessagesQueue.add(conversationId);
         res.addProperty("data",conversationId);
-        System.out.println("Message Size  : "+messages.get(conversationId).size());
+//        System.out.println("Message Size  : "+messages.get(conversationId).size());
         PrintWriter out=response.getWriter();
         res.addProperty("Messages", true);
         res.addProperty("message", "Messages Created Successful");
@@ -960,7 +963,7 @@ public class StorageMethods extends Storage{
         String editLikeSql="";
         String likeKey = editLikeQueue.poll();
         while (likeKey!=null){
-            System.out.println("Updating Comment " + likeKey);
+//            System.out.println("Updating Comment " + likeKey);
 //            editLikeSql=editLikeSql+"SET ";
             Like likeData = likes.get(likeKey);
 //            editLikeSql=editLikeSql+"comment='"+commentData.comment+"' ";
@@ -968,7 +971,7 @@ public class StorageMethods extends Storage{
 //            System.out.println(editLikeSql);
 //            if(editLikeSql.length()>0){
                 Database.updateLikes(likeKey,likeData.status,likeData.username);
-                System.out.println("Data Added Successfully");
+//                System.out.println("Data Added Successfully");
 //            }
             likeKey = editLikeQueue.poll();
         }

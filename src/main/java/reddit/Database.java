@@ -23,7 +23,7 @@ public class Database {
 			connection = DriverManager.getConnection(dbURL + dbName, dbUsername, dbPassword);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Database Connected Error");
+//			System.out.println("Database Connected Error");
 		}
 	}
 	public static void initializeDatabase(){
@@ -37,7 +37,7 @@ public class Database {
 			connection = DriverManager.getConnection(dbURL + dbName, dbUsername, dbPassword);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Database Connected Error");
+//			System.out.println("Database Connected Error");
 		}
 	}
 
@@ -179,7 +179,7 @@ public class Database {
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();
 		res.add("data",convertToJSONPosts(rs));
-		System.out.println("Added");
+//		System.out.println("Added");
 		return res;
 	}
 	public static synchronized JsonObject getAllPostsExcept(String username) throws Exception {
@@ -241,7 +241,7 @@ public class Database {
 	}
 
 	public static synchronized void postBatchLikes(String sql) throws Exception{
-		sql="insert into likes(likeid,contentid,username,status,comment) values "+ sql+" RETURNING *;";
+		sql="insert into likes(likeid,postid,username,status,commentid) values "+ sql+" RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
@@ -284,11 +284,12 @@ public class Database {
 			loginUser(created_by);
 			StorageMethods.addPostToUsers(created_by, postId);
 		}
-		getLikesForContent(postId);
+
 		JsonObject res=getCommentsForPosts(postId);
+		getLikesForContent(postId);
 	}
-	public static void getLikesForContent(String contentId) throws Exception{
-		String sql="select * from likes where contentid='"+contentId+"';";
+	public static void getLikesForContent(String postId) throws Exception{
+		String sql="select * from likes where postid='"+postId+"';";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 		convertToJSONLikes(resultSet);
@@ -317,7 +318,7 @@ public class Database {
 	}
 	public static synchronized void updateMessage(String conversationId,JsonObject message) throws Exception{
 		String sql="Update messages set messages='"+message+"' where conversationid='"+conversationId+"' RETURNING *;";
-		System.out.println(sql);
+//		System.out.println(sql);
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
@@ -366,7 +367,7 @@ public class Database {
 				if(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase().equalsIgnoreCase("childcomments")) {
 //					System.out.println("Child Comment here" +resultSet.getString(i+1));
 					Array s=resultSet.getArray(i+1);
-					System.out.println(Arrays.asList((String[]) s.getArray()));
+//					System.out.println(Arrays.asList((String[]) s.getArray()));
 					String news=resultSet.getString(i+1);
 					childsNew.addAll(Arrays.asList((String[]) s.getArray()));
 //					if(s.length()>2) {
@@ -400,7 +401,7 @@ public class Database {
 			if(childsNew.size()!=0) {
 				getChildComments(childsNew);
 			}
-			System.out.println(((Object)childsNew).getClass().getSimpleName()+" "+childsNew.size());
+//			System.out.println(((Object)childsNew).getClass().getSimpleName()+" "+childsNew.size());
 			addToInMemoryComments(obj,status,childsNew);
 			jsonArray.add(obj);
 		}
@@ -417,7 +418,7 @@ public class Database {
 			}
 		}
 		sql=sql+") order by created_at;";
-		System.out.println(sql);
+//		System.out.println(sql);
 		JsonObject res=new JsonObject();
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
@@ -440,33 +441,38 @@ public class Database {
 
 	public synchronized static void addToInMemoryLikes(JsonObject likeData) throws Exception{
 		String username = likeData.get("username").getAsString();
-		Boolean comment = likeData.get("comment").getAsString().equalsIgnoreCase("t");
+		String commentid;
+		if(likeData.get("commentid").isJsonNull()){
+			commentid=null;
+		}else{
+			commentid = likeData.get("commentid").getAsString();
+		}
+
 		Boolean status = likeData.get("status").getAsString().equalsIgnoreCase("t");
-		String contentId=likeData.get("contentid").getAsString();
+		String postid=likeData.get("postid").getAsString();
 		String likeid=likeData.get("likeid").getAsString();
 		String created_at=likeData.get("created_at").getAsString();
 		String updated_at=likeData.get("updated_at").getAsString();
-		if(comment){
-			Like newLike=new Like(likeid,contentId,username,status,true,created_at,updated_at);
-			StorageMethods.addCommentLikes(likeid,contentId,newLike);
-			if(StorageMethods.isCommentInComments(contentId)) {
-				System.out.println(contentId + " " + likeid);
-				StorageMethods.addLikeToComment(likeid, contentId);
+
+			Like newLike=new Like(likeid,postid,username,status,commentid,created_at,updated_at);
+			StorageMethods.addPostLikes(likeid,postid,newLike);
+			if(StorageMethods.isPostinPosts(postid)) {
+//				System.out.println(postid + " " + likeid);
+				StorageMethods.addLikeToPosts(likeid, postid);
 			}else{
-				getCommentId(contentId);
-				StorageMethods.addLikeToComment(contentId, likeid);
+				getPostID(postid);
+				StorageMethods.addLikeToPosts(postid, likeid);
 			}
-		}else{
-			Like newLike=new Like(likeid,contentId,username,status,false,created_at,updated_at);
-			StorageMethods.addPostLikes(likeid,contentId,newLike);
-			if(StorageMethods.isPostinPosts(contentId)) {
-				System.out.println(contentId + " " + likeid);
-				StorageMethods.addLikeToPosts(likeid, contentId);
-			}else{
-				getPostID(contentId);
-				StorageMethods.addLikeToPosts(contentId, likeid);
+
+			if(commentid!=null){
+				if(StorageMethods.isCommentInComments(commentid)){
+					StorageMethods.addLikeToComment(likeid,commentid);
+				}else{
+					getCommentId(commentid);
+					StorageMethods.addLikeToComment(likeid,commentid);
+				}
 			}
-		}
+
 
 	}
 
@@ -482,7 +488,7 @@ public class Database {
 		}
 		JsonArray childcomments=commentData.get("childcomments").getAsJsonArray();
 
-		System.out.println("Childs Here are"+ children);
+//		System.out.println("Childs Here are"+ children);
 		String postId=commentData.get("postid").getAsString();
 		Comments comments = new Comments(commentID, comment, username,postId,parrent,children, created_at, updated_at);
 		StorageMethods.addCommentToCommentByPosts(postId,comments);
@@ -494,7 +500,7 @@ public class Database {
 				StorageMethods.addCommentToPosts(commentID, postId);
 
 		}
-		getLikesForContent(commentID);
+//		getLikesForContent(postId);
 	}
 	public static synchronized void getPostID(String postID) throws  Exception{
 		String sql="select * from posts where postid='"+postID+"';";
@@ -574,7 +580,7 @@ public class Database {
 
 
 	public static synchronized JsonObject getMyMessages(String username) throws Exception{
-		System.out.println("Getting The Messages");
+//		System.out.println("Getting The Messages");
 		String sql="select * from conversations where user1='"+username+"' or user2='"+username+"';";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);

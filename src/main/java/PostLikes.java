@@ -25,16 +25,18 @@ public class PostLikes extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username=SessionManager.validateSession(request,response);
 		if(username!=null) {
-			String contentid = request.getParameter("contentid");
+			String postid = request.getParameter("postid");
+			String commentid = null;
 			boolean status = Boolean.parseBoolean(request.getParameter("status"));
 			try {
-				if (StorageMethods.isPostinPosts(contentid)) {
-					StorageMethods.addLikesToPosts(contentid, status, username, request, response);
+				if (StorageMethods.isPostinPosts(postid)) {
+					StorageMethods.addLikesToPosts(postid,commentid, status, username, request, response);
 				} else {
-					StorageMethods.addPostMemory(contentid);
-					StorageMethods.addLikesToPosts(contentid, status, username, request, response);
+					StorageMethods.addPostMemory(postid);
+					StorageMethods.addLikesToPosts(postid,commentid, status, username, request, response);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				StorageMethods.throwUnknownError(request, response);
 			}
 		}else{

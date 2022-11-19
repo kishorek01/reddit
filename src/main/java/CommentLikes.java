@@ -26,19 +26,21 @@ public class CommentLikes extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username=SessionManager.validateSession(request,response);
 		if(username!=null) {
-			String contentid = request.getParameter("contentid");
+			String commentid = request.getParameter("commentid");
+			String postid = request.getParameter("postid");
 			boolean status = Boolean.parseBoolean(request.getParameter("status"));
 			PrintWriter out = response.getWriter();
 				try {
-					if (StorageMethods.isCommentInComments(contentid)) {
-						StorageMethods.addLikesToComments(contentid, status, username, request, response);
+					if (StorageMethods.isCommentInComments(commentid)) {
+						StorageMethods.addLikesToComments(postid,commentid, status, username, request, response);
 					} else {
-						StorageMethods.addCommentMemory(contentid);
-						StorageMethods.addLikesToComments(contentid, status, username, request, response);
+						StorageMethods.addCommentMemory(commentid);
+						StorageMethods.addLikesToComments(postid,commentid, status, username, request, response);
 					}
 
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					StorageMethods.throwUnknownError(request, response);
 				}
 
