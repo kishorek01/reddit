@@ -97,7 +97,6 @@ document.getElementById("messageArea").innerHTML+="<div class=\"messageReal\" id
   }
   }
      document.getElementById("messageArea").scrollTop = document.getElementById("messageArea").scrollHeight;
-
   }
 function getMessages(){
 let querySearch=window.location.search;

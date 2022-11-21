@@ -71,7 +71,7 @@ public class Database {
 		String sql="delete from posts where postid='"+postId+"';";
 		statement=connection.createStatement();
 		statement.execute(sql);
-		sql="delete from likes where contentid='"+postId+"';";
+		sql="delete from likes where postid='"+postId+"';";
 		statement=connection.createStatement();
 		statement.execute(sql);
 	}
