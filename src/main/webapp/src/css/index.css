@@ -134,7 +134,13 @@ padding:0;
 margin:0;
 }
 
-
+.highlighttag{
+font-size: 17px;
+font-style: italic;
+cursor:pointer;
+color: blue;
+text-decoration: underline;
+}
 .postContent{
 width: 100%;
 white-space: nowrap;
@@ -404,3 +410,4 @@ color:purple;
     margin-right: 0px;
     width:500px;
     }
+
