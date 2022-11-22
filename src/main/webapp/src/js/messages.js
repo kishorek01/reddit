@@ -36,6 +36,7 @@ axios.get('/getConversations')
 
       }else{
   data=response.data.data;
+  data.data.sort(custom_sort);
   if(data.data.length==0){
     document.getElementById("messageArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Messages Found</p></div>";
   }else{
@@ -51,7 +52,9 @@ axios.get('/getConversations')
     console.log(error);
   });
 }
-
+function custom_sort(a, b) {
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+}
 function openMessage(conversationid){
 let urlParams =window.origin+"/chat.html?id="+conversationid;
 //console.log(urlParams);

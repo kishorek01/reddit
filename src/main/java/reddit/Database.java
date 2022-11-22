@@ -298,10 +298,11 @@ public class Database {
 		String conversationId = messageData.get("conversationid").getAsString();
 		String user1 = messageData.get("user1").getAsString();
 		String user2 = messageData.get("user2").getAsString();
-		StorageMethods.addConversationstoUsers(user1,user2,conversationId);
-		Conversation convo=new Conversation(user1,user2,conversationId);
-		Storage.conversations.put(conversationId,convo);
 		String created_at = messageData.get("created_at").getAsString();
+		String updated_at = messageData.get("updated_at").getAsString();
+		StorageMethods.addConversationstoUsers(user1,user2,conversationId);
+		Conversation convo=new Conversation(user1,user2,conversationId,created_at,updated_at);
+		Storage.conversations.put(conversationId,convo);
 		String sql="Select * from messages where conversationid='"+conversationId+"';";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
@@ -321,12 +322,18 @@ public class Database {
 //		System.out.println(sql);
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
+
+		sql="Update conversations set conversationid='"+conversationId+"' where conversationid='"+conversationId+"' RETURNING *;";
+//		System.out.println(sql);
+		statement1=connection.createStatement();
+		ResultSet resultSet1=statement1.executeQuery(sql);
 	}
 	public static synchronized void addMessagesToInMemory(ResultSet resultSet) throws Exception{
 		while (resultSet.next()){
 			String conversationId=resultSet.getString("conversationid");
 			JsonElement message=JsonParser.parseString(resultSet.getString("messages").toString());
-			StorageMethods.addMessagesToMemory(conversationId,message);
+			String created_at=resultSet.getString("created_at");
+			StorageMethods.addMessagesToMemory(conversationId,message,created_at);
 		}
 	}
 		public static synchronized JsonObject getCommentsForPosts(String postId) throws Exception {

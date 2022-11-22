@@ -798,6 +798,8 @@ public class StorageMethods extends Storage{
                 JsonObject obj=new JsonObject();
                 obj.addProperty("username",key);
                 obj.addProperty("conversationid",message.get(key));
+                obj.addProperty("created_at",Storage.conversations.get(message.get(key)).created_at);
+                obj.addProperty("updated_at",Storage.conversations.get(message.get(key)).updated_at);
                 conversations.add(obj);
             }
         }
@@ -815,11 +817,16 @@ public class StorageMethods extends Storage{
 
     public static synchronized void postMessage(String conversationId,String username,String content,HttpServletRequest request, HttpServletResponse response) throws Exception{
         JsonObject res=new JsonObject();
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
         JsonObject finalResponse=new JsonObject();
         JsonObject newMessage=new JsonObject();
         newMessage.addProperty("username",username);
         response.setContentType("application/json");
         newMessage.addProperty("message",content);
+        newMessage.addProperty("created_at",date);
         messages.get(conversationId).add("M"+(messages.get(conversationId).size()+1),newMessage);
 //        System.out.println("Getting message conversation : "+conversationId);
         MessagesQueue.add(conversationId);
@@ -855,7 +862,7 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
-    public static synchronized void addMessagesToMemory(String conversationId, JsonElement message) throws Exception{
+    public static synchronized void addMessagesToMemory(String conversationId, JsonElement message,String created_at) throws Exception{
         messages.put(conversationId,message.getAsJsonObject());
     }
 
@@ -895,8 +902,12 @@ public class StorageMethods extends Storage{
         if(!users.containsKey(user2)){
             Database.loginUser(user2);
         }
+        LocalDateTime myDateObj = LocalDateTime.now();
+        String date=myDateObj.toString();
+        date=date.replace('T',' ');
+        date=date+"+05:30";
 //        System.out.println("All Users Logined");
-        Conversation newConversation=new Conversation(user1,user2,conversationId);
+        Conversation newConversation=new Conversation(user1,user2,conversationId,date,date);
 //        System.out.println("New Conversation Id + "+conversationId);
         addConversationstoUsers(user1,user2,conversationId);
 //        Storage.newConversationQueue.add(conversationId);
