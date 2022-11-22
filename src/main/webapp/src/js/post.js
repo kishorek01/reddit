@@ -412,6 +412,10 @@ else{
 //response.data.data.comments.sort(custom_sort);
 
 showComments(response.data.data.comments,likesobj);
+if(localStorage.getItem("scrollY")){
+document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
+localStorage.removeItem("scrollY");
+}
   }
   }
 }
@@ -463,8 +467,9 @@ axios.post('/postComments',params)
   },3000);
 
       }else{
+      document.getElementById("modalArea").style.display="none";
       document.getElementById("createPostInput").value="";
-window.location.reload();
+getPostDetail();
 
   }})
   .catch(function (error) {
@@ -510,9 +515,10 @@ axios.post('/childComments',params)
   },3000);
 
       }else{
+      document.getElementById("modalChildArea").style.display="none";
       document.getElementById("createChildPostInput").value="";
       document.getElementById("childCommentId").value="";
-window.location.reload();
+getPostDetail();
 
   }})
   .catch(function (error) {
@@ -529,12 +535,15 @@ window.location.reload();
 function openEditComment(commentId,comment){
 document.getElementById("modalEditArea").style.display="block";
 document.getElementById("editCommentId").value=commentId;
+localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
+console.log(document.getElementById("messageArea").scrollTop);
 document.getElementById("EditCommentInput").value=comment;
 }
 
 function closeEditComment(){
 document.getElementById("modalEditArea").style.display="none";
 document.getElementById("EditCommentInput").value="";
+localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
 document.getElementById("editCommentId").value="";
 }
 
@@ -559,9 +568,10 @@ axios.post('/editComment',params)
   },3000);
 
       }else{
+      document.getElementById("modalEditArea").style.display="none";
       document.getElementById("EditCommentInput").value="";
       document.getElementById("editCommentId").value="";
-window.location.reload();
+getPostDetail();
 
   }})
   .catch(function (error) {
@@ -576,11 +586,13 @@ function openDeleteComment(commentId,comment){
 document.getElementById("modalDeleteArea").style.display="block";
 document.getElementById("deleteCommentId").value=commentId;
 document.getElementById("deleteCommentInput").value=comment;
+localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
 }
 
 function closeDeleteComment(){
 document.getElementById("modalDeleteArea").style.display="none";
 document.getElementById("deleteCommentInput").value="";
+localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
 document.getElementById("deleteCommentId").value="";
 }
 
@@ -602,9 +614,10 @@ axios.post('/deleteComment',params)
   },3000);
 
       }else{
+      document.getElementById("modalDeleteArea").style.display="none";
       document.getElementById("deleteCommentInput").value="";
       document.getElementById("deleteCommentId").value="";
-window.location.reload();
+getPostDetail();
 
   }})
   .catch(function (error) {

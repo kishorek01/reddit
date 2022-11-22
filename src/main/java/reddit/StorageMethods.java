@@ -590,24 +590,6 @@ public class StorageMethods extends Storage{
         while (commentKey != null) {
             String subsqlposts = "";
             String subSqlComments = "";
-            if (commentKey != null) {
-
-                if (commentKey.contains("post") || commentKey.contains("Post")) {
-//                    System.out.println("Updating Post Comment " + commentKey);
-
-                    if (postssql.contains(")")) {
-                        postssql = postssql + ",";
-                    }
-                    subsqlposts = subsqlposts + "(";
-                    Comments commentData = comments.get(commentKey);
-                    subsqlposts = subsqlposts + "'" + commentKey + "',";
-                    subsqlposts = subsqlposts + "'" + commentData.username + "',";
-                    subsqlposts = subsqlposts + "'" + commentData.comment + "',";
-                    subsqlposts = subsqlposts + "'" + commentData.postid + "'";
-                    subsqlposts = subsqlposts + ")";
-//                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
-                    postssql = postssql + subsqlposts;
-                } else {
 //                    System.out.println("Updating Comment Comment " + commentKey);
                         if (commentsql.contains(")")) {
                             commentsql = commentsql + ",";
@@ -616,24 +598,23 @@ public class StorageMethods extends Storage{
                         Comments commentData = comments.get(commentKey);
                         subSqlComments = subSqlComments + "'" + commentKey + "',";
                         subSqlComments = subSqlComments + "'" + commentData.username + "',";
-                        subSqlComments = subSqlComments + "'" + commentData.parentcomment + "',";
+                        if(commentData.parentcomment!=null) {
+                            subSqlComments = subSqlComments + "'" + commentData.parentcomment + "',";
+                        }else{
+                            subSqlComments = subSqlComments + "" + commentData.parentcomment + ",";
+                        }
                         subSqlComments = subSqlComments + "'" + commentData.comment + "',";
                         subSqlComments = subSqlComments + "'" + commentData.postid + "'";
                         subSqlComments = subSqlComments + ")";
-                        Database.appendChildComment(commentData.parentcomment,commentKey,commentData.postid);
+                        if(commentData.parentcomment!=null) {
+                            Database.appendChildComment(commentData.parentcomment, commentKey, commentData.postid);
+                        }
 //                    Database.postComments(commentKey, commentData.username, commentData.comment, commentData.postid);
                         commentsql = commentsql + subSqlComments;
-                }
-            }
             commentKey = newCommentQueue.poll();
         }
 //            System.out.println("Create new post Comment query "+postssql);
 //        System.out.println("Create new CHild comment query "+commentsql);
-
-            if (postssql.length() > 0) {
-                Database.postBatchComments(postssql);
-//                System.out.println("Post Data Added Successfully");
-            }
             if(commentsql.length()>0){
                 Database.postChildCommentsBatch(commentsql);
 //                System.out.println("Comment Data Added Successfully");

@@ -13,34 +13,38 @@ public class TimerSchedule extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("the Scheduler is running"+ new Date());
-        if(Storage.newCommentQueue.size()!=0 || Storage.newPostQueue.size()!=0 || Storage.editPostQueue.size()!=0 || Storage.editCommentQueue.size()!=0 || Storage.newLikeQueue.size()!=0 || Storage.editLikeQueue.size()!=0 || Storage.MessagesQueue.size()!=0){
+
             try {
                 if(Storage.newPostQueue.size()!=0) {
                     StorageMethods.updateDBPosts();
+                    System.out.println("All New Posts Created in DB at "+ new Date());
                 }if(Storage.newCommentQueue.size()!=0) {
                     StorageMethods.updateDBComments();
+                    System.out.println("All New Comments Created in DB at "+ new Date());
                 }
                 if(Storage.editCommentQueue.size()!=0){
                     StorageMethods.updateEditDBComments();
+                    System.out.println("All Comments Edited in DB at "+ new Date());
                 }
                 if(Storage.editPostQueue.size()!=0){
                     StorageMethods.UpdateEditDBPosts();
+                    System.out.println("All Posts Edited in DB at "+ new Date());
                 }
                 if(Storage.newLikeQueue.size()!=0){
                     StorageMethods.createNewLike();
+                    System.out.println("All Likes Created in DB at "+ new Date());
                 }
                 if(Storage.editLikeQueue.size()!=0){
                     StorageMethods.UpdateLikeDB();
+                    System.out.println("All Likes Edited in DB at "+ new Date());
                 }
                 if(Storage.MessagesQueue.size()!=0){
                     StorageMethods.updateMessagesDB();
+                    System.out.println("All Messages Created in DB at "+ new Date());
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }else{
-            System.out.println("No Data To Update");
-        }
+
     }
 }

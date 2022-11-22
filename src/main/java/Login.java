@@ -28,12 +28,12 @@ public class Login extends HttpServlet {
         String password = request.getParameter("password");
 		try {
 			if (!StorageMethods.isUserInStorage(username)) {
-				System.out.println("Getting From DB Memory");
+//				System.out.println("Getting From DB Memory");
 
 				getFromDB(request, response, username, password);
 			} else {
 
-				System.out.println("Getting From In Memory");
+//				System.out.println("Getting From In Memory");
 				User user = StorageMethods.getUser(username);
 				if (user.password.equals(password)) {
 
@@ -49,7 +49,7 @@ public class Login extends HttpServlet {
 	}
 
 	protected synchronized void getFromDB(HttpServletRequest request,HttpServletResponse response,String username,String password) throws ServletException,IOException{
-		System.out.println("Getting From DB");
+//		System.out.println("Getting From DB");
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out=response.getWriter();
@@ -57,7 +57,7 @@ public class Login extends HttpServlet {
 		JsonObject finalResponse = new JsonObject();
 		Database.initializeDatabase();
 		try {
-			System.out.println("Getting from db");
+//			System.out.println("Getting from db");
 			JsonObject userData= Database.loginUser(username);
 //			System.out.println(userData.has("username"));
 			if(userData.has("username")){

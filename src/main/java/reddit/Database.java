@@ -277,13 +277,13 @@ public class Database {
 		if (!StorageMethods.isPostinPosts(postId)) {
 			StorageMethods.addPost(postId, post);
 		}
-		if(StorageMethods.isUserInStorage(created_by)) {
-//			System.out.println(postId+" "+created_by);
+//	if(StorageMethods.isUserInStorage(created_by)) {
+//////			System.out.println(postId+" "+created_by);
 			StorageMethods.addPostToUsers(created_by, postId);
-		}else{
-			loginUser(created_by);
-			StorageMethods.addPostToUsers(created_by, postId);
-		}
+////		}else{
+//			loginUser(created_by);
+//			StorageMethods.addPostToUsers(created_by, postId);
+////		}
 
 		JsonObject res=getCommentsForPosts(postId);
 		getLikesForContent(postId);
