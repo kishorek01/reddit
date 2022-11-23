@@ -15,6 +15,9 @@
 
   <script>
         getMyPosts();
+         function changesort(){
+        getMyPosts();
+        }
     </script>
 
 </head>
@@ -25,6 +28,7 @@
   <a href="messages.html">Messages</a>
   <a onclick="logout()" href="#">Logout</a>
 </div>
+
 <div class="deleteArea" id="deleteArea">
   <div class="modal">
     <h2>Confirm Delete Post</h2>
@@ -57,9 +61,13 @@
     </div>
   </div>
 </div>
-
+<select style="top: 17px;right: 301px;" id="sortType" onchange="changesort()" value="new" class="selectBox">
+  <option value="new">New Post</option>
+  <option value="top">Top Post</option>
+</select>
+<button onclick="openCreateModel()" class="createPost">Create Post</button>
 <div id="postArea" class="postArea">
-  <button onclick="openCreateModel()" class="createPost">Create Post</button>
+
 </div>
 
 

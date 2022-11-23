@@ -175,13 +175,53 @@ public class Database {
 
 	public static synchronized JsonObject getMyPosts(String username) throws Exception {
 //		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
-		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by!='"+username+"' order by p.created_at desc nulls last;";
+		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by p.created_at desc nulls last;";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();
 		res.add("data",convertToJSONPosts(rs));
 //		System.out.println("Added");
 		return res;
+	}
+
+	public static synchronized void getMySortedPosts(String username,String sortType,HttpServletRequest request,HttpServletResponse response) throws Exception {
+//		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
+		String sql;
+		if(sortType.equalsIgnoreCase("top")){
+			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by l.count desc nulls last,p.created_at desc;";
+		}else{
+			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by p.created_at desc nulls last;";
+		}
+		Statement stmt=connection.createStatement();
+		ResultSet rs=stmt.executeQuery(sql);
+		JsonArray postData;
+		JsonObject res=new JsonObject();
+
+		response.setContentType("application/json");
+		JsonObject finalResponse=new JsonObject();
+		ArrayList<Posts> arr=new ArrayList<>();
+		JsonObject commentData=new JsonObject();
+		while (rs.next()) {
+			String postid=rs.getString("postid");
+			StorageMethods.posts.get(postid).countLike= rs.getInt("count");
+			arr.add(StorageMethods.posts.get(postid));
+			if(StorageMethods.commentsByPostId.containsKey(postid) && StorageMethods.commentsByPostId.get(postid).size()>0) {
+				commentData.add(postid, new Gson().toJsonTree(StorageMethods.commentsByPostId.get(postid)).getAsJsonObject());
+			}
+		}
+
+
+
+		postData = new Gson().toJsonTree(arr).getAsJsonArray();
+		res.add("data",postData);
+		res.add("commentData",commentData);
+		res.addProperty("postget", true);
+		res.addProperty("message", "Post get Successful");
+		finalResponse.add("data", res);
+		finalResponse.addProperty("code", 200);
+		PrintWriter out=response.getWriter();
+		out.print(finalResponse);
+		out.flush();
 	}
 
 

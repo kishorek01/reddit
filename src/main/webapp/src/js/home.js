@@ -153,8 +153,13 @@ axios.get('/getAllPosts',{params:{"sort_type":val}})
 
 function getMyPosts(){
 let data=[];
-//console.log("Getting My Posts");
-axios.get('/getMyPosts')
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
+axios.get('/getMyPosts',{params:{"sort_type":val}})
   .then(function (response) {
   if(response.data.code==500){
   toastr["error"](response.data.data.message, "Error");
@@ -164,6 +169,8 @@ axios.get('/getMyPosts')
   },3000);
 
   }else{
+
+
   data=response.data.data.data;
 //    console.log(data);
 
@@ -172,6 +179,7 @@ axios.get('/getMyPosts')
   document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
   }else
   {
+  document.getElementById("postArea").innerHTML="";
 //    data.sort(custom_sort);
 
   for(var i=0;i<data.length;i++){

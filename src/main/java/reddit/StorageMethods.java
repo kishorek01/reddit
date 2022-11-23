@@ -336,6 +336,7 @@ public class StorageMethods extends Storage{
         }
         newLikeQueue.add(LikeId);
         posts.get(postid).likes.add(LikeId);
+        posts.get(postid).countLike++;
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
         res.addProperty("Edited", true);
