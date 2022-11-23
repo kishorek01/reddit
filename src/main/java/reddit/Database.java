@@ -188,7 +188,7 @@ public class Database {
 	public static synchronized void getSortedPosts(String sortType, HttpServletRequest request,HttpServletResponse response) throws Exception{
 		String sql;
 		if(sortType.equalsIgnoreCase("top")){
-			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by l.count desc nulls last,p.created_at;";
+			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by l.count desc nulls last,p.created_at desc;";
 		}else{
 			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by p.created_at desc nulls last;";
 		}
