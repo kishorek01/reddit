@@ -10,32 +10,29 @@ import java.io.IOException;
 /**
  * Servlet implementation class PostComments
  */
-public class EditLike extends HttpServlet {
+public class SortPost extends HttpServlet {
     private static final long serialVersionUID = 1L;
     Gson gson = new Gson();
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public EditLike() {
+    public SortPost() {
         super();
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username=SessionManager.validateSession(request,response);
         if(username!=null) {
-            String likeid = request.getParameter("likeid");
-            String postid = request.getParameter("postid");
-            String commentid = request.getParameter("commentid");
-            System.out.println(commentid);
-            boolean status = Boolean.parseBoolean(request.getParameter("status"));
-
+            String sortType = request.getParameter("sort_type");
+            if(sortType==null){
+                sortType="new";
+            }
             try {
-                System.out.println("Edit Like Here");
-//			JsonObject commentData=Database.postComments(username,comment,postid);
-                StorageMethods.editLikes(likeid, status, postid,commentid, request, response);
+                System.out.println("Sorting Post Here");
+                StorageMethods.sortAllPosts(sortType,request,response);
             } catch (Exception e) {
                 StorageMethods.throwUnknownError(request, response);
             }

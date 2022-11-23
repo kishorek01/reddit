@@ -1,7 +1,10 @@
 package reddit;
 
 import com.google.gson.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -171,7 +174,8 @@ public class Database {
 	}
 
 	public static synchronized JsonObject getMyPosts(String username) throws Exception {
-		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
+//		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
+		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by!='"+username+"' order by p.created_at desc nulls last;";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();
@@ -179,8 +183,38 @@ public class Database {
 //		System.out.println("Added");
 		return res;
 	}
+
+
+	public static synchronized void getSortedPosts(String sortType, HttpServletRequest request,HttpServletResponse response) throws Exception{
+		String sql;
+		if(sortType.equalsIgnoreCase("top")){
+			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by l.count desc nulls last,p.created_at;";
+		}else{
+			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by p.created_at desc nulls last;";
+		}
+
+		Statement stmt=connection.createStatement();
+		ResultSet rs=stmt.executeQuery(sql);
+		JsonArray postData;
+		response.setContentType("application/json");
+		JsonObject finalResponse=new JsonObject();
+		ArrayList<Posts> arr=new ArrayList<>();
+		while (rs.next()) {
+			String postid=rs.getString("postid");
+			StorageMethods.posts.get(postid).countLike= rs.getInt("count");
+			arr.add(StorageMethods.posts.get(postid));
+		}
+		postData = new Gson().toJsonTree(arr).getAsJsonArray();
+		finalResponse.addProperty("postget", true);
+		finalResponse.addProperty("message", "Post get Successful");
+		finalResponse.add("data", postData);
+		finalResponse.addProperty("code", 200);
+		PrintWriter out=response.getWriter();
+		out.print(finalResponse);
+		out.flush();
+	}
 	public static synchronized JsonObject getAllPostsExcept(String username) throws Exception {
-		String sql="select * from posts where created_by!='"+username+"' order by created_at desc;";
+		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by!='"+username+"';";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();
@@ -188,7 +222,7 @@ public class Database {
 		return res;
 	}
 	public static synchronized JsonObject getAllPosts() throws Exception {
-		String sql="select * from posts order by created_at desc;";
+		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by p.created_at desc nulls last;";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();
@@ -270,7 +304,13 @@ public class Database {
 		String created_at = postsData.get("created_at").getAsString();
 		String updated_at = postsData.get("updated_at").getAsString();
 		String postId = postsData.get("postid").getAsString();
-		Posts post = new Posts(postId, content, created_by, created_at, updated_at);
+		int countLike;
+		if(postsData.get("count").isJsonNull()){
+			countLike=0;
+		}else{
+			countLike = postsData.get("count").getAsInt();
+		}
+		Posts post = new Posts(postId, content, created_by, created_at, updated_at,countLike);
 		if (!StorageMethods.isPostinPosts(postId)) {
 			StorageMethods.addPost(postId, post);
 		}
@@ -466,10 +506,10 @@ public class Database {
 
 			if(commentid!=null){
 				if(StorageMethods.isCommentInComments(commentid)){
-					StorageMethods.addLikeToComment(likeid,commentid);
+					StorageMethods.addLikeToComment(likeid,commentid,status);
 				}else{
 					getCommentId(commentid);
-					StorageMethods.addLikeToComment(likeid,commentid);
+					StorageMethods.addLikeToComment(likeid,commentid,status);
 				}
 			}
 
@@ -503,7 +543,8 @@ public class Database {
 //		getLikesForContent(postId);
 	}
 	public static synchronized void getPostID(String postID) throws  Exception{
-		String sql="select * from posts where postid='"+postID+"';";
+//		String sql="select * from posts where postid='"+postID+"';";
+		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.postid='"+postID+"';";
 		Statement stmt=connection.createStatement();
 		ResultSet rs=stmt.executeQuery(sql);
 		JsonObject res=new JsonObject();

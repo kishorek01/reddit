@@ -25,8 +25,15 @@ public class GetAllPosts extends HttpServlet {
 		String username=SessionManager.validateSession(request,response);
 		if(username!=null) {
 			try {
-			StorageMethods.getAllPosts(request,response);
+//			StorageMethods.getAllPosts(request,response);
+				String sortType = request.getParameter("sort_type");
+				System.out.println(sortType);
+				if(sortType==null){
+					sortType="new";
+				}
+				StorageMethods.sortAllPosts(sortType,request,response);
 		}catch(Exception e) {
+				e.printStackTrace();
 			StorageMethods.throwUnknownError(request,response);
 		}
 		}else{

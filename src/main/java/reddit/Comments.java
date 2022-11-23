@@ -11,6 +11,8 @@ public class Comments  {
     public String created_at;
     public String updated_at;
     public String parentcomment;
+    public int like;
+    public int dislike;
     public ArrayList<String> childcomments;
     public ArrayList<String> likes;
 
@@ -25,6 +27,8 @@ public class Comments  {
         this.updated_at=date;
         this.username = commentedBy;
         this.postid = postId;
+        this.like=0;
+        this.dislike=0;
         this.childcomments = new ArrayList<>();
         this.parentcomment=null;
         this.likes=new ArrayList<>();
@@ -39,6 +43,8 @@ public class Comments  {
         this.username = commentedBy;
         this.postid = postId;
         this.childcomments = childcomments;
+        this.like=0;
+        this.dislike=0;
         this.parentcomment=parentcomment;
         this.created_at=date;
         this.likes=new ArrayList<>();
@@ -48,6 +54,8 @@ public class Comments  {
         this.comment = comment;
         this.commentid=commentid;
         this.username = commentedBy;
+        this.like=0;
+        this.dislike=0;
         this.postid = postId;
         this.childcomments = childcomments;
         this.parentcomment=parentcomment;

@@ -110,7 +110,13 @@ document.getElementById("editPostInput").value="";
 function getAllPosts(){
 let data=[];
 //console.log("Getting All Posts");
-axios.get('/getAllPosts')
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
+axios.get('/getAllPosts',{params:{"sort_type":val}})
   .then(function (response) {
     if(response.data.code==500){
     toastr["error"](response.data.data.message, "Error");
@@ -126,7 +132,7 @@ axios.get('/getAllPosts')
     }else
     {
     document.getElementById("postArea").innerHTML="";
-      data.sort(custom_sort);
+//      data.sort(custom_sort);
 
   for(var i=0;i<data.length;i++){
   var postId=data[i].postid;
@@ -135,7 +141,7 @@ axios.get('/getAllPosts')
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
   }
   }
 }
@@ -166,7 +172,7 @@ axios.get('/getMyPosts')
   document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
   }else
   {
-    data.sort(custom_sort);
+//    data.sort(custom_sort);
 
   for(var i=0;i<data.length;i++){
   data[i].content = data[i].content.replace(/(\r\n|\n|\r)/gm, "");
@@ -177,7 +183,7 @@ axios.get('/getMyPosts')
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].likes.length+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
   }
   }
   }
@@ -232,7 +238,7 @@ axios.post('/createPost',params)
   let agoTime=moment(data.created_at).fromNow();
   window.location.reload();
   var postId=data.postid;
-document.getElementById("postArea").innerHTML="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.likes.length+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\')\">Delete</p></div></div>"+document.getElementById("postArea").innerHTML;
+document.getElementById("postArea").innerHTML="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\')\">Delete</p></div></div>"+document.getElementById("postArea").innerHTML;
   }
 
   }})

@@ -252,4 +252,14 @@
     <servlet-name>GetPost</servlet-name>
     <url-pattern>/getPost</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SortPost</display-name>
+    <servlet-name>SortPost</servlet-name>
+    <servlet-class>SortPost</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SortPost</servlet-name>
+    <url-pattern>/sortPost</url-pattern>
+  </servlet-mapping>
 </web-app>

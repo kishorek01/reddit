@@ -165,6 +165,7 @@ params.append('username',owner);
 params.append('postid',postid);
 params.append('likeid',likeid);
 params.append('status',false);
+params.append('commentid',null);
 axios.post('/editLike',params)
   .then(function (response) {
     if(response.data){
@@ -221,6 +222,7 @@ params.append('username',owner);
 params.append('postid',postid);
 params.append('likeid',likeid);
 params.append('status',true);
+params.append('commentid',null);
 axios.post('/editLike',params)
   .then(function (response) {
     if(response.data){

@@ -99,9 +99,14 @@ public class StorageMethods extends Storage{
             posts.get(postId).likes.add(likeId);
         }
     }
-    public static void addLikeToComment(String likeId,String commentId){
+    public static void addLikeToComment(String likeId,String commentId,Boolean status){
         if(!comments.get(commentId).likes.contains(likeId)){
             comments.get(commentId).likes.add(likeId);
+        }
+        if(status){
+            comments.get(commentId).like++;
+        }else{
+            comments.get(commentId).dislike++;
         }
     }
     public static void throwEmailAlreadyExists(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -213,12 +218,6 @@ public class StorageMethods extends Storage{
         response.setContentType("application/json");
         for(String i: myPosts){
             arr.add(posts.get(i));
-//            if(commentsByPostId.containsKey(posts.get(i).postid) && commentsByPostId.get(posts.get(i).postid).size()>0) {
-//                Set<String> keys=commentsByPostId.get(posts.get(i).postid).keySet();
-//                System.out.println("This id has comments " +posts.get(i).postid);
-//                commentData.add(posts.get(i).postid, new Gson().toJsonTree(commentsByPostId.get(posts.get(i).postid)).getAsJsonObject());
-//            }
-            //Commented FOr ONly SHowing Post in Homepage no Comments;
         }
         postData = new Gson().toJsonTree(arr).getAsJsonArray();
         finalResponse.addProperty("postget", true);
@@ -374,6 +373,11 @@ public class StorageMethods extends Storage{
         newLikeQueue.add(LikeId);
         if(!Objects.equals(commentid, "") && commentid!=null) {
         comments.get(commentid).likes.add(LikeId);
+        if(status){
+            comments.get(commentid).like++;
+        }else{
+            comments.get(commentid).dislike++;
+        }
         }
         res.add("data",new Gson().toJsonTree(likes.get(LikeId),Like.class));
         PrintWriter out=response.getWriter();
@@ -462,7 +466,7 @@ public class StorageMethods extends Storage{
         String date=myDateObj.toString();
         date=date.replace('T',' ');
         date=date+"+05:30";
-        Posts postData=new Posts(postId,content,username, date,date);
+        Posts postData=new Posts(postId,content,username, date,date,0);
         posts.put(postId,postData);
         res.add("data",new Gson().toJsonTree(postData));
         users.get(username).myPosts.add(postId);
@@ -567,13 +571,22 @@ public class StorageMethods extends Storage{
         out.flush();
     }
 
-    public static void editLikes(String likeId,Boolean status,String postid,HttpServletRequest request,HttpServletResponse response) throws IOException{
+    public static void editLikes(String likeId,Boolean status,String postid,String commentid,HttpServletRequest request,HttpServletResponse response) throws IOException{
         JsonObject res=new JsonObject();
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         likes.get(likeId).status=status;
 //        System.out.println("Edit Like here "+likes.get(likeId).status);
         likesByContentId.get(postid).get(likeId).status=status;
+        if(commentid!=null && !commentid.equals("null")){
+            if(status){
+                comments.get(commentid).like++;
+                comments.get(commentid).dislike--;
+            }else{
+                comments.get(commentid).like--;
+                comments.get(commentid).dislike++;
+            }
+        }
         res.add("data",new Gson().toJsonTree(likes.get(likeId),Like.class));
         Storage.editLikeQueue.add(likeId);
         PrintWriter out=response.getWriter();
@@ -583,6 +596,11 @@ public class StorageMethods extends Storage{
         finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
+    }
+
+
+    public  static  synchronized void sortAllPosts(String sortType,HttpServletRequest request,HttpServletResponse response) throws Exception{
+            Database.getSortedPosts(sortType,request,response);
     }
 
 

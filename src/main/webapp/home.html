@@ -19,6 +19,9 @@
 <body style="padding:0px;">
 <script>
         getAllPosts();
+        function changesort(){
+        getAllPosts();
+        }
     </script>
 <div class="sidebar">
     <a class="active" href="#">Home</a>
@@ -26,6 +29,11 @@
     <a href="messages.html">Messages</a>
     <a onclick="logout()" href="#">Logout</a>
 </div>
+
+<select id="sortType" onchange="changesort()" value="new" class="selectBox">
+    <option value="new">New Post</option>
+    <option value="top">Top Post</option>
+</select>
 <div id="postArea" class="postArea">
 
 </div>
