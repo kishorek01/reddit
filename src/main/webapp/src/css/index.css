@@ -408,6 +408,14 @@ color:purple;
     border-bottom: 1px solid gray;
     margin-left: 0px;
     margin-right: 0px;
-    width:500px;
+    width:100vw;
     }
 
+.ccomment{
+padding-left:20px;
+border-left:1px solid gray;
+}
+
+.ccomment:hover{
+border-left:1px solid red;
+}

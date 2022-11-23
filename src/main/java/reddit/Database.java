@@ -1,9 +1,6 @@
 package reddit;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -401,30 +398,26 @@ public class Database {
 					JsonArray nre=new JsonArray();
 					for(String child:childsNew){
 						nre.add(child);
+						if(!nre.contains(new Gson().toJsonTree(child))) {
+							System.out.println(child);
+							getChildComments(child);
+						}
 					}
 					obj.add(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), nre);
 				}
 			}
-			if(childsNew.size()!=0) {
-				getChildComments(childsNew);
-			}
+//			if(childsNew.size()!=0) {
+//				getChildComments(childsNew);
+//			}
 //			System.out.println(((Object)childsNew).getClass().getSimpleName()+" "+childsNew.size());
 			addToInMemoryComments(obj,status,childsNew);
 			jsonArray.add(obj);
 		}
 		return jsonArray;
 	}
-	public static void getChildComments(ArrayList<String> commentIds) throws Exception {
+	public static void getChildComments(String commentId) throws Exception {
 //		System.out.println("Getting comments for comment id Array "+commentIds);
-		String sql="select * from comments where commentid in (";
-		for(int i=0;i<commentIds.size();i++){
-			String id="'"+commentIds.get(i).toString()+"'";
-			sql=sql+id;
-			if(i!=commentIds.size()-1){
-				sql=sql+",";
-			}
-		}
-		sql=sql+") order by created_at;";
+		String sql="select * from comments where commentid='"+commentId+"' order by created_at;";
 //		System.out.println(sql);
 		JsonObject res=new JsonObject();
 		Statement statement1=connection.createStatement();

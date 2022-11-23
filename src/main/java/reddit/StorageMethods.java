@@ -72,7 +72,10 @@ public class StorageMethods extends Storage{
     public static Boolean isCommentInComments(String commentID){
         return comments.containsKey(commentID);
     }
-    public static void addPostToUsers(String username,String postId){
+    public static void addPostToUsers(String username,String postId) throws Exception {
+        if(!users.containsKey(username)){
+            Database.loginUser(username);
+        }
         if(!users.get(username).myPosts.contains(postId)) {
 //            System.out.println("Adding POst"+postId+ " to inmemory of users");
             users.get(username).myPosts.add(postId);

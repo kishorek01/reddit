@@ -54,7 +54,8 @@ let parentComments=Object.keys(data)
 //  }
  }
  function createCommentFor(parent,data,fullData,mlef,likeArr,likesObj){
- var mle=50*mlef;
+ if(data!=undefined){
+ var mle=20;
  var owner=getCookie("user");
  var message=data.comment;
  if(message==null || message==""){
@@ -62,7 +63,6 @@ let parentComments=Object.keys(data)
  }
  var totlikes=0;
  var totdislikes=0;
- if(likeArr){
  for(var i=0;i<likeArr.length;i++){
  if(likeArr[i].status){
  totlikes=totlikes+1;
@@ -70,33 +70,31 @@ let parentComments=Object.keys(data)
  totdislikes=totdislikes+1;
  }
  }
- }
  var like=null;
  var likeid=null;
 // console.log(likeArr);
- if(likeArr){
  for(var i=0;i<likeArr.length;i++){
  if(likeArr[i].username==owner){
  like=likeArr[i].status;
  likeid=likeArr[i].likeid;
  }
  }
- }
  if(owner==data.username && message!="This Comment was Deleted" ){
- document.getElementById(parent).innerHTML+="<div style=\"margin-left:"+mle+"px;\" id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div></div>";
+ document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div></div>";
  }else{
-document.getElementById(parent).innerHTML+="<div style=\"margin-left:"+mle+"px;\" id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div></div>";
+document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div></div>";
 }
 if(data.childcomments.length>0){
 mlef=mlef+1;
 for(var j=0;j<data.childcomments.length;j++){
  var newlikeArr=[];
-
+  if(fullData[data.childcomments[j]]!=undefined){
    for(var k=0;k<fullData[data.childcomments[j]].likes.length;k++){
    newlikeArr.push(likesObj[fullData[data.childcomments[j]].likes[k]]);
+}
    }
-//console.log(newlikeArr)
 createCommentFor(data.commentid,fullData[data.childcomments[j]],fullData,mlef,newlikeArr,likesObj);
+}
 }
 }
  }
@@ -394,8 +392,8 @@ postid:postId
   }else{
   data=data.data;
   console.log(response.data.data);
-  let likesPost=response.data.data.likes;
-  var likesobj=response.data.data.likesobj;
+  let likesPost=response.data.data.likes || [];
+  var likesobj=response.data.data.likesobj || {};
   let postLikes=[];
   for(var i=0;i<likesPost.length;i++){
 //  console.log(likesPost[i].commentid)

@@ -5,8 +5,9 @@ import com.google.gson.JsonObject;
 public class LoginUser {
     public void getPosts(String username) throws Exception {
 //        System.out.println("Getting Posts Using Thread");
+//        JsonObject res=Database.getAllPosts();
         JsonObject result=Database.getMyPosts(username);
-//        result=Database.getAllPostsExcept(username);
+        result=Database.getAllPostsExcept(username);
 //        System.out.println("Got all the post for user "+ username+" and stored it in memory");
 //        getMessages(username);
     }
