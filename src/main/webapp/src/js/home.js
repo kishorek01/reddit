@@ -36,7 +36,7 @@ window.location.href=urlParams;
 function editPost(postId,data){
 //console.log("Editing post "+postId);
 document.getElementById("editArea").style.display= "block";
-document.getElementById("editPostInput").value=data;
+document.getElementById("editPostInput").value=document.getElementById(postId+"value").innerHTML;
 document.getElementById("editScan").innerHTML="<button onclick=\"closeEditModel()\" class=\"cancelBtn\">Cancel</button>";
 document.getElementById("editScan").innerHTML+="<button onclick=\"confirmEdit(\'"+postId+"\')\" class=\"publishPost\">Publish Again</button>"
 }
@@ -44,7 +44,7 @@ document.getElementById("editScan").innerHTML+="<button onclick=\"confirmEdit(\'
 function deletePost(postId,data){
 //console.log("Deleting post "+postId);
 document.getElementById("deleteArea").style.display= "block";
-document.getElementById("deletePostInput").value=data;
+document.getElementById("deletePostInput").value=document.getElementById(postId+"value").innerHTML;;
 document.getElementById("deleteScan").innerHTML="<button onclick=\"closeDeleteModel()\" class=\"cancelBtn\">Cancel</button>";
 document.getElementById("deleteScan").innerHTML+="<button onclick=\"confirmDelete(\'"+postId+"\')\" class=\"publishPost\">Delete</button>"
 }
@@ -63,8 +63,13 @@ axios.post('/deletePost',params)
   },3000);
 
       }else{
-window.location.reload();
+      toastr["success"](response.data.data.message, "Success");
+//window.location.reload();
 
+document.getElementById("deleteArea").style.display="none";
+document.getElementById("deletePostInput").value="";
+//document.getElementById(postId).style.display="none";
+document.getElementById(postId).remove();
   }})
   .catch(function (error) {
     console.log(error);
@@ -88,7 +93,15 @@ axios.post('/editPost',params)
   },3000);
 
       }else{
-window.location.reload();
+//window.location.reload();
+
+document.getElementById("editArea").style.display="none";
+document.getElementById("editPostInput").value="";
+if(response.data && response.data.data && response.data.data.data){
+var dat=response.data.data.data;
+//console.log(id);
+document.getElementById(dat.postid+"value").innerHTML=dat.content;
+}
 
   }})
   .catch(function (error) {
@@ -191,7 +204,7 @@ axios.get('/getMyPosts',{params:{"sort_type":val}})
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p id=\""+data[i].postid+"value\" class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
   }
   }
   }
@@ -221,6 +234,12 @@ document.getElementById("createPostInput").value = "";
 
 function publish(){
 //console.log("Cancelling the post");
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
 var post=document.getElementById("createPostInput").value;
 post=post.replace("'", "`");
 //console.log(post);
@@ -244,9 +263,16 @@ axios.post('/createPost',params)
   document.getElementById("modalArea").style.display = "none";
   document.getElementById("createPostInput").value = "";
   let agoTime=moment(data.created_at).fromNow();
-  window.location.reload();
+//  window.location.reload();
   var postId=data.postid;
-document.getElementById("postArea").innerHTML="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\')\">Delete</p></div></div>"+document.getElementById("postArea").innerHTML;
+  var code="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p id=\""+data.postid+"value\" class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data.content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data.content+"\')\">Delete</p></div></div>";
+  if(val=="new"){
+
+  document.getElementById("postArea").innerHTML=code+document.getElementById("postArea").innerHTML;
+  }else{
+  document.getElementById("postArea").innerHTML+=code;
+  }
+
   }
 
   }})

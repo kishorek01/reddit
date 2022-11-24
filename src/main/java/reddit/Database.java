@@ -190,7 +190,7 @@ public class Database {
 //		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
 		String sql;
 		if(sortType.equalsIgnoreCase("top")){
-			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by l.count desc nulls last,p.created_at desc;";
+			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by l.count desc nulls last,p.created_at;";
 		}else{
 			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by p.created_at desc nulls last;";
 		}

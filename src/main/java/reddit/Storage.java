@@ -27,7 +27,7 @@ public class Storage {
         static {
             TimerSchedule t1 = new TimerSchedule("Task");
             Timer t = new Timer();
-            t.scheduleAtFixedRate(t1, 0, 10000);
+            t.scheduleAtFixedRate(t1, 0, 1000);
         }
 }
 
