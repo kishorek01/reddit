@@ -479,7 +479,7 @@ public class StorageMethods extends Storage{
         String date=myDateObj.toString();
         date=date.replace('T',' ');
         date=date+"+05:30";
-        Posts postData=new Posts(postId,content,username, date,date,0);
+        Posts postData=new Posts(postId,content,username, date,date,0,0);
         posts.put(postId,postData);
         res.add("data",new Gson().toJsonTree(postData));
         users.get(username).myPosts.add(postId);

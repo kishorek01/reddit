@@ -207,10 +207,12 @@ public class Database {
 		while (rs.next()) {
 			String postid=rs.getString("postid");
 			StorageMethods.posts.get(postid).countLike= rs.getInt("count");
-			arr.add(StorageMethods.posts.get(postid));
 			if(StorageMethods.commentsByPostId.containsKey(postid) && StorageMethods.commentsByPostId.get(postid).size()>0) {
+				StorageMethods.posts.get(postid).totalComments= StorageMethods.commentsByPostId.get(postid).size();
 				commentData.add(postid, new Gson().toJsonTree(StorageMethods.commentsByPostId.get(postid)).getAsJsonObject());
 			}
+			arr.add(StorageMethods.posts.get(postid));
+
 		}
 
 
@@ -245,8 +247,12 @@ public class Database {
 		while (rs.next()) {
 			String postid=rs.getString("postid");
 			StorageMethods.posts.get(postid).countLike= rs.getInt("count");
+			if(StorageMethods.commentsByPostId.containsKey(postid)) {
+				StorageMethods.posts.get(postid).totalComments = StorageMethods.commentsByPostId.get(postid).size();
+			}
 			arr.add(StorageMethods.posts.get(postid));
 		}
+
 		postData = new Gson().toJsonTree(arr).getAsJsonArray();
 		finalResponse.addProperty("postget", true);
 		finalResponse.addProperty("message", "Post get Successful");
@@ -575,7 +581,14 @@ public class Database {
 		}else{
 			countLike = postsData.get("count").getAsInt();
 		}
-		Posts post = new Posts(postId, content, created_by, created_at, updated_at,countLike);
+		String sql="select count(*) from comments where postid='"+postId+"';";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		int totalComments=0;
+		while (resultSet.next()){
+			totalComments=resultSet.getInt("count");
+		}
+		Posts post = new Posts(postId, content, created_by, created_at, updated_at,countLike,totalComments);
 		if (!StorageMethods.isPostinPosts(postId)) {
 			StorageMethods.addPost(postId, post);
 		}

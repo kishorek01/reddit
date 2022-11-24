@@ -154,7 +154,7 @@ axios.get('/getAllPosts',{params:{"sort_type":val}})
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div id=\""+postId+"\" onclick=\"openPost(\'"+postId+"\')\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].totalComments+" Comments</p></div></div>";
   }
   }
 }
@@ -204,7 +204,7 @@ axios.get('/getMyPosts',{params:{"sort_type":val}})
 //  const time = new Date(data[i].created_at).toLocaleTimeString('en-US');
 //  console.log(time);
   let agoTime=moment(data[i].created_at).fromNow();
-  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p id=\""+data[i].postid+"value\" class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
+  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data[i].created_by+"</h3><span>"+agoTime+"</span><p id=\""+data[i].postid+"value\" class=\"postContent\">"+data[i].content+"</p><div class=\"details\"><p>"+data[i].countLike+" Likes</p><p>"+data[i].totalComments+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data[i].content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data[i].content+"\')\">Delete</p></div></div>";
   }
   }
   }
@@ -265,7 +265,7 @@ axios.post('/createPost',params)
   let agoTime=moment(data.created_at).fromNow();
 //  window.location.reload();
   var postId=data.postid;
-  var code="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p id=\""+data.postid+"value\" class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.comments.length+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data.content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data.content+"\')\">Delete</p></div></div>";
+  var code="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p id=\""+data.postid+"value\" class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.totalComments+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data.content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data.content+"\')\">Delete</p></div></div>";
   if(val=="new"){
 
   document.getElementById("postArea").innerHTML=code+document.getElementById("postArea").innerHTML;
