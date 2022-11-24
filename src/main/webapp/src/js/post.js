@@ -90,9 +90,9 @@ return null;
   let code;
   agoTime+=" "+new Date(data.created_at).toLocaleTimeString('en-US');
   if(owner==data.username && message!="This Comment was Deleted" ){
-  code="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p id=\""+data.commentid+"edit\" onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p id=\""+data.commentid+"delete\" onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
+  code="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p><div style=\"display: flex;gap: 20px;\"> <div id=\""+data.commentid+"votebox\" style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p></div> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p id=\""+data.commentid+"edit\" onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p id=\""+data.commentid+"delete\" onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
   }else{
- code="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
+ code="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><div id=\""+data.commentid+"votebox\" style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> </div><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
  }
   if(parentcomment!=null){
   parentcomment+="childs";
@@ -148,9 +148,9 @@ if(sortType=="top" || sortType=="default"){
  parent+="childs";
  }
  if(owner==data.username && message!="This Comment was Deleted" ){
- document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" id=\""+data.commentid+"edit\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p id=\""+data.commentid+"delete\" onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
+ document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p><div style=\"display: flex;gap: 20px;\"> <div id=\""+data.commentid+"votebox\" style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p></div> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" id=\""+data.commentid+"edit\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p id=\""+data.commentid+"delete\" onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
  }else{
-document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
+document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p id=\""+data.commentid+"value\" style=\"font-size: 17px;white-space: nowrap;width: 50px;text-overflow: ellipsis;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"> <div id=\""+data.commentid+"votebox\" style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p></div><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div><div id=\""+data.commentid+"childs\"></div></div>";
 }
 if(data.childcomments.length>0){
 for(var j=0;j<data.childcomments.length;j++){
@@ -208,173 +208,59 @@ likeid=postLikes[i].likeid;
 
 function dislikepost(postid,likeType,likeid){
 if((likeType===null || likeType) && likeid=='null'){
-console.log("Disliking post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('status',false);
-axios.post('/postLikes',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Disliked Successfully", "Success");
-getPostDetail();}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+var likeId=generateLikeId();
+console.log(likeId);
 }else if(likeType===null || likeType){
-console.log("Editing Liked post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('likeid',likeid);
-params.append('status',false);
-params.append('commentid',null);
-axios.post('/editLike',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Disliked Successfully", "Success");
-getPostDetail();
+
 }else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}else{
-toastr["info"]("Already Disliked", "Like");
+toastr["info"]("Comment Already Disliked", "Like");
+
 }
 }
 
 function likepost(postid,likeType,likeid){
 if((likeType===null || !likeType) && likeid=='null'){
-console.log("liking post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('status',true);
-axios.post('/postLikes',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Liked Successfully", "Success");
-getPostDetail();}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+var likeId=generateLikeId();
+console.log(likeId);
 }else if(likeType===null || !likeType){
-console.log("Editing Disliked post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('likeid',likeid);
-params.append('status',true);
-params.append('commentid',null);
-axios.post('/editLike',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Liked Successfully", "Success");
-getPostDetail();
 }else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}else{
-toastr["info"]("Already Liked", "Like");
+toastr["info"]("Post Already Liked", "Like");
+
 }
 }
 
 
 function likecomment(postid,commentid,likeType,likeid){
-console.log("Comment Likes",postid,commentid,likeType,likeid);
 if((likeType===null || !likeType) && likeid=='null'){
-console.log("liking Comment",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('commentid',commentid);
-params.append('status',true);
-axios.post('/commentLikes',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Comment Liked Successfully", "Success");
-getPostDetail();}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+var likeId=generateLikeId();
+var data={}
+data.likeid=likeId;
+data.status=true;
+data.postid=postid;
+data.commentid=commentid;
+data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.username=getCookie("user");
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeId]=data;
+let comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid].like++;
+localStorage.setItem("comments",JSON.stringify(comments));
+localStorage.setItem("likes",JSON.stringify(likes));
+likeid=likeId;
+document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else if(likeType===null || !likeType){
-console.log("Editing Disliked post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('likeid',likeid);
-params.append('commentid',commentid);
-params.append('status',true);
-axios.post('/editLike',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Comment Liked Successfully", "Success");
-getPostDetail();
-}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+console.log("Already There in dislike",likeid);
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeid].status=true;
+
+localStorage.setItem("likes",JSON.stringify(likes));
+let comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid].like++;
+comments[commentid].dislike--;
+localStorage.setItem("comments",JSON.stringify(comments));
+document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
+
 }else{
 toastr["info"]("Comment Already Liked", "Like");
 }
@@ -383,59 +269,36 @@ toastr["info"]("Comment Already Liked", "Like");
 
 
 function dislikecomment(postid,commentid,likeType,likeid){
-//console.log("Comment Likes",postid,commentid,likeType,likeid);
+
 if((likeType===null || likeType) && likeid=='null'){
-//console.log("disliking Comment",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('commentid',commentid);
-params.append('status',false);
-axios.post('/commentLikes',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Comment DisLiked Successfully", "Success");
-getPostDetail();}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+
+var likeId=generateLikeId();
+var data={}
+data.likeid=likeId;
+data.status=false;
+data.postid=postid;
+data.commentid=commentid;
+data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.username=getCookie("user");
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeId]=data;
+likeid=likeId;
+let comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid].dislike++;
+localStorage.setItem("comments",JSON.stringify(comments));
+document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
+localStorage.setItem("likes",JSON.stringify(likes));
 }else if(likeType===null || likeType){
-console.log("Editing Disliked post",likeType,likeid);
-const params = new URLSearchParams();
-var owner=getCookie("user");
-params.append('username',owner);
-params.append('postid',postid);
-params.append('likeid',likeid);
-params.append('commentid',commentid);
-params.append('status',false);
-axios.post('/editLike',params)
-  .then(function (response) {
-    if(response.data){
-    if(response.data.code==201){
-toastr["error"](response.data.data.message, "Error");
-document.location="login.html";
-}else if(response.data.code==200){
-let convId=response.data.data.data;
-toastr["success"]("Comment DisLiked Successfully", "Success");
-getPostDetail();
-}else{
-toastr["error"](response.data.data.message, "Error");
-}
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+console.log("Already There in like",likeid);
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeid].status=false;
+localStorage.setItem("likes",JSON.stringify(likes));
+let comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid].like--;
+comments[commentid].dislike++;
+localStorage.setItem("comments",JSON.stringify(comments));
+document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else{
 toastr["info"]("Comment Already Disliked", "Like");
 }
@@ -458,6 +321,7 @@ var dep=4;
 if(document.getElementById("depth")){
 dep=document.getElementById("depth").value;
 }
+localStorage.removeItem("likes");
 axios.get('/getPost',{
 params:{
 "postid":postId,
@@ -481,18 +345,20 @@ params:{
      console.log(data)
 
      var likesobj=response.data.data.likesobj || {};
-
+     localStorage.setItem("likes",JSON.stringify(likesobj));
     for(var i=0;i<data.post.likes.length;i++){
     if(likesobj[data.post.likes[i]]){
     postLikes.push(likesobj[data.post.likes[i]]);
     }
     }
   showPost(data.post,postLikes);
+
 //  data.comments=Object.values(data.comments);
   if(Object.values(data.comments).length === 0){
     document.getElementById("commentAreaBox").innerHTML="<div id=\"nocomments\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
     val=document.getElementById("sortType").style.display="none";
   }else{
+  localStorage.setItem("comments",JSON.stringify(data.comments));
   document.getElementById("sortType").style.display="block";
   data=data;
 //response.data.data.comments.sort(custom_sort);
@@ -808,4 +674,18 @@ var newlikeArr=[];
 
 createCommentFor(commentid,commentOBJ[parent.childcomments[j]],commentOBJ,newlikeArr,likeObj);
 }
+}
+
+
+
+function generateLikeId(){
+var owner=getCookie("user");
+var result='';
+result=result+owner+",Like,";
+ var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var j = 0; j < 7; j++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+return result;
 }

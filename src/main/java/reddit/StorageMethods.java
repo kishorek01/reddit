@@ -334,9 +334,7 @@ public class StorageMethods extends Storage{
         if(!likesByContentId.get(postid).containsKey(newLike.likeid)){
             likesByContentId.get(postid).put(newLike.likeid,newLike);
         }
-        if(commentid!=null && !commentid.equals("null")){
-            likesByContentId.get(postid).put(newLike.commentid,newLike);
-        }
+
         newLikeQueue.add(LikeId);
         posts.get(postid).likes.add(LikeId);
         posts.get(postid).countLike++;
@@ -358,9 +356,7 @@ public class StorageMethods extends Storage{
         if(!likesByContentId.get(contentId).containsKey(like.likeid)){
             likesByContentId.get(contentId).put(like.likeid,like);
         }
-        if(like.commentid!=null && !like.commentid.equals("null")){
-            likesByContentId.get(contentId).put(like.commentid,like);
-        }
+
 
 
     }
@@ -376,9 +372,6 @@ public class StorageMethods extends Storage{
         }
         if(!likesByContentId.get(postId).containsKey(newLike.likeid)){
             likesByContentId.get(postId).put(newLike.likeid,newLike);
-        }
-        if(commentid!=null && !commentid.equals("null")){
-            likesByContentId.get(postId).put(newLike.commentid,newLike);
         }
         newLikeQueue.add(LikeId);
         if(!Objects.equals(commentid, "") && commentid!=null) {
@@ -407,9 +400,7 @@ public class StorageMethods extends Storage{
         if(!likesByContentId.get(contentId).containsKey(like.likeid)){
             likesByContentId.get(contentId).put(like.likeid,like);
         }
-        if(like.commentid!=null && !like.commentid.equals("null")){
-            likesByContentId.get(contentId).put(like.commentid,like);
-        }
+
 
 
     }
