@@ -33,9 +33,13 @@ public class GetPost extends HttpServlet {
                 if(sortType==null){
                     sortType="new";
                 }
-
+                String depth = request.getParameter("depth");
+                int d=4;
+                if(depth!=null){
+                    d=Integer.parseInt(depth);
+                }
 //                StorageMethods.getPost(postId, request, response);
-                Database.getSortedPost(postId,sortType,parentcomment,request,response);
+                Database.getSortedPost(postId,sortType,parentcomment,d,request,response);
             } catch (Exception e) {
                 e.printStackTrace();
                 StorageMethods.throwUnknownError(request, response);

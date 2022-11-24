@@ -141,10 +141,12 @@ axios.get('/getAllPosts',{params:{"sort_type":val}})
   data=response.data.data;
 //  console.log(data);
   if(data.length==0){
-    document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+    document.getElementById("postArea").innerHTML+="<div id=\"noposts\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+    document.getElementById("sortType").style.display="none";
     }else
     {
     document.getElementById("postArea").innerHTML="";
+    document.getElementById("sortType").style.display="block";
 //      data.sort(custom_sort);
 
   for(var i=0;i<data.length;i++){
@@ -189,9 +191,11 @@ axios.get('/getMyPosts',{params:{"sort_type":val}})
 
 //  console.log(data.length)
   if(data.length==0){
-  document.getElementById("postArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+  document.getElementById("postArea").innerHTML+="<div id=\"noposts\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Posts Found</p></div>";
+  document.getElementById("sortType").style.display="none";
   }else
   {
+  document.getElementById("sortType").style.display="block";
   document.getElementById("postArea").innerHTML="";
 //    data.sort(custom_sort);
 
@@ -258,12 +262,17 @@ axios.post('/createPost',params)
   data=response.data;
   if(data.code==200){
 //  console.log(data);
+var noc=document.getElementById("noposts");
+      if(noc){
+      noc.remove();
+      }
   data=data.data.data;
   toastr["success"](response.data.data.message, "Success");
   document.getElementById("modalArea").style.display = "none";
   document.getElementById("createPostInput").value = "";
   let agoTime=moment(data.created_at).fromNow();
 //  window.location.reload();
+document.getElementById("sortType").style.display="block";
   var postId=data.postid;
   var code="<div style=\"cursor: default;\" id=\""+postId+"\" class=\"posts\"><h3>"+data.created_by+"</h3><span>"+agoTime+"</span><p id=\""+data.postid+"value\" class=\"postContent\">"+data.content+"</p><div class=\"details\"><p>"+data.countLike+" Likes</p><p>"+data.totalComments+" Comments</p><p class=\"edit\" onclick=\"editPost(\'"+postId+"\',\'"+data.content+"\')\">Edit</p> <p class=\"delete\" onclick=\"deletePost(\'"+postId+"\',\'"+data.content+"\')\">Delete</p></div></div>";
   if(val=="new"){

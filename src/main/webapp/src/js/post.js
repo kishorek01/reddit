@@ -451,11 +451,16 @@ val="default";
 }
 
 //console.log("Getting All Conversations");
+var dep;
+if(document.getElementById("depth")){
+dep=document.getElementById("depth").value;
+}
 axios.get('/getPost',{
 params:{
 "postid":postId,
 "sort_type":val,
-"parentcomment":null
+"parentcomment":null,
+"depth":dep
 }
 })
   .then(function (response) {
@@ -738,7 +743,8 @@ axios.get('/getPost',{
 params:{
 "postid":postid,
 "sort_type":val,
-"parentcomment":commentid
+"parentcomment":commentid,
+"depth":4
 }
 })
   .then(function (response) {
@@ -748,6 +754,7 @@ params:{
   document.location="login.html";
   },3000);
       }else{
+//      document.getElementById("depth").value=document.getElementById("depth").value+4;
   data=response.data.data;
   let dat={}
    let postLikes=[];

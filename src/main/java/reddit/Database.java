@@ -336,7 +336,7 @@ public class Database {
 
 
 
-	public static synchronized void getSortedPost(String postId,String sortType,String parentcomment, HttpServletRequest request,HttpServletResponse response) throws Exception{
+	public static synchronized void getSortedPost(String postId,String sortType,String parentcomment,int depth, HttpServletRequest request,HttpServletResponse response) throws Exception{
 		String sql;
 		if(sortType.equalsIgnoreCase("default")){
 			sql="select parentcomment,commentid from comments where parentcomment!='' order by created_at;";
@@ -391,25 +391,39 @@ public class Database {
 //		JsonObject finalResponse=new JsonObject();
 //		ArrayList<Posts> arr=new ArrayList<>();
 
-		sql="SELECT"+
-             " p1.commentid as l1id,"+
-             " p2.commentid as l2id,"+
-             " p3.commentid as l3id,"+
-             " p4.commentid as l4id"+
-         " FROM"+
-              " comments p1"+
-         " LEFT JOIN"+
-              " comments p2 on p2.parentcomment = p1.commentid"+
-         " LEFT JOIN"+
-               " comments p3 on p3.parentcomment = p2.commentid"+
-         " LEFT JOIN"+
-               " comments p4 on p4.parentcomment = p3.commentid where ";
+		sql="SELECT ";
+				for(int i=1;i<=depth;i++){
+					if(i!=depth) {
+						sql += "p" + i + ".commentid as l" + i + "id, ";
+					}
+					else{
+						sql += "p" + i + ".commentid as l" + i + "id ";
+					}
+				}
+         sql+=" FROM"+
+              " comments p1";
+		for(int i=2;i<=depth;i++){
+			if(i!=depth) {
+				sql += " LEFT JOIN comments p"+i+" on p"+i+".parentcomment = p"+(i-1)+".commentid ";
+			}
+			else{
+				sql += " LEFT JOIN comments p"+i+" on p"+i+".parentcomment = p"+(i-1)+".commentid where ";
+			}
+		}
 				if(parentcomment==null || parentcomment.equalsIgnoreCase("null")){
 					sql=sql+"p1.parentcomment is "+null+" and ";
 				}else {
 					sql=sql+"p1.parentcomment='"+parentcomment+"' and ";
 				}
-				sql=sql+ "p1.postid='"+postId+"' order by p1.created_at desc,p2.created_at desc,p3.created_at desc,p4.created_at desc;";
+				sql=sql+ "p1.postid='"+postId+"' order by ";
+		for(int i=1;i<=depth;i++){
+			if(i!=depth) {
+				sql += "p"+i+".created_at desc,";
+			}
+			else{
+				sql += "p"+i+".created_at desc;";
+			}
+		}
 		Statement stmt1=connection.createStatement();
 		ResultSet rs1=stmt1.executeQuery(sql);
 		try {
@@ -424,33 +438,35 @@ public class Database {
 			JsonObject likeData=new JsonObject();
 //			StorageMethods.getPost(postId, request, response);
 			while(rs1.next()){
-				String l1id=rs1.getString("l1id");
-				String l2id=rs1.getString("l2id");
-				String l3id=rs1.getString("l3id");
-				String l4id=rs1.getString("l4id");
-				if(StorageMethods.commentsByPostId.containsKey(postId)) {
-					if(l1id!=null) {
-						commentData.add(l1id, new Gson().toJsonTree(StorageMethods.comments.get(l1id), Comments.class).getAsJsonObject());
 
+				for(int i=1;i<=depth;i++){
+					String lid=rs1.getString("l"+i+"id");
+					if(StorageMethods.commentsByPostId.containsKey(postId)) {
+						if(lid!=null) {
+							commentData.add(lid, new Gson().toJsonTree(StorageMethods.comments.get(lid), Comments.class).getAsJsonObject());
+
+						}
 					}
-					if(l2id!=null) {
-						commentData.add(l2id, new Gson().toJsonTree(StorageMethods.comments.get(l2id), Comments.class).getAsJsonObject());
-
-					}
-					if(l3id!=null){
-						commentData.add(l3id,new Gson().toJsonTree(StorageMethods.comments.get(l3id),Comments.class).getAsJsonObject());
-
-					}
-					if(l4id!=null
-					) {
-						commentData.add(l4id, new Gson().toJsonTree(StorageMethods.comments.get(l4id), Comments.class).getAsJsonObject());
-
-					}
-
-
-
 				}
-
+//				String l1id=rs1.getString("l1id");
+//				String l2id=rs1.getString("l2id");
+//				String l3id=rs1.getString("l3id");
+//				String l4id=rs1.getString("l4id");
+//				if(StorageMethods.commentsByPostId.containsKey(postId)) {
+//					if(l1id!=null) {
+//						commentData.add(l1id, new Gson().toJsonTree(StorageMethods.comments.get(l1id), Comments.class).getAsJsonObject());
+//					}
+//					if(l2id!=null) {
+//						commentData.add(l2id, new Gson().toJsonTree(StorageMethods.comments.get(l2id), Comments.class).getAsJsonObject());
+//					}
+//					if(l3id!=null){
+//						commentData.add(l3id,new Gson().toJsonTree(StorageMethods.comments.get(l3id),Comments.class).getAsJsonObject());
+//					}
+//					if(l4id!=null
+//					) {
+//						commentData.add(l4id, new Gson().toJsonTree(StorageMethods.comments.get(l4id), Comments.class).getAsJsonObject());
+//					}
+//				}
 			}
 			res.add("comments",commentData);
 //			System.out.println(commentData);

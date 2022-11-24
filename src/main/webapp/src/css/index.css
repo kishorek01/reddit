@@ -424,6 +424,7 @@ border-left:2px solid #03A5A5;
     position: absolute;
     right: 50px;
     top: 30px;
+    display:none;
     background-color: white;
       border: thin solid blue;
       border-radius: 4px;

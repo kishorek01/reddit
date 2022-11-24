@@ -30,6 +30,7 @@ public class GetAllPosts extends HttpServlet {
 				if(sortType==null){
 					sortType="new";
 				}
+
 				StorageMethods.sortAllPosts(sortType,request,response);
 		}catch(Exception e) {
 				e.printStackTrace();
