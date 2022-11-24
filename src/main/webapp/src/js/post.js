@@ -243,6 +243,13 @@ data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
 data.username=getCookie("user");
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeId]=data;
+if(!localStorage.getItem("newlikes")){
+var lk=[]
+localStorage.setItem("newlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+newlikes.push(likeId);
+localStorage.setItem("newlikes",JSON.stringify(newlikes));
 let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].like++;
 localStorage.setItem("comments",JSON.stringify(comments));
@@ -259,6 +266,18 @@ let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].like++;
 comments[commentid].dislike--;
 localStorage.setItem("comments",JSON.stringify(comments));
+if(!localStorage.getItem("editlikes")){
+var lk=[]
+localStorage.setItem("editlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+if(!newlikes.includes(likeid)){
+var editlikes=JSON.parse(localStorage.getItem("editlikes"));
+if(editlikes.length==0 || !editlikes.includes(likeid)){
+editlikes.push(likeid);
+localStorage.setItem("editlikes",JSON.stringify(editlikes));
+}
+}
 document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 
 }else{
@@ -286,6 +305,13 @@ likes[likeId]=data;
 likeid=likeId;
 let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].dislike++;
+if(!localStorage.getItem("newlikes")){
+var lk=[]
+localStorage.setItem("newlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+newlikes.push(likeId);
+localStorage.setItem("newlikes",JSON.stringify(newlikes));
 localStorage.setItem("comments",JSON.stringify(comments));
 document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+data.status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 localStorage.setItem("likes",JSON.stringify(likes));
@@ -298,6 +324,18 @@ let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].like--;
 comments[commentid].dislike++;
 localStorage.setItem("comments",JSON.stringify(comments));
+if(!localStorage.getItem("editlikes")){
+var lk=[]
+localStorage.setItem("editlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+if(!newlikes.includes(likeid)){
+var editlikes=JSON.parse(localStorage.getItem("editlikes"));
+if(editlikes.length==0 || !editlikes.includes(likeid)){
+editlikes.push(likeid);
+localStorage.setItem("editlikes",JSON.stringify(editlikes));
+}
+}
 document.getElementById(commentid+"votebox").innerHTML="<p>"+comments[commentid].like+" Likes</p> <p>"+comments[commentid].dislike+" Dislikes</p><p  onclick=\"likecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+postid+"\','"+commentid+"',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else{
 toastr["info"]("Comment Already Disliked", "Like");
@@ -322,6 +360,9 @@ if(document.getElementById("depth")){
 dep=document.getElementById("depth").value;
 }
 localStorage.removeItem("likes");
+localStorage.removeItem("comments");
+localStorage.removeItem("newlikes");
+localStorage.removeItem("editlikes");
 axios.get('/getPost',{
 params:{
 "postid":postId,
