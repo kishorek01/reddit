@@ -159,8 +159,12 @@ for(var j=0;j<data.childcomments.length;j++){
    newlikeArr.push(likesObj[fullData[data.childcomments[j]].likes[k]]);
    }
 }
-   }
 createCommentFor(data.commentid,fullData[data.childcomments[j]],fullData,newlikeArr,likesObj);
+
+   }else{
+   document.getElementById(data.commentid+"childs").innerHTML+="<p id=\""+data.commentid+"more\" onclick=\"getMoreComments('"+data.commentid+"','"+data.postid+"')\" style=\"font-size: 17px;font-style: italic;cursor: pointer;color: blue;text-decoration: underline;\">Load More</p>";
+   break;
+   }
 }
 }
 }
@@ -719,12 +723,60 @@ getPostDetail();
 
 
 
-function getComments(){
+function getMoreComments(commentid,postid){
 let val;
 if(document.getElementById("sortType")){
 val=document.getElementById("sortType").value;
 }else{
 val="new";
 }
-console.log(val);
+axios.get('/getPost',{
+params:{
+"postid":postid,
+"sort_type":val,
+"parentcomment":commentid
+}
+})
+  .then(function (response) {
+    if(response.data.code==500){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+      }else{
+  data=response.data.data;
+  let dat={}
+   let postLikes=[];
+     var likesobj=response.data.data.likesobj || {};
+  data=data;
+  let parent=data.parentcomment;
+
+appendcommet(commentid,data.comments,likesobj,parent);
+document.getElementById(commentid+"more").style.display="none";
+if(localStorage.getItem("scrollY")){
+document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
+localStorage.removeItem("scrollY");
+}
+
+}
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+
+function appendcommet(commentid,commentOBJ,likeObj,parent){
+for(var j=0;j<parent.childcomments.length;j++){
+var newlikeArr=[];
+  if(commentOBJ[parent.childcomments[j]]!=undefined){
+   for(var k=0;k<commentOBJ[parent.childcomments[j]].likes.length;k++){
+   if(likeObj[commentOBJ[parent.childcomments[j]].likes[k]]!=undefined){
+   newlikeArr.push(likeObj[commentOBJ[parent.childcomments[j]].likes[k]]);
+   }
+}
+   }
+
+createCommentFor(commentid,commentOBJ[parent.childcomments[j]],commentOBJ,newlikeArr,likeObj);
+}
 }

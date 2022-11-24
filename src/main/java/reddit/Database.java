@@ -257,6 +257,77 @@ public class Database {
 	}
 
 
+	public static synchronized void getChildComment(String postId,String parentcomment,String sortType,HttpServletRequest request, HttpServletResponse response) throws  Exception{
+		String sql="SELECT"+
+				" p1.commentid as l1id,"+
+				" p2.commentid as l2id,"+
+				" p3.commentid as l3id,"+
+				" p4.commentid as l4id"+
+				" FROM"+
+				" comments p1"+
+				" LEFT JOIN"+
+				" comments p2 on p2.parentcomment = p1.commentid"+
+				" LEFT JOIN"+
+				" comments p3 on p3.parentcomment = p2.commentid"+
+				" LEFT JOIN"+
+				" comments p4 on p4.parentcomment = p3.commentid where ";
+		if(parentcomment==null || parentcomment.equalsIgnoreCase("null")){
+			sql=sql+"p1.parentcomment is "+null+" and ";
+		}else {
+			sql=sql+"p1.parentcomment='"+parentcomment+"' and ";
+		}
+		sql=sql+ "p1.postid='"+postId+"' order by p1.created_at desc,p2.created_at desc,p3.created_at desc,p4.created_at desc;";
+		Statement stmt1=connection.createStatement();
+		ResultSet rs1=stmt1.executeQuery(sql);
+		try {
+			JsonObject res=new JsonObject();
+			response.setContentType("application/json");
+			JsonObject finalResponse=new JsonObject();
+			Posts post=StorageMethods.posts.get(postId);
+			JsonArray likeArr=new JsonArray();
+
+			res.add("post",new Gson().toJsonTree(post,Posts.class).getAsJsonObject());
+			JsonObject commentData=new JsonObject();
+			JsonObject likeData=new JsonObject();
+			while(rs1.next()){
+				String l1id=rs1.getString("l1id");
+				String l2id=rs1.getString("l2id");
+				String l3id=rs1.getString("l3id");
+				String l4id=rs1.getString("l4id");
+				if(StorageMethods.commentsByPostId.containsKey(postId)) {
+					if(l1id!=null) {
+						commentData.add(l1id, new Gson().toJsonTree(StorageMethods.comments.get(l1id), Comments.class).getAsJsonObject());
+					}
+					if(l2id!=null) {
+						commentData.add(l2id, new Gson().toJsonTree(StorageMethods.comments.get(l2id), Comments.class).getAsJsonObject());
+					}
+					if(l3id!=null){
+						commentData.add(l3id,new Gson().toJsonTree(StorageMethods.comments.get(l3id),Comments.class).getAsJsonObject());
+					}
+					if(l4id!=null
+					) {
+						commentData.add(l4id, new Gson().toJsonTree(StorageMethods.comments.get(l4id), Comments.class).getAsJsonObject());
+					}
+				}
+			}
+			res.add("comments",commentData);
+			if(StorageMethods.likesByContentId.containsKey(postId)) {
+				res.add("likesobj", new Gson().toJsonTree(StorageMethods.likesByContentId.get(postId)).getAsJsonObject());
+			}
+			PrintWriter out=response.getWriter();
+			finalResponse.add("data", res);
+			finalResponse.addProperty("code", 200);
+			out.print(finalResponse);
+			out.flush();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+
+
+
+
 
 	public static synchronized void getSortedPost(String postId,String sortType,String parentcomment, HttpServletRequest request,HttpServletResponse response) throws Exception{
 		String sql;
@@ -386,6 +457,9 @@ public class Database {
 			}
 //			res.add("likes",likeArr);
 //        res.add("data",message);
+			if(parentcomment!=null){
+				res.add("parentcomment",new Gson().toJsonTree(StorageMethods.comments.get(parentcomment)).getAsJsonObject());
+			}
 			PrintWriter out=response.getWriter();
 			finalResponse.add("data", res);
 			finalResponse.addProperty("code", 200);

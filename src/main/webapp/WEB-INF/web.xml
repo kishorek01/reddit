@@ -262,4 +262,14 @@
     <servlet-name>SortPost</servlet-name>
     <url-pattern>/sortPost</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetChildComment</display-name>
+    <servlet-name>GetChildComment</servlet-name>
+    <servlet-class>GetChildComment</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetChildComment</servlet-name>
+    <url-pattern>/getChildComment</url-pattern>
+  </servlet-mapping>
 </web-app>
