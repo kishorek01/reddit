@@ -826,19 +826,21 @@ public class StorageMethods extends Storage{
         JsonObject finalResponse=new JsonObject();
         HashMap<String,String> message=users.get(username).messages;
         JsonArray conversations=new JsonArray();
-        if(message.size()!=0){
-            Set<String> keys=message.keySet();
-//            System.out.println(keys);
-            for(String key: keys){
-//                System.out.println(key);
-                JsonObject obj=new JsonObject();
-                obj.addProperty("username",key);
-                obj.addProperty("conversationid",message.get(key));
-                obj.addProperty("created_at",Storage.conversations.get(message.get(key)).created_at);
-                obj.addProperty("updated_at",Storage.conversations.get(message.get(key)).updated_at);
-                conversations.add(obj);
-            }
-        }
+//        if(message.size()!=0){
+//            Set<String> keys=message.keySet();
+////            System.out.println(keys);
+//            for(String key: keys){
+////                System.out.println(key);
+//                JsonObject obj=new JsonObject();
+//                obj.addProperty("username",key);
+//                obj.addProperty("conversationid",message.get(key));
+//                obj.addProperty("created_at",Storage.conversations.get(message.get(key)).created_at);
+//                obj.addProperty("updated_at",Storage.conversations.get(message.get(key)).updated_at);
+//                conversations.add(obj);
+//            }
+//        }
+
+        conversations=Database.getConvo(username);
         res.add("data",conversations);
 //        System.out.println("Message Size  : "+conversations.size());
         response.setContentType("application/json");

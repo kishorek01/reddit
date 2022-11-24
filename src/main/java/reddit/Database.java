@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -892,5 +893,29 @@ public class Database {
 		JsonObject res=new JsonObject();
 		res.add("data",converToJSONMessages(resultSet));
 		return res;
+	}
+
+
+	public static synchronized JsonArray getConvo(String username) throws Exception{
+		String sql="select c.conversationid,c.user1,c.user2,c.created_at,m.updated_at from conversations c left join messages m on c.conversationid=m.conversationid where c.user1='"+username+"' or c.user2='"+username+"' order by m.updated_at desc;";
+		Statement statement1=connection.createStatement();
+		ResultSet resultSet=statement1.executeQuery(sql);
+		JsonArray data=new JsonArray();
+		while(resultSet.next()){
+			JsonObject obj=new JsonObject();
+			String user1= resultSet.getString("user1");
+			String user2= resultSet.getString("user2");
+			if(Objects.equals(username, user1)){
+				obj.addProperty("username",user2);
+			}else{
+				obj.addProperty("username",user1);
+			}
+
+			obj.addProperty("conversationid",resultSet.getString("conversationid"));
+			obj.addProperty("created_at",resultSet.getString("created_at"));
+			obj.addProperty("updated_at",resultSet.getString("updated_at"));
+			data.add(obj);
+		}
+		return data;
 	}
 }
