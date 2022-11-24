@@ -189,7 +189,7 @@ document.getElementById("postedTime").innerHTML=agoTime;
 document.getElementById("postContent").innerHTML=data.content;
 document.getElementById("postLikes").innerHTML=totlikes+" Likes";
 document.getElementById("postDisLikes").innerHTML=totdislikes+" Dislikes";
-document.getElementById("postComments").innerHTML=data.comments.length+" Comments";
+document.getElementById("postComments").innerHTML=data.totalComments+" Comments";
  var owner=getCookie("user");
  var message=data.comment;
 var like=null;
@@ -491,7 +491,9 @@ params:{
 //  data.comments=Object.values(data.comments);
   if(Object.values(data.comments).length === 0){
     document.getElementById("commentAreaBox").innerHTML="<div id=\"nocomments\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
+    val=document.getElementById("sortType").style.display="none";
   }else{
+  document.getElementById("sortType").style.display="block";
   data=data;
 //response.data.data.comments.sort(custom_sort);
 showparentcomment(data.post.comments,data.comments,likesobj);
@@ -555,6 +557,7 @@ axios.post('/postComments',params)
       var noc=document.getElementById("nocomments");
       if(noc){
       noc.remove();
+      document.getElementById("sortType").style.display="block";
       }
       document.getElementById("modalArea").style.display="none";
       document.getElementById("createPostInput").value="";
