@@ -496,10 +496,12 @@ params:{
 //response.data.data.comments.sort(custom_sort);
 showparentcomment(data.post.comments,data.comments,likesobj);
 //showComments(response.data.data.comments,likesobj);
-if(localStorage.getItem("scrollY")){
-document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
-localStorage.removeItem("scrollY");
-}
+
+
+//if(localStorage.getItem("scrollY")){
+//document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
+//localStorage.removeItem("scrollY");
+//}
   }
 }
   })
@@ -638,15 +640,15 @@ createCommentForNew(response.data.data.data,val,parentcomment);
 function openEditComment(commentId,comment){
 document.getElementById("modalEditArea").style.display="block";
 document.getElementById("editCommentId").value=commentId;
-localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
-console.log(document.getElementById("messageArea").scrollTop);
+//localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
+//console.log(document.getElementById("messageArea").scrollTop);
 document.getElementById("EditCommentInput").value=comment;
 }
 
 function closeEditComment(){
 document.getElementById("modalEditArea").style.display="none";
 document.getElementById("EditCommentInput").value="";
-localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
+//localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
 document.getElementById("editCommentId").value="";
 }
 
@@ -694,13 +696,13 @@ function openDeleteComment(commentId,comment){
 document.getElementById("modalDeleteArea").style.display="block";
 document.getElementById("deleteCommentId").value=commentId;
 document.getElementById("deleteCommentInput").value=comment;
-localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
+//localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
 }
 
 function closeDeleteComment(){
 document.getElementById("modalDeleteArea").style.display="none";
 document.getElementById("deleteCommentInput").value="";
-localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
+//localStorage.removeItem("scrollY", document.getElementById("messageArea").scrollTop);
 document.getElementById("deleteCommentId").value="";
 }
 
@@ -776,10 +778,11 @@ params:{
 
 appendcommet(commentid,data.comments,likesobj,parent);
 document.getElementById(commentid+"more").style.display="none";
-if(localStorage.getItem("scrollY")){
-document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
-localStorage.removeItem("scrollY");
-}
+
+//if(localStorage.getItem("scrollY")){
+//document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
+//localStorage.removeItem("scrollY");
+//}
 
 }
   })
