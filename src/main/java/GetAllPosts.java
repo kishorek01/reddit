@@ -27,7 +27,6 @@ public class GetAllPosts extends HttpServlet {
 			try {
 //			StorageMethods.getAllPosts(request,response);
 				String sortType = request.getParameter("sort_type");
-				System.out.println(sortType);
 				if(sortType==null){
 					sortType="new";
 				}

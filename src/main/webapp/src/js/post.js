@@ -22,7 +22,26 @@ axios.get('/logout')
     console.log(error);
   });
 }
+function showparentcomment(data,comments,likesObj){
+document.getElementById("commentAreaBox").innerHTML="";
+//let parentComments=data;
+   var commentsArray=Object.values(comments);
+//   commentsArray.sort(custom_sort);
+   var obj={}
+   var keys=data;
+     var owner=getCookie("user");
+   for(var i=0;i<keys.length;i++){
+   if(comments[keys[i]]){
 
+   var likeArr=[];
+   for(var j=0;j<comments[keys[i]].likes.length;j++){
+   likeArr.push(likesObj[comments[keys[i]].likes[j]]);
+   }
+     createCommentFor("commentAreaBox",comments[keys[i]],comments,likeArr,likesObj)
+   }
+   obj[commentsArray[i].commentid]=commentsArray[i];
+   }
+}
 function showComments(data,likesObj){
 document.getElementById("commentAreaBox").innerHTML="";
 let parentComments=Object.keys(data)
@@ -33,7 +52,7 @@ let parentComments=Object.keys(data)
                            });
                      }, {});
    var commentsArray=Object.values(data);
-   commentsArray.sort(custom_sort);
+//   commentsArray.sort(custom_sort);
    var obj={}
    var keys=Object.keys(parentComments);
      var owner=getCookie("user");
@@ -43,9 +62,9 @@ let parentComments=Object.keys(data)
    for(var j=0;j<commentsArray[i].likes.length;j++){
    likeArr.push(likesObj[commentsArray[i].likes[j]]);
    }
-     createCommentFor("commentAreaBox",commentsArray[i],data,0,likeArr,likesObj)
+     createCommentFor("commentAreaBox",commentsArray[i],comments,likeArr,likesObj)
    }
-   obj[commentsArray[i].commentid]=commentsArray[i];
+   obj[comments[keys[i]].commentid]=comments[keys[i]];
    }
 
 //  for(var i=0;i<keys.length;i++){
@@ -53,7 +72,7 @@ let parentComments=Object.keys(data)
 //  createCommentFor("commentAreaBox",comData,data,0)
 //  }
  }
- function createCommentFor(parent,data,fullData,mlef,likeArr,likesObj){
+ function createCommentFor(parent,data,fullData,likeArr,likesObj){
  if(data!=undefined){
  var mle=20;
  var owner=getCookie("user");
@@ -64,7 +83,7 @@ let parentComments=Object.keys(data)
  var totlikes=0;
  var totdislikes=0;
  for(var i=0;i<likeArr.length;i++){
- if(likeArr[i].status){
+ if(likeArr!=undefined && likeArr[i].status){
  totlikes=totlikes+1;
  }else{
  totdislikes=totdislikes+1;
@@ -73,27 +92,31 @@ let parentComments=Object.keys(data)
  var like=null;
  var likeid=null;
 // console.log(likeArr);
+console.log(likeArr);
  for(var i=0;i<likeArr.length;i++){
  if(likeArr[i].username==owner){
  like=likeArr[i].status;
  likeid=likeArr[i].likeid;
  }
  }
+ let agoTime=moment(data.created_at).fromNow();
+ agoTime+=" "+new Date(data.created_at).toLocaleTimeString('en-US');
  if(owner==data.username && message!="This Comment was Deleted" ){
- document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div></div>";
+ document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p> <p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p> <p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p><p onclick=\"openEditComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Edit</p><p onclick=\"openDeleteComment(\'"+data.commentid+"\',\'"+message+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: red;text-decoration: underline;\">Delete</p></div></div></div>";
  }else{
-document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"</p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div></div>";
+document.getElementById(parent).innerHTML+="<div class=\"ccomment\"  id=\""+data.commentid+"\"><div class=\"postsComments\"><p style=\"font-size: 18px;font-weight: 600;font-style: italic;\">"+data.username+"<span style=\"font-size: 13px;font-weight: 700;opacity: 0.5;padding-left: 7px;font-style: italic;\">"+agoTime+"</span></p><p style=\"font-size: 17px;font-style: italic\">"+message+"</p> <div style=\"display: flex;gap: 20px;\"><p>"+totlikes+" Likes</p><p>"+totdislikes+" Dislikes</p><p  onclick=\"likecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikecomment(\'"+data.postid+"\','"+data.commentid+"',"+like+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p><p onclick=\"openChildComment(\'"+data.commentid+"\')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Reply</p></div></div></div>";
 }
 if(data.childcomments.length>0){
-mlef=mlef+1;
 for(var j=0;j<data.childcomments.length;j++){
  var newlikeArr=[];
   if(fullData[data.childcomments[j]]!=undefined){
    for(var k=0;k<fullData[data.childcomments[j]].likes.length;k++){
+   if(likesObj[fullData[data.childcomments[j]].likes[k]]!=undefined){
    newlikeArr.push(likesObj[fullData[data.childcomments[j]].likes[k]]);
+   }
 }
    }
-createCommentFor(data.commentid,fullData[data.childcomments[j]],fullData,mlef,newlikeArr,likesObj);
+createCommentFor(data.commentid,fullData[data.childcomments[j]],fullData,newlikeArr,likesObj);
 }
 }
 }
@@ -372,10 +395,19 @@ let querySearch=window.location.search;
 querySearch=querySearch.replace("?id=","");
 let postId=querySearch;
 let data=[];
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="default";
+}
+
 //console.log("Getting All Conversations");
 axios.get('/getPost',{
 params:{
-postid:postId
+"postid":postId,
+"sort_type":val,
+"parentcomment":null
 }
 })
   .then(function (response) {
@@ -387,36 +419,31 @@ postid:postId
 
       }else{
   data=response.data.data;
-  let dat={}
-//  console.log(data)
-  if(data.comments.length === 0){
-    document.getElementById("messageArea").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Messages Found</p></div>";
-  }else{
-  data=data.data;
-  console.log(response.data.data);
-  let likesPost=response.data.data.likes || [];
-  var likesobj=response.data.data.likesobj || {};
-  let postLikes=[];
-  for(var i=0;i<likesPost.length;i++){
-//  console.log(likesPost[i].commentid)
-  if(!likesPost[i].commentid){
-  postLikes.push(likesPost[i]);
-  }
-  }
-//  console.log(postLikes)
-showPost(response.data.data.post,postLikes);
-if(response.data.data.post.comments.length==0){
-document.getElementById("commentAreaBox").innerHTML+="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
-}
-else{
-//response.data.data.comments.sort(custom_sort);
 
-showComments(response.data.data.comments,likesobj);
+  let dat={}
+   let postLikes=[];
+     console.log(data)
+
+     var likesobj=response.data.data.likesobj || {};
+
+    for(var i=0;i<data.post.likes.length;i++){
+    if(likesobj[data.post.likes[i]]){
+    postLikes.push(likesobj[data.post.likes[i]]);
+    }
+    }
+  showPost(data.post,postLikes);
+//  data.comments=Object.values(data.comments);
+  if(Object.values(data.comments).length === 0){
+    document.getElementById("commentAreaBox").innerHTML="<div style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
+  }else{
+  data=data;
+//response.data.data.comments.sort(custom_sort);
+showparentcomment(data.post.comments,data.comments,likesobj);
+//showComments(response.data.data.comments,likesobj);
 if(localStorage.getItem("scrollY")){
 document.getElementById("messageArea").scrollTop=localStorage.getItem("scrollY");
 localStorage.removeItem("scrollY");
 }
-  }
   }
 }
   })
@@ -624,4 +651,16 @@ getPostDetail();
     console.log(error);
   });
 }
+}
+
+
+
+function getComments(){
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
+console.log(val);
 }

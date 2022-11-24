@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Database {
 	public static Connection connection=null;
@@ -252,6 +254,154 @@ public class Database {
 		PrintWriter out=response.getWriter();
 		out.print(finalResponse);
 		out.flush();
+	}
+
+
+
+	public static synchronized void getSortedPost(String postId,String sortType,String parentcomment, HttpServletRequest request,HttpServletResponse response) throws Exception{
+		String sql;
+		if(sortType.equalsIgnoreCase("default")){
+			sql="select parentcomment,commentid from comments where parentcomment!='' order by created_at;";
+		}else if(sortType.equalsIgnoreCase("top")){
+			sql="select c.parentcomment,c.commentid,l.status,l.count from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid where c.postid='"+postId+"' and c.parentcomment!='' order by l.status desc nulls last,l.count desc;";
+		}else{
+			sql="select parentcomment,commentid from comments where parentcomment!='' order by created_at desc;";
+		}
+
+		Statement stmt=connection.createStatement();
+		ResultSet rs=stmt.executeQuery(sql);
+		ConcurrentHashMap<String,ArrayList<String>> newOrder=new ConcurrentHashMap<>();
+		while (rs.next()) {
+			String pcomment = rs.getString("parentcomment");
+			String cid = rs.getString("commentid");
+			if(!newOrder.containsKey(pcomment)){
+				newOrder.put(pcomment,new ArrayList<>());
+			}
+			if(!newOrder.get(pcomment).contains(cid)){
+				newOrder.get(pcomment).add(cid);
+			}
+		}
+
+		Set<String> newpid=newOrder.keySet();
+		for(String key:newpid){
+			if(StorageMethods.comments.containsKey(key)) {
+				StorageMethods.comments.get(key).childcomments = newOrder.get(key);
+			}
+		}
+		if(sortType.equalsIgnoreCase("default")){
+			sql="select parentcomment,commentid from comments where postid='"+postId+"' and parentcomment is null order by created_at;";
+		}else if(sortType.equalsIgnoreCase("top")){
+			sql="select c.parentcomment,c.commentid,l.status,l.count from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid where c.postid='"+postId+"' and c.parentcomment is null order by l.status desc nulls last,l.count desc,c.created_at;";
+		}else if(sortType.equalsIgnoreCase("new")){
+			sql="select parentcomment,commentid from comments where postid='"+postId+"' and parentcomment is null order by created_at desc;";
+		}
+
+		Statement stmtpar=connection.createStatement();
+		ResultSet rspar=stmt.executeQuery(sql);
+		ArrayList<String> orderParent=new ArrayList<>();
+		while(rspar.next()){
+			String l = rspar.getString("commentid");
+			if(!orderParent.contains(l)) {
+				orderParent.add(l);
+			}
+		}
+		if(StorageMethods.posts.containsKey(postId)){
+			StorageMethods.posts.get(postId).comments=orderParent;
+		}
+//		JsonArray postData;
+//		response.setContentType("application/json");
+//		JsonObject finalResponse=new JsonObject();
+//		ArrayList<Posts> arr=new ArrayList<>();
+
+		sql="SELECT"+
+             " p1.commentid as l1id,"+
+             " p2.commentid as l2id,"+
+             " p3.commentid as l3id,"+
+             " p4.commentid as l4id"+
+         " FROM"+
+              " comments p1"+
+         " LEFT JOIN"+
+              " comments p2 on p2.parentcomment = p1.commentid"+
+         " LEFT JOIN"+
+               " comments p3 on p3.parentcomment = p2.commentid"+
+         " LEFT JOIN"+
+               " comments p4 on p4.parentcomment = p3.commentid where ";
+				if(parentcomment==null || parentcomment.equalsIgnoreCase("null")){
+					sql=sql+"p1.parentcomment is "+null+" and ";
+				}else {
+					sql=sql+"p1.parentcomment='"+parentcomment+"' and ";
+				}
+				sql=sql+ "p1.postid='"+postId+"' order by p1.created_at desc,p2.created_at desc,p3.created_at desc,p4.created_at desc;";
+		Statement stmt1=connection.createStatement();
+		ResultSet rs1=stmt1.executeQuery(sql);
+		try {
+			JsonObject res=new JsonObject();
+			response.setContentType("application/json");
+			JsonObject finalResponse=new JsonObject();
+			Posts post=StorageMethods.posts.get(postId);
+			JsonArray likeArr=new JsonArray();
+
+			res.add("post",new Gson().toJsonTree(post,Posts.class).getAsJsonObject());
+			JsonObject commentData=new JsonObject();
+			JsonObject likeData=new JsonObject();
+//			StorageMethods.getPost(postId, request, response);
+			while(rs1.next()){
+				String l1id=rs1.getString("l1id");
+				String l2id=rs1.getString("l2id");
+				String l3id=rs1.getString("l3id");
+				String l4id=rs1.getString("l4id");
+				if(StorageMethods.commentsByPostId.containsKey(postId)) {
+					if(l1id!=null) {
+						commentData.add(l1id, new Gson().toJsonTree(StorageMethods.comments.get(l1id), Comments.class).getAsJsonObject());
+
+					}
+					if(l2id!=null) {
+						commentData.add(l2id, new Gson().toJsonTree(StorageMethods.comments.get(l2id), Comments.class).getAsJsonObject());
+
+					}
+					if(l3id!=null){
+						commentData.add(l3id,new Gson().toJsonTree(StorageMethods.comments.get(l3id),Comments.class).getAsJsonObject());
+
+					}
+					if(l4id!=null
+					) {
+						commentData.add(l4id, new Gson().toJsonTree(StorageMethods.comments.get(l4id), Comments.class).getAsJsonObject());
+
+					}
+
+
+
+				}
+
+			}
+			res.add("comments",commentData);
+//			System.out.println(commentData);
+			if(StorageMethods.likesByContentId.containsKey(postId)) {
+				res.add("likesobj", new Gson().toJsonTree(StorageMethods.likesByContentId.get(postId)).getAsJsonObject());
+//				for (String key : StorageMethods.likesByContentId.get(postId).keySet()) {
+//					if(StorageMethods.likes.containsKey(key)) {
+//						likeArr.add(new Gson().toJsonTree(StorageMethods.likes.get(key)).getAsJsonObject());
+//					}
+//				}
+			}
+//			res.add("likes",likeArr);
+//        res.add("data",message);
+			PrintWriter out=response.getWriter();
+			finalResponse.add("data", res);
+			finalResponse.addProperty("code", 200);
+			out.print(finalResponse);
+			out.flush();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+//		postData = new Gson().toJsonTree(arr).getAsJsonArray();
+//		finalResponse.addProperty("postget", true);
+//		finalResponse.addProperty("message", "Post get Successful");
+//		finalResponse.add("data", postData);
+//		finalResponse.addProperty("code", 200);
+//		PrintWriter out=response.getWriter();
+//		out.print(finalResponse);
+//		out.flush();
 	}
 	public static synchronized JsonObject getAllPostsExcept(String username) throws Exception {
 		String sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by!='"+username+"';";
@@ -536,12 +686,14 @@ public class Database {
 
 			Like newLike=new Like(likeid,postid,username,status,commentid,created_at,updated_at);
 			StorageMethods.addPostLikes(likeid,postid,newLike);
-			if(StorageMethods.isPostinPosts(postid)) {
+			if(commentid==null) {
+				if (StorageMethods.isPostinPosts(postid)) {
 //				System.out.println(postid + " " + likeid);
-				StorageMethods.addLikeToPosts(likeid, postid);
-			}else{
-				getPostID(postid);
-				StorageMethods.addLikeToPosts(postid, likeid);
+					StorageMethods.addLikeToPosts(likeid, postid);
+				} else {
+					getPostID(postid);
+					StorageMethods.addLikeToPosts(postid, likeid);
+				}
 			}
 
 			if(commentid!=null){
@@ -575,10 +727,8 @@ public class Database {
 		if (!StorageMethods.isCommentInComments(postId)) {
 			StorageMethods.addComment(commentID,comments);
 		}
-		if(status) {
-
+		if(status && parrent ==null) {
 				StorageMethods.addCommentToPosts(commentID, postId);
-
 		}
 //		getLikesForContent(postId);
 	}

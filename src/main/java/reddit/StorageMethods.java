@@ -334,6 +334,9 @@ public class StorageMethods extends Storage{
         if(!likesByContentId.get(postid).containsKey(newLike.likeid)){
             likesByContentId.get(postid).put(newLike.likeid,newLike);
         }
+        if(commentid!=null && !commentid.equals("null")){
+            likesByContentId.get(postid).put(newLike.commentid,newLike);
+        }
         newLikeQueue.add(LikeId);
         posts.get(postid).likes.add(LikeId);
         posts.get(postid).countLike++;
@@ -355,6 +358,9 @@ public class StorageMethods extends Storage{
         if(!likesByContentId.get(contentId).containsKey(like.likeid)){
             likesByContentId.get(contentId).put(like.likeid,like);
         }
+        if(like.commentid!=null && !like.commentid.equals("null")){
+            likesByContentId.get(contentId).put(like.commentid,like);
+        }
 
 
     }
@@ -370,6 +376,9 @@ public class StorageMethods extends Storage{
         }
         if(!likesByContentId.get(postId).containsKey(newLike.likeid)){
             likesByContentId.get(postId).put(newLike.likeid,newLike);
+        }
+        if(commentid!=null && !commentid.equals("null")){
+            likesByContentId.get(postId).put(newLike.commentid,newLike);
         }
         newLikeQueue.add(LikeId);
         if(!Objects.equals(commentid, "") && commentid!=null) {
@@ -397,6 +406,9 @@ public class StorageMethods extends Storage{
         }
         if(!likesByContentId.get(contentId).containsKey(like.likeid)){
             likesByContentId.get(contentId).put(like.likeid,like);
+        }
+        if(like.commentid!=null && !like.commentid.equals("null")){
+            likesByContentId.get(contentId).put(like.commentid,like);
         }
 
 
@@ -771,6 +783,7 @@ public class StorageMethods extends Storage{
 
     public static synchronized void getPost(String postId,HttpServletRequest request,HttpServletResponse response) throws Exception{
         JsonObject res=new JsonObject();
+
         response.setContentType("application/json");
         JsonObject finalResponse=new JsonObject();
         Posts post=posts.get(postId);
@@ -805,6 +818,7 @@ public class StorageMethods extends Storage{
         finalResponse.addProperty("code", 200);
         out.print(finalResponse);
         out.flush();
+        System.out.println("Data Sent");
     }
 
     public static synchronized void getConversations(String username,HttpServletRequest request,HttpServletResponse response) throws Exception{

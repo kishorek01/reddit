@@ -28,7 +28,6 @@ public class GetMyPosts extends HttpServlet {
 		if(username!=null) {
 			try {
 				String sortType = request.getParameter("sort_type");
-				System.out.println(sortType);
 				if(sortType==null){
 					sortType="new";
 				}
