@@ -590,6 +590,7 @@ val=document.getElementById("sortType").value;
 val="new";
 }
 createCommentForNew(data,val,null);
+document.getElementById("postComments").innerHTML=(Number(document.getElementById("postComments").innerHTML.replace(" Comments",''))+1)+" Comments";
 }
 }
 
@@ -654,6 +655,7 @@ val=document.getElementById("sortType").value;
 val="new";
 }
 createCommentForNew(data,val,parentcomment);
+document.getElementById("postComments").innerHTML=(Number(document.getElementById("postComments").innerHTML.replace(" Comments",''))+1)+" Comments";
 }
 }
 
