@@ -238,3 +238,91 @@ toastr["error"](response.data.data.message, "Error");
 toastr["info"]("Comment Already Disliked", "Like");
 }
 }
+
+
+
+
+function publishComment(){
+let comment=document.getElementById("createPostInput").value;
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+let postId=querySearch;
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+if(postId!="" && comment!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('comment',comment);
+axios.post('/postComments',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      var noc=document.getElementById("nocomments");
+      if(noc){
+      noc.remove();
+      document.getElementById("sortType").style.display="block";
+      }
+      document.getElementById("modalArea").style.display="none";
+      document.getElementById("createPostInput").value="";
+//getPostDetail();
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
+if(response.data && response.data.data && response.data.data.data){
+createCommentForNew(response.data.data.data,val,null);
+}
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+
+
+function publishEditComment(){
+let comment=document.getElementById("EditCommentInput").value;
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+let postId=querySearch;
+let commentid=document.getElementById("editCommentId").value;
+if(postId!="" && comment!="" && commentid!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('comment',comment);
+params.append('commentid',commentid);
+axios.post('/editComment',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      document.getElementById("modalEditArea").style.display="none";
+      document.getElementById("EditCommentInput").value="";
+      document.getElementById("editCommentId").value="";
+//getPostDetail();
+if(response.data && response.data.data && response.data.data.data){
+var dat=response.data.data.data;
+let id=dat.commentid+"value";
+//console.log(id);
+document.getElementById(dat.commentid+"value").innerHTML=dat.comment;
+}
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+
+
+

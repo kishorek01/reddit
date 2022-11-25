@@ -1011,7 +1011,7 @@ public class StorageMethods extends Storage{
 
 
 
-    public static void addLikesToCommentsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at) throws IOException {
+    public static void addLikesToCommentsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at) throws Exception {
         Like newLike=new Like(LikeId,postid,username,status,commentid,created_at,updated_at);
         likes.put(LikeId,newLike);
         if(!likesByContentId.containsKey(postid)){
@@ -1033,7 +1033,7 @@ public class StorageMethods extends Storage{
     }
 
 
-    public static void editLikesBatch(String likeId,Boolean status,String postid,String commentid) throws IOException{
+    public static void editLikesBatch(String likeId,Boolean status,String postid,String commentid) throws Exception{
         likes.get(likeId).status=status;
         likesByContentId.get(postid).get(likeId).status=status;
         if(commentid!=null && !commentid.equals("null")){
@@ -1061,7 +1061,7 @@ public class StorageMethods extends Storage{
 
 
 
-    public static void addLikesToPostsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at){
+    public static void addLikesToPostsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at) throws Exception{
         Like newLike=new Like(LikeId,postid,username,status,commentid,created_at,updated_at);
         likes.put(LikeId,newLike);
         if(!likesByContentId.containsKey(postid)){
@@ -1074,4 +1074,46 @@ public class StorageMethods extends Storage{
         posts.get(postid).likes.add(LikeId);
         posts.get(postid).countLike++;
     }
+
+    public static void editBatchComments(String comment,String commentId,String postId) throws Exception{
+        comments.get(commentId).comment=comment;
+        commentsByPostId.get(postId).get(commentId).comment=comment;
+        Storage.editCommentQueue.add(commentId);
+    }
+
+    public static void postBatchComments(String commentId,String username, String comment, String postID, String parentComment,String created_at,String updated_at) throws Exception {
+        if(parentComment==null || parentComment.equalsIgnoreCase("null")) {
+            Comments commentData = new Comments(commentId, comment, username, postID);
+            comments.put(commentId, commentData);
+            if(posts.containsKey(postID)){
+                posts.get(postID).comments.add(commentId);
+            }else{
+                Database.getPostID(postID);
+                posts.get(postID).comments.add(commentId);
+            }
+            if(!commentsByPostId.containsKey(postID)){
+                commentsByPostId.put(postID,new ConcurrentHashMap<>());
+            }
+            if(!commentsByPostId.get(postID).containsKey(commentData.commentid)){
+                commentsByPostId.get(postID).put(commentData.commentid,commentData);
+            }
+        }else{
+            ArrayList<String> child = new ArrayList<>();
+            Comments commentData = new Comments(commentId, comment, username, postID,parentComment,child);
+            comments.put(commentId, commentData);
+            if (!comments.containsKey(parentComment)) {
+                Database.getCommentId(parentComment);
+            }
+            comments.get(parentComment).childcomments.add(commentId);
+            posts.get(postID).comments.add(commentId);
+            if(!commentsByPostId.containsKey(postID)){
+                commentsByPostId.put(postID,new ConcurrentHashMap<>());
+            }
+            if(!commentsByPostId.get(postID).containsKey(commentData.commentid)){
+                commentsByPostId.get(postID).put(commentData.commentid,commentData);
+            }
+        }
+        Storage.newCommentQueue.add(commentId);
+    }
+
 }

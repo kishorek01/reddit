@@ -218,8 +218,8 @@ data.likeid=likeId;
 data.status=false;
 data.postid=postid;
 data.commentid=null;
-data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
-data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.created_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
 data.username=getCookie("user");
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeId]=data;
@@ -279,8 +279,8 @@ data.likeid=likeId;
 data.status=true;
 data.postid=postid;
 data.commentid=null;
-data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
-data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.created_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
 data.username=getCookie("user");
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeId]=data;
@@ -303,7 +303,7 @@ document.getElementById("postDisLikes").innerHTML=post.dislike+" Dislikes";
 console.log("Already There in dislike",likeid);
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeid].status=true;
-
+likes[likeid].updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
 localStorage.setItem("likes",JSON.stringify(likes));
 let post=JSON.parse(localStorage.getItem("post"));
 post.like++;
@@ -339,8 +339,8 @@ data.likeid=likeId;
 data.status=true;
 data.postid=postid;
 data.commentid=commentid;
-data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
-data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.created_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
 data.username=getCookie("user");
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeId]=data;
@@ -366,6 +366,7 @@ localStorage.setItem("likes",JSON.stringify(likes));
 let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].like++;
 comments[commentid].dislike--;
+comments[commentid].updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
 localStorage.setItem("comments",JSON.stringify(comments));
 if(!localStorage.getItem("editlikes")){
 var lk=[]
@@ -398,8 +399,8 @@ data.likeid=likeId;
 data.status=false;
 data.postid=postid;
 data.commentid=commentid;
-data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
-data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.created_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30');
 data.username=getCookie("user");
 let likes=JSON.parse(localStorage.getItem("likes"));
 likes[likeId]=data;
@@ -424,6 +425,7 @@ localStorage.setItem("likes",JSON.stringify(likes));
 let comments=JSON.parse(localStorage.getItem("comments"));
 comments[commentid].like--;
 comments[commentid].dislike++;
+comments[commentid].updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
 localStorage.setItem("comments",JSON.stringify(comments));
 if(!localStorage.getItem("editlikes")){
 var lk=[]
@@ -550,39 +552,42 @@ querySearch=querySearch.replace("?id=","");
 let postId=querySearch;
 comment=comment.replace(/(\r\n|\n|\r)/gm, "");
 if(postId!="" && comment!=""){
-const params = new URLSearchParams();
-params.append('postid', postId);
-params.append('comment',comment);
-axios.post('/postComments',params)
-  .then(function (response) {
-    if(response.data.code==500 || response.data.code!=200){
-    toastr["error"](response.data.data.message, "Error");
- setTimeout(function(){
-  document.location="login.html";
-  },3000);
-
-      }else{
-      var noc=document.getElementById("nocomments");
-      if(noc){
-      noc.remove();
-      document.getElementById("sortType").style.display="block";
-      }
-      document.getElementById("modalArea").style.display="none";
-      document.getElementById("createPostInput").value="";
-//getPostDetail();
+var noc=document.getElementById("nocomments");
+if(noc){
+noc.remove();
+document.getElementById("sortType").style.display="block";
+}
+let commentid=generateCommentId("Post");
+let data={
+commentid:commentid,
+comment:comment,
+username:getCookie("user"),
+postid:postId,
+like:0,
+dislike:0,
+childcomments:[],
+likes:[],
+created_at:new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30'),
+updated_at:new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30')
+}
+if(!localStorage.getItem("newcomments")){
+localStorage.setItem("newcomments",JSON.stringify([]));
+}
+var newcomments=JSON.parse(localStorage.getItem("newcomments"));
+newcomments.push(commentid);
+var comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid]=data;
+localStorage.setItem("newcomments",JSON.stringify(newcomments));
+localStorage.setItem("comments",JSON.stringify(comments));
+document.getElementById("modalArea").style.display="none";
+document.getElementById("createPostInput").value="";
 let val;
 if(document.getElementById("sortType")){
 val=document.getElementById("sortType").value;
 }else{
 val="new";
 }
-if(response.data && response.data.data && response.data.data.data){
-createCommentForNew(response.data.data.data,val,null);
-}
-  }})
-  .catch(function (error) {
-    console.log(error);
-  });
+createCommentForNew(data,val,null);
 }
 }
 
@@ -653,7 +658,7 @@ document.getElementById("modalEditArea").style.display="block";
 document.getElementById("editCommentId").value=commentId;
 //localStorage.setItem("scrollY", document.getElementById("messageArea").scrollTop);
 //console.log(document.getElementById("messageArea").scrollTop);
-document.getElementById("EditCommentInput").value=comment;
+document.getElementById("EditCommentInput").value=document.getElementById(commentId+"value").innerHTML;
 }
 
 function closeEditComment(){
@@ -671,33 +676,31 @@ comment=comment.replace(/(\r\n|\n|\r)/gm, "");
 let postId=querySearch;
 let commentid=document.getElementById("editCommentId").value;
 if(postId!="" && comment!="" && commentid!=""){
-const params = new URLSearchParams();
-params.append('postid', postId);
-params.append('comment',comment);
-params.append('commentid',commentid);
-axios.post('/editComment',params)
-  .then(function (response) {
-    if(response.data.code==500 || response.data.code!=200){
-    toastr["error"](response.data.data.message, "Error");
- setTimeout(function(){
-  document.location="login.html";
-  },3000);
 
-      }else{
-      document.getElementById("modalEditArea").style.display="none";
-      document.getElementById("EditCommentInput").value="";
-      document.getElementById("editCommentId").value="";
-//getPostDetail();
-if(response.data && response.data.data && response.data.data.data){
-var dat=response.data.data.data;
-let id=dat.commentid+"value";
-//console.log(id);
-document.getElementById(dat.commentid+"value").innerHTML=dat.comment;
+if(!localStorage.getItem("newcomments")){
+localStorage.setItem("newcomments",JSON.stringify([]));
 }
-  }})
-  .catch(function (error) {
-    console.log(error);
-  });
+if(!localStorage.getItem("editcomments")){
+localStorage.setItem("editcomments",JSON.stringify([]));
+}
+var newcomments=JSON.parse(localStorage.getItem("newcomments"));
+var editcomments=JSON.parse(localStorage.getItem("editcomments"));
+if(!newcomments.includes(commentid)){
+if(!editcomments.includes(commentid)){
+editcomments.push(commentid);
+}
+}
+
+var comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid].comment=comment;
+localStorage.setItem("editcomments",JSON.stringify(editcomments));
+localStorage.setItem("comments",JSON.stringify(comments));
+
+document.getElementById("modalEditArea").style.display="none";
+document.getElementById("EditCommentInput").value="";
+document.getElementById("editCommentId").value="";
+document.getElementById(commentid+"value").innerHTML=comment;
+
 }
 }
 
@@ -837,11 +840,31 @@ result=result+owner+",Like,";
 return result;
 }
 
+function generateCommentId(type){
+var owner=getCookie("user");
+var result='';
+result=result+owner+","+type+",";
+ var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var j = 0; j < 7; j++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+return result;
+}
+
 
 
 function checkBatchSend(){
 var edits=[];
 var newlikes=[];
+var newcomments=[];
+var editcomments=[];
+if(localStorage.getItem("newcomments")){
+newcomments=JSON.parse(localStorage.getItem("newcomments"));
+}
+if(localStorage.getItem("editcomments")){
+editcomments=JSON.parse(localStorage.getItem("editcomments"));
+}
 if(localStorage.getItem("editlikes")){
 edits=JSON.parse(localStorage.getItem("editlikes"));
 }
@@ -857,6 +880,16 @@ if(newlikes.length>0){
 console.log("New Likes Batch");
 console.log(newlikes);
 batchUpdate(newlikes,"new");
+}
+if(newcomments.length>0){
+console.log("New Comments Batch");
+console.log(newcomments);
+batchUpdateComments(newcomments,"new");
+}
+if(editcomments.length>0){
+console.log("Edit Comments Batch");
+console.log(editcomments);
+batchUpdateComments(editcomments,"edit");
 }
 setTimeout(checkBatchSend,5000);
 }
@@ -885,6 +918,39 @@ axios.post('/batchLikes',params)
       localStorage.removeItem("editlikes");
       }else{
       localStorage.removeItem("newlikes");
+      }
+}
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+
+
+function batchUpdateComments(ids,type){
+let commentsObj=JSON.parse(localStorage.getItem("comments"));
+let data=[]
+for(var i=0;i<ids.length;i++){
+data.push(commentsObj[ids[i]]);
+}
+console.log(data);
+const params = new URLSearchParams();
+params.append('data', JSON.stringify(data));
+params.append('type', type);
+axios.post('/batchComments',params)
+  .then(function (response) {
+    if(response.data.code==500){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+      }else{
+      console.log(response);
+      if(type=="edit"){
+      localStorage.removeItem("editcomments");
+      }else{
+      localStorage.removeItem("newcomments");
       }
 }
   })

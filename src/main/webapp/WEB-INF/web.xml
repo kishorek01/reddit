@@ -282,4 +282,14 @@
     <servlet-name>BatchLikes</servlet-name>
     <url-pattern>/batchLikes</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>BatchComments</display-name>
+    <servlet-name>BatchComments</servlet-name>
+    <servlet-class>BatchComments</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BatchComments</servlet-name>
+    <url-pattern>/batchComments</url-pattern>
+  </servlet-mapping>
 </web-app>
