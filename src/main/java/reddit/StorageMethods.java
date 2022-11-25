@@ -94,9 +94,14 @@ public class StorageMethods extends Storage{
             posts.get(postId).comments.add(commentId);
         }
     }
-    public static void addLikeToPosts(String likeId,String postId){
+    public static void addLikeToPosts(String likeId,String postId,Boolean status){
         if(!posts.get(postId).likes.contains(likeId)){
             posts.get(postId).likes.add(likeId);
+            if(status){
+                StorageMethods.posts.get(postId).like++;
+            }else{
+                StorageMethods.posts.get(postId).dislike++;
+            }
         }
     }
     public static void addLikeToComment(String likeId,String commentId,Boolean status){
@@ -470,7 +475,7 @@ public class StorageMethods extends Storage{
         String date=myDateObj.toString();
         date=date.replace('T',' ');
         date=date+"+05:30";
-        Posts postData=new Posts(postId,content,username, date,date,0,0);
+        Posts postData=new Posts(postId,content,username, date,date,0,0,0,0);
         posts.put(postId,postData);
         res.add("data",new Gson().toJsonTree(postData));
         users.get(username).myPosts.add(postId);
@@ -1023,11 +1028,13 @@ public class StorageMethods extends Storage{
         likesByContentId.get(postid).get(LikeId).status=status;
         newLikeQueue.add(LikeId);
         if(!Objects.equals(commentid, "") && commentid!=null) {
-            comments.get(commentid).likes.add(LikeId);
-            if(status){
-                comments.get(commentid).like++;
-            }else{
-                comments.get(commentid).dislike++;
+            if(comments.containsKey(commentid)) {
+                comments.get(commentid).likes.add(LikeId);
+                if (status) {
+                    comments.get(commentid).like++;
+                } else {
+                    comments.get(commentid).dislike++;
+                }
             }
         }
     }
