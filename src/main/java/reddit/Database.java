@@ -522,7 +522,7 @@ public class Database {
 	}
 
 	public static synchronized void postChildCommentsBatch(String sql) throws Exception{
-		sql="insert into comments(commentid,username,parentcomment,comment,postid) values "+sql+" RETURNING *;";
+		sql="insert into comments(commentid,username,parentcomment,comment,postid) values "+sql+" on conflict(commentid) do nothing RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
@@ -557,13 +557,13 @@ public class Database {
 	}
 
 	public static synchronized void postBatchPosts(String sql) throws Exception{
-		sql="insert into posts(postid,created_by,content,created_at,updated_at) values "+ sql+" RETURNING *;";
+		sql="insert into posts(postid,created_by,content,created_at,updated_at) values "+ sql+" on conflict(postid) do nothing RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
 
 	public static synchronized void postBatchLikes(String sql) throws Exception{
-		sql="insert into likes(likeid,postid,username,status,commentid) values "+ sql+" RETURNING *;";
+		sql="insert into likes(likeid,postid,username,status,commentid) values "+ sql+" on conflict(likeid) do nothing RETURNING *;";
 		Statement statement1=connection.createStatement();
 		ResultSet resultSet=statement1.executeQuery(sql);
 	}
