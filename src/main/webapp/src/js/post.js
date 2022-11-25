@@ -845,7 +845,7 @@ var result='';
 result=result+owner+",Like,";
  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var j = 0; j < 7; j++ ) {
+    for ( var j = 0; j < 8; j++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 return result;
@@ -857,7 +857,7 @@ var result='';
 result=result+owner+","+type+",";
  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var j = 0; j < 7; j++ ) {
+    for ( var j = 0; j < 8; j++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 return result;

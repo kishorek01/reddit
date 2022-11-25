@@ -1120,6 +1120,7 @@ public class StorageMethods extends Storage{
                 commentsByPostId.get(postID).put(commentData.commentid,commentData);
             }
         }
+        posts.get(postID).totalComments++;
         Storage.newCommentQueue.add(commentId);
     }
 
