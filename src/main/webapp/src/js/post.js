@@ -786,7 +786,12 @@ params:{
      var likesobj=response.data.data.likesobj || {};
   data=data;
   let parent=data.parentcomment;
-
+  var comments=JSON.parse(localStorage.getItem("comments"));
+  let finalcomments = {
+      ...comments,
+      ...data.comments
+  };
+  localStorage.setItem("comments",JSON.stringify(finalcomments));
 appendcommet(commentid,data.comments,likesobj,parent);
 document.getElementById(commentid+"more").style.display="none";
 
