@@ -613,38 +613,45 @@ let querySearch=window.location.search;
 querySearch=querySearch.replace("?id=","");
 let postId=querySearch;
 comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+if(getCookie("user")==""){
+alert("Session Expired Login");
+}
 let parentcomment=document.getElementById("childCommentId").value;
 if(postId!="" && comment!="" && parentcomment!=""){
-const params = new URLSearchParams();
-params.append('postid', postId);
-params.append('comment',comment);
-params.append('parentcomment',parentcomment);
-axios.post('/childComments',params)
-  .then(function (response) {
-    if(response.data.code==500 || response.data.code!=200){
-    toastr["error"](response.data.data.message, "Error");
- setTimeout(function(){
-  document.location="login.html";
-  },3000);
+let commentid=generateCommentId("Comment");
+let data={
+commentid:commentid,
+comment:comment,
+username:getCookie("user"),
+postid:postId,
+like:0,
+dislike:0,
+parentcomment:parentcomment,
+childcomments:[],
+likes:[],
+created_at:new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30'),
+updated_at:new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().replace('T',' ').replace('Z','+05:30')
+}
+if(!localStorage.getItem("newcomments")){
+localStorage.setItem("newcomments",JSON.stringify([]));
+}
+var newcomments=JSON.parse(localStorage.getItem("newcomments"));
+newcomments.push(commentid);
+var comments=JSON.parse(localStorage.getItem("comments"));
+comments[commentid]=data;
+localStorage.setItem("newcomments",JSON.stringify(newcomments));
+localStorage.setItem("comments",JSON.stringify(comments));
 
-      }else{
-      document.getElementById("modalChildArea").style.display="none";
-      document.getElementById("createChildPostInput").value="";
-      document.getElementById("childCommentId").value="";
-//getPostDetail();
+document.getElementById("modalChildArea").style.display="none";
+document.getElementById("createChildPostInput").value="";
+document.getElementById("childCommentId").value="";
 let val;
 if(document.getElementById("sortType")){
 val=document.getElementById("sortType").value;
 }else{
 val="new";
 }
-if(response.data && response.data.data && response.data.data.data){
-createCommentForNew(response.data.data.data,val,parentcomment);
-}
-  }})
-  .catch(function (error) {
-    console.log(error);
-  });
+createCommentForNew(data,val,parentcomment);
 }
 }
 

@@ -326,3 +326,47 @@ document.getElementById(dat.commentid+"value").innerHTML=dat.comment;
 
 
 
+
+function publishChildComment(){
+let comment=document.getElementById("createChildPostInput").value;
+let querySearch=window.location.search;
+querySearch=querySearch.replace("?id=","");
+let postId=querySearch;
+comment=comment.replace(/(\r\n|\n|\r)/gm, "");
+let parentcomment=document.getElementById("childCommentId").value;
+if(postId!="" && comment!="" && parentcomment!=""){
+const params = new URLSearchParams();
+params.append('postid', postId);
+params.append('comment',comment);
+params.append('parentcomment',parentcomment);
+axios.post('/childComments',params)
+  .then(function (response) {
+    if(response.data.code==500 || response.data.code!=200){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+
+      }else{
+      document.getElementById("modalChildArea").style.display="none";
+      document.getElementById("createChildPostInput").value="";
+      document.getElementById("childCommentId").value="";
+//getPostDetail();
+let val;
+if(document.getElementById("sortType")){
+val=document.getElementById("sortType").value;
+}else{
+val="new";
+}
+if(response.data && response.data.data && response.data.data.data){
+createCommentForNew(response.data.data.data,val,parentcomment);
+}
+  }})
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+}
+
+
+
