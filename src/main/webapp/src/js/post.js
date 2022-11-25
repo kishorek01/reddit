@@ -489,6 +489,8 @@ params:{
 
 
      var likesobj=response.data.data.likesobj || {};
+     var comm=response.data.data.comments || {};
+     localStorage.setItem("comments",JSON.stringify(comm));
      localStorage.setItem("likes",JSON.stringify(likesobj));
     for(var i=0;i<data.post.likes.length;i++){
     if(likesobj[data.post.likes[i]]){
@@ -502,7 +504,7 @@ params:{
     document.getElementById("commentAreaBox").innerHTML="<div id=\"nocomments\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
     val=document.getElementById("sortType").style.display="none";
   }else{
-  localStorage.setItem("comments",JSON.stringify(data.comments));
+
   document.getElementById("sortType").style.display="block";
   data=data;
 //response.data.data.comments.sort(custom_sort);
