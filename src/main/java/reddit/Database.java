@@ -191,7 +191,7 @@ public class Database {
 //		String sql="select * from posts where created_by='"+username+"' order by created_at desc;";
 		String sql;
 		if(sortType.equalsIgnoreCase("top")){
-			sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(*) from likes where commentid is null group by postid,status) l on l.pid=p.postid where p.created_by='"+username+"' order by case when l.status=true then 1 else 2 end nulls last,l.count desc nulls last,p.created_at desc;";
+			sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(status) from likes where commentid is null group by postid,status) l on l.pid=p.postid where p.created_by='"+username+"' order by case when l.status is true then 0 when l.status is null then 1 end,case when l.status is true then l.count end desc, case when l.status is false then l.count end asc,p.created_at desc;";
 		}else{
 			sql="select * from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid where p.created_by='"+username+"' order by p.created_at desc nulls last;";
 		}
@@ -233,7 +233,7 @@ public class Database {
 	public static synchronized void getSortedPosts(String sortType, HttpServletRequest request,HttpServletResponse response) throws Exception{
 		String sql;
 		if(sortType.equalsIgnoreCase("top")){
-			sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(*) from likes where commentid is null group by postid,status) l on l.pid=p.postid order by case when l.status=true then 1 else 2 end nulls last,l.count desc nulls last,p.created_at desc;";
+			sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(status) from likes where commentid is null group by postid,status) l on l.pid=p.postid order by case when l.status is true then 0 when l.status is null then 1 end,case when l.status is true then l.count end desc, case when l.status is false then l.count end asc,p.created_at desc;";
 		}else{
 			sql="select p.postid,l.count from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by p.created_at desc nulls last;";
 		}
