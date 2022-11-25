@@ -82,8 +82,8 @@ return null;
   if(message==null || message==""){
   message="This Comment was Deleted";
   }
-  var totlikes=0;
-  var totdislikes=0;
+  var totlikes=data.like;
+  var totdislikes=data.dislike;
   var like=null;
   var likeid=null;
   let agoTime=moment(data.created_at).fromNow();
@@ -182,6 +182,10 @@ totlikes=totlikes+1;
 totdislikes=totdislikes+1;
 }
 }
+data.like=totlikes;
+data.dislike=totdislikes;
+  localStorage.setItem("post",JSON.stringify(data));
+
 
 document.getElementById("postOwner").innerHTML=data.created_by;
 let agoTime=moment(data.created_at).fromNow();
@@ -209,9 +213,58 @@ likeid=postLikes[i].likeid;
 function dislikepost(postid,likeType,likeid){
 if((likeType===null || likeType) && likeid=='null'){
 var likeId=generateLikeId();
-console.log(likeId);
+var data={}
+data.likeid=likeId;
+data.status=false;
+data.postid=postid;
+data.commentid=null;
+data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.username=getCookie("user");
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeId]=data;
+if(!localStorage.getItem("newlikes")){
+var lk=[]
+localStorage.setItem("newlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+newlikes.push(likeId);
+localStorage.setItem("newlikes",JSON.stringify(newlikes));
+let post=JSON.parse(localStorage.getItem("post"));
+post.dislike++;
+localStorage.setItem("post",JSON.stringify(post));
+localStorage.setItem("likes",JSON.stringify(likes));
+likeid=likeId;
+document.getElementById("postLikes").innerHTML=post.like+" Likes";
+document.getElementById("postDisLikes").innerHTML=post.dislike+" Dislikes";
+ document.getElementById("LikesCont").innerHTML="<p id=\"likesdislked\" onclick=\"likepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else if(likeType===null || likeType){
 
+console.log("Already There in dislike",likeid);
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeid].status=false;
+
+localStorage.setItem("likes",JSON.stringify(likes));
+let post=JSON.parse(localStorage.getItem("post"));
+post.like--;
+post.dislike++;
+localStorage.setItem("post",JSON.stringify(post));
+
+if(!localStorage.getItem("editlikes")){
+var lk=[]
+localStorage.setItem("editlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes")) || [];
+if(!newlikes.includes(likeid)){
+var editlikes=JSON.parse(localStorage.getItem("editlikes"));
+if(editlikes.length==0 || !editlikes.includes(likeid)){
+editlikes.push(likeid);
+localStorage.setItem("editlikes",JSON.stringify(editlikes));
+}
+}
+document.getElementById("postLikes").innerHTML=post.like+" Likes";
+document.getElementById("postDisLikes").innerHTML=post.dislike+" Dislikes";
+ document.getElementById("LikesCont").innerHTML="<p id=\"likesdislked\" onclick=\"likepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else{
 toastr["info"]("Comment Already Disliked", "Like");
 
@@ -221,11 +274,59 @@ toastr["info"]("Comment Already Disliked", "Like");
 function likepost(postid,likeType,likeid){
 if((likeType===null || !likeType) && likeid=='null'){
 var likeId=generateLikeId();
-console.log(likeId);
+var data={}
+data.likeid=likeId;
+data.status=true;
+data.postid=postid;
+data.commentid=null;
+data.created_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.updated_at=new Date().toISOString().replace('T',' ').replace('Z','+05:30');
+data.username=getCookie("user");
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeId]=data;
+if(!localStorage.getItem("newlikes")){
+var lk=[]
+localStorage.setItem("newlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+newlikes.push(likeId);
+localStorage.setItem("newlikes",JSON.stringify(newlikes));
+let post=JSON.parse(localStorage.getItem("post"));
+post.like++;
+localStorage.setItem("post",JSON.stringify(post));
+localStorage.setItem("likes",JSON.stringify(likes));
+likeid=likeId;
+document.getElementById("postLikes").innerHTML=post.like+" Likes";
+document.getElementById("postDisLikes").innerHTML=post.dislike+" Dislikes";
+ document.getElementById("LikesCont").innerHTML="<p id=\"likesdislked\" onclick=\"likepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
 }else if(likeType===null || !likeType){
-}else{
-toastr["info"]("Post Already Liked", "Like");
+console.log("Already There in dislike",likeid);
+let likes=JSON.parse(localStorage.getItem("likes"));
+likes[likeid].status=true;
 
+localStorage.setItem("likes",JSON.stringify(likes));
+let post=JSON.parse(localStorage.getItem("post"));
+post.like++;
+post.dislike--;
+localStorage.setItem("post",JSON.stringify(post));
+localStorage.setItem("likes",JSON.stringify(likes));
+if(!localStorage.getItem("editlikes")){
+var lk=[]
+localStorage.setItem("editlikes",JSON.stringify(lk));
+}
+var newlikes=JSON.parse(localStorage.getItem("newlikes")) || [];
+if(!newlikes.includes(likeid)){
+var editlikes=JSON.parse(localStorage.getItem("editlikes"));
+if(editlikes.length==0 || !editlikes.includes(likeid)){
+editlikes.push(likeid);
+localStorage.setItem("editlikes",JSON.stringify(editlikes));
+}
+}
+document.getElementById("postLikes").innerHTML=post.like+" Likes";
+document.getElementById("postDisLikes").innerHTML=post.dislike+" Dislikes";
+ document.getElementById("LikesCont").innerHTML="<p id=\"likesdislked\" onclick=\"likepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">Like</p><p onclick=\"dislikepost(\'"+postid+"\',"+likes[likeid].status+",'"+likeid+"')\" style=\"font-size: 17px;font-style: italic;cursor:pointer;color: blue;text-decoration: underline;\">UnLike</p>";
+}else{
+toastr["info"]("Comment Already Liked", "Like");
 }
 }
 
@@ -270,7 +371,7 @@ if(!localStorage.getItem("editlikes")){
 var lk=[]
 localStorage.setItem("editlikes",JSON.stringify(lk));
 }
-var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+var newlikes=JSON.parse(localStorage.getItem("newlikes")) || [];
 if(!newlikes.includes(likeid)){
 var editlikes=JSON.parse(localStorage.getItem("editlikes"));
 if(editlikes.length==0 || !editlikes.includes(likeid)){
@@ -328,7 +429,7 @@ if(!localStorage.getItem("editlikes")){
 var lk=[]
 localStorage.setItem("editlikes",JSON.stringify(lk));
 }
-var newlikes=JSON.parse(localStorage.getItem("newlikes"));
+var newlikes=JSON.parse(localStorage.getItem("newlikes")) || [];
 if(!newlikes.includes(likeid)){
 var editlikes=JSON.parse(localStorage.getItem("editlikes"));
 if(editlikes.length==0 || !editlikes.includes(likeid)){
@@ -383,7 +484,7 @@ params:{
 
   let dat={}
    let postLikes=[];
-     console.log(data)
+
 
      var likesobj=response.data.data.likesobj || {};
      localStorage.setItem("likes",JSON.stringify(likesobj));
@@ -393,7 +494,7 @@ params:{
     }
     }
   showPost(data.post,postLikes);
-
+  setTimeout(checkBatchSend,5000);
 //  data.comments=Object.values(data.comments);
   if(Object.values(data.comments).length === 0){
     document.getElementById("commentAreaBox").innerHTML="<div id=\"nocomments\" style=\"cursor: default;cursor: default;text-align: center;align-items: center;display: grid;grid-template-rows: auto;\" class=\"posts\"><p style=\"font-size: 20px;font-weight: 600;opacity: 0.5;font-style: italic;letter-spacing: 2px;\">No Comments Found</p></div>";
@@ -729,4 +830,60 @@ result=result+owner+",Like,";
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 return result;
+}
+
+
+
+function checkBatchSend(){
+var edits=[];
+var newlikes=[];
+if(localStorage.getItem("editlikes")){
+edits=JSON.parse(localStorage.getItem("editlikes"));
+}
+if(localStorage.getItem("newlikes")){
+newlikes=JSON.parse(localStorage.getItem("newlikes"));
+}
+if(edits.length>0){
+console.log("Edit Likes Batch");
+console.log(edits);
+batchUpdate(edits,"edit");
+}
+if(newlikes.length>0){
+console.log("New Likes Batch");
+console.log(newlikes);
+batchUpdate(newlikes,"new");
+}
+setTimeout(checkBatchSend,5000);
+}
+
+
+function batchUpdate(ids,type){
+let likeObj=JSON.parse(localStorage.getItem("likes"));
+let data=[]
+for(var i=0;i<ids.length;i++){
+data.push(likeObj[ids[i]]);
+}
+console.log(data);
+const params = new URLSearchParams();
+params.append('data', JSON.stringify(data));
+params.append('type', type);
+axios.post('/batchLikes',params)
+  .then(function (response) {
+    if(response.data.code==500){
+    toastr["error"](response.data.data.message, "Error");
+ setTimeout(function(){
+  document.location="login.html";
+  },3000);
+      }else{
+      console.log(response);
+      if(type=="edit"){
+      localStorage.removeItem("editlikes");
+      }else{
+      localStorage.removeItem("newlikes");
+      }
+}
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 }

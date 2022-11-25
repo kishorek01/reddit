@@ -1011,4 +1011,67 @@ public class StorageMethods extends Storage{
 
 
 
+    public static void addLikesToCommentsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at) throws IOException {
+        Like newLike=new Like(LikeId,postid,username,status,commentid,created_at,updated_at);
+        likes.put(LikeId,newLike);
+        if(!likesByContentId.containsKey(postid)){
+            likesByContentId.put(postid,new ConcurrentHashMap<>());
+        }
+        if(!likesByContentId.get(postid).containsKey(newLike.likeid)){
+            likesByContentId.get(postid).put(newLike.likeid,newLike);
+        }
+        likesByContentId.get(postid).get(LikeId).status=status;
+        newLikeQueue.add(LikeId);
+        if(!Objects.equals(commentid, "") && commentid!=null) {
+            comments.get(commentid).likes.add(LikeId);
+            if(status){
+                comments.get(commentid).like++;
+            }else{
+                comments.get(commentid).dislike++;
+            }
+        }
+    }
+
+
+    public static void editLikesBatch(String likeId,Boolean status,String postid,String commentid) throws IOException{
+        likes.get(likeId).status=status;
+        likesByContentId.get(postid).get(likeId).status=status;
+        if(commentid!=null && !commentid.equals("null")){
+            if(status){
+                comments.get(commentid).like++;
+                comments.get(commentid).dislike--;
+            }else{
+                comments.get(commentid).like--;
+                comments.get(commentid).dislike++;
+            }
+        }
+        Storage.editLikeQueue.add(likeId);
+    }
+    public static void throwSuccess(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        JsonObject res=new JsonObject();
+        response.setContentType("application/json");
+        JsonObject finalResponse=new JsonObject();
+        finalResponse.addProperty("code", 200);
+        res.addProperty("message","All Data Updated");
+        finalResponse.add("data", res);
+        PrintWriter out=response.getWriter();
+        out.print(finalResponse);
+        out.flush();
+    }
+
+
+
+    public static void addLikesToPostsBatch(String LikeId,String postid,String commentid,Boolean status,String username,String created_at,String updated_at){
+        Like newLike=new Like(LikeId,postid,username,status,commentid,created_at,updated_at);
+        likes.put(LikeId,newLike);
+        if(!likesByContentId.containsKey(postid)){
+            likesByContentId.put(postid,new ConcurrentHashMap<>());
+        }
+        if(!likesByContentId.get(postid).containsKey(newLike.likeid)){
+            likesByContentId.get(postid).put(newLike.likeid,newLike);
+        }
+        newLikeQueue.add(LikeId);
+        posts.get(postid).likes.add(LikeId);
+        posts.get(postid).countLike++;
+    }
 }

@@ -272,4 +272,14 @@
     <servlet-name>GetChildComment</servlet-name>
     <url-pattern>/getChildComment</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>BatchLikes</display-name>
+    <servlet-name>BatchLikes</servlet-name>
+    <servlet-class>BatchLikes</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BatchLikes</servlet-name>
+    <url-pattern>/batchLikes</url-pattern>
+  </servlet-mapping>
 </web-app>
