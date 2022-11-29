@@ -1,0 +1,32 @@
+create table posts(postid varchar unique primary key,created_by varchar,content varchar,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),FOREIGN KEY (created_by) REFERENCES users(username));
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON posts
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+
+
+
+select p.postid from posts p left join (select postid as pid,count(*) from likes where commentid is null group by postid) l on l.pid=p.postid order by l.count desc nulls last;
+
+
+//Sort Posts
+
+
+
+
+sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(*) from likes where commentid is null group by postid,status) l on l.pid=p.postid  order by case when l.status=true then 1 else 2 end nulls last,l.count desc nulls last,p.created_at desc;";
+
+
+sql="select p.postid,l.status,l.count from posts p left join (select postid as pid,status,count(status) from likes where commentid is null group by postid,status) l on l.pid=p.postid where p.created_by='"+username+"' order by case when l.status is true then 0 when l.status is null then 1 end,case when l.status is true then l.count end desc, case when l.status is false then l.count end asc,p.created_at desc;"
+
+
+
+
+/// SORT ORGANIZED
+
+
+
+select c.parentcomment,c.commentid,l.ccid,l.status,l.count from comments c left join (select likes.commentid,lab.ccid,status,count(likes.status),array_agg(likeid) from likes left join (select count(*) as ccid,commentid from likes group by commentid) lab on lab.commentid=likes.commentid group by likes.commentid,lab.ccid,likes.status order by likes.status desc,count(*) desc) l on c.commentid=l.commentid where c.postid='aravind,eMBsFf' and c.parentcomment is null group by c.commentid,l.status,l.ccid,l.count order by case when l.status is true then 0 when l.status is null then 1 end,case when l.status is true then l.count end desc,case when l.status is true then l.ccid end, case when l.status is false then l.count end asc,case when l.status is false then l.ccid end desc,c.created_at;

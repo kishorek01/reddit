@@ -1,0 +1,6 @@
+create table likes(likeid varchar unique primary key,postid varchar, commentid varchar default null,username varchar,status boolean,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),FOREIGN KEY(username) REFERENCES users(username), FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE);
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON likes
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

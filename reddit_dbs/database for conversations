@@ -1,0 +1,4 @@
+create table conversations(conversationid varchar not null primary key,user1 varchar,user2 varchar,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),FOREIGN KEY(user1) REFERENCES users(username),FOREIGN KEY(user2) REFERENCES users(username));
+
+
+select conversationid,updated_at from messages order by updated_at desc;

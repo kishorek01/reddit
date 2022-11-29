@@ -1,0 +1,4 @@
+create table messages(conversationid varchar,messages json,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), FOREIGN KEY(conversationid) REFERENCES conversations(conversationid) ON DELETE CASCADE);
+
+insert into messages(conversationid,messages)
+values('1','{"M1":{"username":"kishore","message":"Hi da.Epdi iruka?"},"M2":{"username":"ashok","message":"Nala iruke.nee?"}}');

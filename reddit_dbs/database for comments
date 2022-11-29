@@ -1,0 +1,51 @@
+create table comments(commentid varchar unique not null primary key,username varchar,comment varchar,postid varchar,parentcomment varchar default null,childcomments varchar Array default '{}',created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),FOREIGN KEY(username) REFERENCES users(username), FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE);
+
+
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON comments
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+
+
+select postid,commentid,count(*) from likes where postid='aravind,eMBsFf' and commentid!='' group by postid,commentid order by count(*) desc;
+
+
+top comments
+
+
+select postid,c.parentcomment,array_agg(c.commentid),l.count,l.status from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid group by postid,c.commentid,l.count,l.status order by array_position(array[true,null,false],l.status),l.count desc nulls last,c.created_at;
+
+
+select postid,c.parentcomment,array_agg(c.commentid) from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid group by postid,c.parentcomment;
+
+
+select postid,c.parentcomment,array_agg( distinct c.commentid) from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid group by postid,c.parentcomment;
+
+
+select c.parentcomment,array_agg( distinct c.commentid) from comments c left join (select commentid,status,count(likes.status),array_agg(likeid) from likes group by commentid,status order by status desc,count(*) desc) l on c.commentid=l.commentid where c.postid='aravind,eMBsFf' and c.parentcomment!='' group by postid,c.parentcomment;
+
+select array_agg(commentid) from comments group by postid;
+
+
+
+
+SELECT
+    p1.commentid as level1_comment,
+    p2.commentid as level2_comment,
+    p3.commentid as level3_comment,
+    p4.commentid as level4_comment
+FROM        
+      comments p1
+LEFT JOIN   
+      comments p2 on p2.parentcomment = p1.commentid 
+LEFT JOIN                                            
+      comments p3 on p3.parentcomment = p2.commentid                                          
+LEFT JOIN                                                                                     
+      comments p4 on p4.parentcomment = p3.commentid where p1.parentcomment='yadeendran,Comment,WknXv6s' and p1.postid='aravind,eMBsFf' order by p1.created_at desc,p2.created_at desc,p3.created_at desc,p4.created_at desc;
+
+
+select commentid from comments where parentcomment!='' and parentcomment not in (select commentid from comments);
+//Select parent comment that is not found
